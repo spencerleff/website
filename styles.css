@@ -1,0 +1,140 @@
+:root {
+    --font-family: 'SF Mono', 'San Francisco Mono', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    --color-primary: #4d4d4d; /* Dark grey */
+    --color-background: #fafafa; /* Off-white */
+    --color-accent: #004f4f; /* Deep teal */
+    --color-light-grey: #ccc;
+    --color-dark-grey: #444444;
+    --typewriterSpeed: 2s;
+    --typewriterCharacters: 24;
+}
+
+html {
+    font-size: 24px; /* 50% larger than 16px */
+    font-family: var(--font-family);
+    color: var(--color-primary);
+    background-color: var(--color-background);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-align: center; /* Center all text */
+    display: grid;
+    place-content: center;
+    min-height: 100vh;
+    background: var(--color-background);
+}
+
+* {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+}
+
+/* Responsive scaling */
+section, div, h1, h2, h3, h4, h5, h6, p, img {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Specific section styles */
+.section {
+    padding: 20px;
+}
+
+/* Color scheme */
+body {
+    background-color: var(--color-background);
+    color: var(--color-primary);
+}
+
+h1 {
+    font-size: clamp(1rem, 3vw + 1rem, 4rem);
+    position: relative;
+    width: max-content;
+}
+
+h1::before,
+h1::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+h1::before {
+    background: var(--color-background);
+    animation: typewriter var(--typewriterSpeed)
+      steps(var(--typewriterCharacters)) 1s forwards;
+}
+
+h1::after {
+    width: 0.1em;
+    background: var(--color-primary);
+    animation: typewriter var(--typewriterSpeed)
+      steps(var(--typewriterCharacters)) 1s forwards,
+    blink 750ms steps(var(--typewriterCharacters)) infinite;
+}
+
+.subtitle {
+    color: var(--color-dark-grey);
+    margin-top: 1rem;
+    font-size: 150%;
+    opacity: 0;
+    transform: translateY(3rem);
+    animation: fadeInUp 2s ease calc(var(--typewriterSpeed) + 2.5s) forwards;
+}
+
+@keyframes typewriter {
+    to {
+        left: 100%;
+    }
+}
+
+@keyframes blink {
+    to {
+        background: transparent;
+    }
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Media queries for responsive text sizing */
+@media (max-width: 1200px) {
+    html {
+        font-size: 24px; /* 50% larger than 15px */
+    }
+}
+
+@media (max-width: 992px) {
+    html {
+        font-size: 22px; /* 50% larger than 14px */
+    }
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 19px; /* 50% larger than 13px */
+    }
+}
+
+@media (max-width: 576px) {
+    html {
+        font-size: 16px; /* 50% larger than 12px */
+    }
+}
