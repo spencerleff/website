@@ -1,16 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Spencer Leff</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>spencerleff</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="section" id="intro">
-        <h1 class="typewriter">Hi there! I'm Spencer ♥</h1>
-        <p class="subtitle">Welcome Aboard</p>
+    <!-- Nav bar -->
+    <div class="nav">
+        <div class="hamburger-container">
+            <button class="hamburger" onclick="toggleNav()">☰</button>
+        </div>
+    
+        <ul class="nav-list">
+            <li><a href="#home"><i class="fa fa-home"></i><span>Home</span></a></li>
+            <li><a href="#about"><i class="fa fa-user"></i><span>About Me</span></a></li>
+            <li><a href="#work"><i class="fa fa-briefcase"></i><span>Work</span></a></li>
+            <li><a href="#projects"><i class="fa fa-folder-open"></i><span>Projects</span></a></li>
+            <li class="Resume"><a href="#resume"><i class="fa fa-file"></i><span>Resume</span></a></li>
+        </ul>   
+    </div> 
+
+    <!-- Home -->
+    <div class="section" id="home">
+        <h1 class="title">Hi there! I'm Spencer ♥</h1>
+        <h1 class="subtitle">Welcome to my website</h1>
     </div>
+
+    <!-- About -->
+    <div class="section" id="about">
+        <h1 class="title">About Me</h1>
+        <h1 class="subtitle">Art</h1>
+        <h1 class="subtitle">Exercise</h1>
+        <h1 class="subtitle">Gaming</h1>
+        <h1 class="subtitle">Baking</h1>
+    </div>
+
+    <!-- Work -->
+    <div class="section" id="work">
+        <h1 class="title">What I'm Working On</h1>
+        <h1 class="subtitle">I'm currently a software engineer at Chevron</h1>
+    </div>
+
+    <!-- Projects -->
+    <div class="section" id="projects">
+        <h1 class="title">Projects</h1>
+        <h1 class="subtitle">Frog Hero</h1>
+        <h1 class="subtitle">VIM Paint Tool</h1>
+    </div>
+
+    <!-- Resume -->
+    <div class="section" id="resume">
+        <h1 class="title">Resume</h1>
+        <h1 class="subtitle">Add resume here</h1>
+    </div>
+
+    <!-- Scripts -->
     <script src="scripts.js"></script>
 </body>
 </html>
