@@ -1,20 +1,23 @@
+:root {
+    --blue: #3d7aaf;
+    --blue-light: #eaf0f7;
+    --blue-mid: #2c81c2;
+}
+
 html {
-    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100%;
 }
 
 body {
+    height: 100%;
     font-family: "Inter", sans-serif;
     line-height: 1.5;
-    min-height: 100vh;
     background-color: #f5f5f4;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
     padding: 0;
-    margin: 0;
+    text-align: center;
 }
 
 .nav {
@@ -104,8 +107,156 @@ a span {
     display: none;
 }
 
+
 .section {
-    margin-bottom: 20rem;
+    height: 100vh;
+    width: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* Work section */
+.work-wrap {
+    max-width: 90vw;
+    width: 100%;
+    padding: 2rem 2%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.work-title {
+    font-size: 5rem;
+    font-weight: bold;
+    color: #313636;
+    margin: 0 0 0.25rem;
+}
+
+.work-label {
+    font-size: 3rem;
+    font-weight: 400;
+    color: #888;
+    margin: 0 0 1rem;
+}
+
+.work-sub {
+    font-size: 1.5rem;
+    color: #888;
+    margin: 0 0 2rem;
+}
+
+.carousel-wrap {
+    overflow: hidden;
+}
+
+.carousel {
+    display: flex;
+    gap: 24px;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 12px 4px;
+}
+
+.card {
+    flex: 0 0 50%;
+    background: #ffffff;
+    border: 1px solid #e5e5e0;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 40vh;
+    box-sizing: border-box;
+    transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.4s ease;
+    opacity: 0.4;
+    transform: scale(0.95);
+    cursor: pointer;
+    text-align: left;
+}
+
+.card.active {
+    opacity: 1;
+    transform: scale(1);
+    border-color: #c0c0bb;
+}
+
+.card-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #313636;
+    margin: 0 0 8px;
+}
+
+.card-desc {
+    font-size: 1.5rem;
+    color: #888;
+    margin: 0;
+    line-height: 1.6;
+    flex: 1;
+}
+
+.card-footer {
+    margin-top: 16px;
+}
+
+.card-link {
+    font-size: 1rem;
+    color: #888;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    justify-content: flex-start;
+}
+
+.card-link:hover {
+    color: #313636;
+}
+
+.card-link-icon {
+    font-size: 1rem !important;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 16px;
+    overflow: hidden;
+}
+
+.tag {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 12px 16px;
+    border-radius: 6px;
+    background: #f5f5f4;
+    color: #666666;
+    border: 1px solid #d8d8d3;
+    white-space: nowrap;
+}
+
+.dots {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #c0c0bb;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.dot.active {
+    background: #313636;
 }
 
 .title {
@@ -118,4 +269,26 @@ a span {
     font-size: 3rem;
     font-weight: bold;
     color: #cacfcf;
+}
+
+.dot.active {
+    background: var(--blue) !important;
+}
+
+.tag {
+    background: var(--blue-light) !important;
+    color: var(--blue-mid) !important;
+    border-color: #c5d8e8 !important;
+}
+
+.card-link {
+    color: var(--blue) !important;
+}
+
+.card-link:hover {
+    color: var(--blue-mid) !important;
+}
+
+.work-label {
+    color: var(--blue) !important;
 }

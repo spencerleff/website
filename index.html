@@ -40,8 +40,91 @@
 
     <!-- Work -->
     <div class="section" id="work">
-        <h1 class="title">What I'm Working On</h1>
-        <h1 class="subtitle">I'm currently a software engineer at Chevron</h1>
+        <div class="work-wrap">
+            <h2 class="work-title">What I'm working on</h2>
+            <p class="work-label">Software Engineer · Chevron</p>
+            <p class="work-sub">Building full-stack systems and vendor integrations across 300+ West Coast Chevron stations</p>
+
+            <div class="carousel-wrap">
+                <div class="carousel" id="carousel">
+
+                    <div class="card" data-index="0" onclick="goTo(0)">
+                        <p class="card-title">Workjam workforce platform</p>
+                        <p class="card-desc">Application and software engineer for Workjam across the entire COCO network. Manage the platform, implement updates, and built custom Azure Logic Apps using Workjam APIs to pull daily task completions into a Power BI report.</p>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                <span class="tag">Workjam</span>
+                                <span class="tag">Azure Logic Apps</span>
+                                <span class="tag">Power BI</span>
+                                <span class="tag">REST APIs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-index="1" onclick="goTo(1)">
+                        <p class="card-title">Electronic shelf labels</p>
+                        <p class="card-desc">Hanshow ESL integration enabling real-time pricing updates and promotional automation across store shelves, replacing manual label changes.</p>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                <span class="tag">Hanshow</span>
+                                <span class="tag">Real-time pricing</span>
+                                <span class="tag">Automation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-index="2" onclick="goTo(2)">
+                        <p class="card-title">EDI invoicing & vendor automation</p>
+                        <p class="card-desc">Automated electronic invoicing for 50+ vendors as part of a multi-million dollar back-office modernization. Most recently completed full EDI automation for Coremark — invoices, order export, order acknowledgement, delivery schedules, and pricebook — covering 80% of inventory across all sites.</p>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                <span class="tag">EDI</span>
+                                <span class="tag">Azure Data Factory</span>
+                                <span class="tag">SAP</span>
+                                <span class="tag">Automation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-index="3" onclick="goTo(3)">
+                        <p class="card-title">Samsung retail media network</p>
+                        <p class="card-desc">In-store digital signage pilot at ExtraMile stations using 4K Samsung displays, MagicINFO CMS, AI-driven social content, real-time weather triggers, and foot traffic analytics.</p>
+                        <div class="card-footer">
+                            <a class="card-link" href="https://news.samsung.com/us/samsung-fuels-new-era-of-in-store-engagement" target="_blank">
+                                <i class="fa fa-external-link card-link-icon"></i> Samsung announcement
+                            </a>
+                            <div class="card-tags">
+                                <span class="tag">Digital signage</span>
+                                <span class="tag">CMS</span>
+                                <span class="tag">Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-index="4" onclick="goTo(4)">
+                        <p class="card-title">Financial data pipeline modernization</p>
+                        <p class="card-desc">Designing and implementing key integrations for a multi-million dollar back-office modernization, leveraging Azure Data Factory to build financial data pipelines between PDI and SAP.</p>
+                        <div class="card-footer">
+                            <div class="card-tags">
+                                <span class="tag">Azure Data Factory</span>
+                                <span class="tag">SAP</span>
+                                <span class="tag">PDI</span>
+                                <span class="tag">ETL</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="dots">
+                <div class="dot" onclick="goTo(0)"></div>
+                <div class="dot" onclick="goTo(1)"></div>
+                <div class="dot active" onclick="goTo(2)"></div>
+                <div class="dot" onclick="goTo(3)"></div>
+                <div class="dot" onclick="goTo(4)"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Projects -->
@@ -53,8 +136,16 @@
 
     <!-- Resume -->
     <div class="section" id="resume">
-        <h1 class="title">Resume</h1>
-        <h1 class="subtitle">Add resume here</h1>
+        <iframe 
+            src="files/Spencer_Leff.pdf#view=Fit"
+            style="
+                width: 90%;
+                height: 90vh;
+                border: none;
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            "
+        ></iframe>
     </div>
 
     <!-- Scripts -->
