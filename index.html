@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <!-- Nav bar -->
@@ -31,11 +31,53 @@
 
     <!-- About -->
     <div class="section" id="about">
-        <h1 class="title">About Me</h1>
-        <h1 class="subtitle">Art</h1>
-        <h1 class="subtitle">Exercise</h1>
-        <h1 class="subtitle">Gaming</h1>
-        <h1 class="subtitle">Baking</h1>
+        <div class="about-wrap">
+
+            <!-- Left: text + socials -->
+            <div class="about-left">
+                <h2 class="about-name">Spencer Leff</h2>
+                <p class="about-role">Software Engineer · Chevron</p>
+
+                <p class="about-bio">
+                    I build full-stack systems and vendor integrations across Chevron's West Coast station network.
+                    Outside of work I'm into gaming — Beat Saber, Hollow Knight, Pokémon, Minecraft, and Rocket League are my go-tos.
+                    I also love baking, a passion passed down from my mom and grandma that I keep alive with family baking days whenever I'm back home.
+                    When I'm not inside you'll find me playing basketball, tennis, or pickleball, out hiking or kayaking, or just getting a workout in.
+                </p>
+
+                <!-- Social icons -->
+                <div class="about-socials">
+                    <a href="https://www.youtube.com/@goosebugs/shorts" target="_blank" class="social-link" aria-label="YouTube">
+                        <i class="fa-brands fa-youtube"></i>
+                    </a>
+                    <a href="https://www.instagram.com/froggybugs/" target="_blank" class="social-link" aria-label="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <a href="https://www.threads.com/@froggybugs" target="_blank" class="social-link" aria-label="Threads">
+                        <i class="fa-brands fa-threads"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/spencer-leff-a7b17a196/" target="_blank" class="social-link" aria-label="LinkedIn">
+                        <i class="fa-brands fa-linkedin"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Center: Beat Saber clip -->
+            <div class="about-center">
+                <a href="https://www.youtube.com/watch?v=REFIWpFVEAg" target="_blank" class="short-thumb-link">
+                    <img src="https://img.youtube.com/vi/REFIWpFVEAg/maxresdefault.jpg" alt="Beat Saber clip" class="short-thumb" />
+                    <div class="short-thumb-overlay">
+                        <i class="fa-brands fa-youtube"></i>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Right: photo -->
+            <div class="about-right">
+                <img src="Images/PFP-Tunnel.jpeg" alt="Spencer Leff" class="about-photo" />
+            </div>
+
+        </div>
     </div>
 
     <!-- Work -->
@@ -137,7 +179,7 @@
     <!-- Resume -->
     <div class="section" id="resume">
         <iframe 
-            src="Files/Spencer_Leff.pdf"
+            src="files/Spencer_Leff.pdf#view=Fit"
             style="
                 width: 90%;
                 height: 90vh;
