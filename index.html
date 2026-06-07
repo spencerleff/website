@@ -5,47 +5,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Nav bar -->
+
+    <!-- Nav -->
     <div class="nav">
         <div class="hamburger-container">
             <button class="hamburger" onclick="toggleNav()">☰</button>
         </div>
-    
         <ul class="nav-list">
             <li><a href="#home"><i class="fa fa-home"></i><span>Home</span></a></li>
             <li><a href="#about"><i class="fa fa-user"></i><span>About Me</span></a></li>
             <li><a href="#work"><i class="fa fa-briefcase"></i><span>Work</span></a></li>
             <li><a href="#projects"><i class="fa fa-folder-open"></i><span>Projects</span></a></li>
-            <li class="Resume"><a href="#resume"><i class="fa fa-file"></i><span>Resume</span></a></li>
-        </ul>   
-    </div> 
+            <li><a href="#resume"><i class="fa fa-file"></i><span>Resume</span></a></li>
+        </ul>
+    </div>
 
     <!-- Home -->
     <div class="section" id="home">
-        <h1 class="title">Hi there! I'm Spencer ♥</h1>
-        <h1 class="subtitle">Welcome to my website</h1>
+        <div class="hero-wrap">
+            <div class="hero-eyebrow">Software Engineer · Bay Area</div>
+            <h1 class="hero-name">Spencer<br>Leff</h1>
+            <p class="hero-tagline">These hands were made for typing</p>
+        </div>
+        <a class="scroll-hint" href="#about">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+            </svg>
+        </a>
     </div>
 
     <!-- About -->
     <div class="section" id="about">
         <div class="about-wrap">
 
-            <!-- Left: text + socials -->
             <div class="about-left">
                 <h2 class="about-name">Spencer Leff</h2>
                 <p class="about-role">Software Engineer · Chevron</p>
-
                 <p class="about-bio">
-                    I build full-stack systems and vendor integrations across Chevron's West Coast station network.
-                    Outside of work I'm into gaming — Beat Saber, Hollow Knight, Pokémon, Minecraft, and Rocket League are my go-tos.
-                    I also love baking, a passion passed down from my mom and grandma that I keep alive with family baking days whenever I'm back home.
-                    When I'm not inside you'll find me playing basketball, tennis, or pickleball, out hiking or kayaking, or just getting a workout in.
+                    I’m a software engineer building full-stack applications and vendor integrations that support Chevron’s West Coast station network.
+                    Outside of work, I’m a big fan of gaming. Whether it’s challening myself playing Beat Saber, exploring worlds in Hollow Knight and Pokémon, or building something new in Minecraft, games have always been one of my favorite creative outlets.
+                    I also enjoy baking, a hobby that started with my mom and grandma and has become one of my favorite ways to spend time with family whenever I’m back home.
+                    Outside of software development, I like to stay active. Whether that’s playing basketball, tennis, or pickleball, going for a run or bike ride, or spending time in the gym.
                 </p>
-
-                <!-- Social icons -->
                 <div class="about-socials">
                     <a href="https://www.youtube.com/@goosebugs/shorts" target="_blank" class="social-link" aria-label="YouTube">
                         <i class="fa-brands fa-youtube"></i>
@@ -62,7 +69,6 @@
                 </div>
             </div>
 
-            <!-- Center: Beat Saber clip -->
             <div class="about-center">
                 <a href="https://www.youtube.com/watch?v=REFIWpFVEAg" target="_blank" class="short-thumb-link">
                     <img src="https://img.youtube.com/vi/REFIWpFVEAg/maxresdefault.jpg" alt="Beat Saber clip" class="short-thumb" />
@@ -72,7 +78,6 @@
                 </a>
             </div>
 
-            <!-- Right: photo -->
             <div class="about-right">
                 <img src="Images/PFP-Tunnel.jpeg" alt="Spencer Leff" class="about-photo" />
             </div>
@@ -83,114 +88,108 @@
     <!-- Work -->
     <div class="section" id="work">
         <div class="work-wrap">
-            <h2 class="work-title">What I'm working on</h2>
-            <p class="work-label">Software Engineer · Chevron</p>
-            <p class="work-sub">Building full-stack systems and vendor integrations across 300+ West Coast Chevron stations</p>
 
-            <div class="carousel-wrap">
-                <div class="carousel" id="carousel">
-
-                    <div class="card" data-index="0" onclick="goTo(0)">
-                        <p class="card-title">Workjam workforce platform</p>
-                        <p class="card-desc">Application and software engineer for Workjam across the entire COCO network. Manage the platform, implement updates, and built custom Azure Logic Apps using Workjam APIs to pull daily task completions into a Power BI report.</p>
-                        <div class="card-footer">
-                            <div class="card-tags">
-                                <span class="tag">Workjam</span>
-                                <span class="tag">Azure Logic Apps</span>
-                                <span class="tag">Power BI</span>
-                                <span class="tag">REST APIs</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card" data-index="1" onclick="goTo(1)">
-                        <p class="card-title">Electronic shelf labels</p>
-                        <p class="card-desc">Hanshow ESL integration enabling real-time pricing updates and promotional automation across store shelves, replacing manual label changes.</p>
-                        <div class="card-footer">
-                            <div class="card-tags">
-                                <span class="tag">Hanshow</span>
-                                <span class="tag">Real-time pricing</span>
-                                <span class="tag">Automation</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card" data-index="2" onclick="goTo(2)">
-                        <p class="card-title">EDI invoicing & vendor automation</p>
-                        <p class="card-desc">Automated electronic invoicing for 50+ vendors as part of a multi-million dollar back-office modernization. Most recently completed full EDI automation for Coremark — invoices, order export, order acknowledgement, delivery schedules, and pricebook — covering 80% of inventory across all sites.</p>
-                        <div class="card-footer">
-                            <div class="card-tags">
-                                <span class="tag">EDI</span>
-                                <span class="tag">Azure Data Factory</span>
-                                <span class="tag">SAP</span>
-                                <span class="tag">Automation</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card" data-index="3" onclick="goTo(3)">
-                        <p class="card-title">Samsung retail media network</p>
-                        <p class="card-desc">In-store digital signage pilot at ExtraMile stations using 4K Samsung displays, MagicINFO CMS, AI-driven social content, real-time weather triggers, and foot traffic analytics.</p>
-                        <div class="card-footer">
-                            <a class="card-link" href="https://news.samsung.com/us/samsung-fuels-new-era-of-in-store-engagement" target="_blank">
-                                <i class="fa fa-external-link card-link-icon"></i> Samsung announcement
-                            </a>
-                            <div class="card-tags">
-                                <span class="tag">Digital signage</span>
-                                <span class="tag">CMS</span>
-                                <span class="tag">Analytics</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card" data-index="4" onclick="goTo(4)">
-                        <p class="card-title">Financial data pipeline modernization</p>
-                        <p class="card-desc">Designing and implementing key integrations for a multi-million dollar back-office modernization, leveraging Azure Data Factory to build financial data pipelines between PDI and SAP.</p>
-                        <div class="card-footer">
-                            <div class="card-tags">
-                                <span class="tag">Azure Data Factory</span>
-                                <span class="tag">SAP</span>
-                                <span class="tag">PDI</span>
-                                <span class="tag">ETL</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+            <div class="work-header">
+                <h2 class="work-title">What I'm building</h2>
+                <p class="work-role">Software Engineer · Chevron</p>
+                <p class="work-sub">Full-stack systems and vendor integrations across 300+ West Coast stations</p>
             </div>
 
-            <div class="dots">
-                <div class="dot" onclick="goTo(0)"></div>
-                <div class="dot" onclick="goTo(1)"></div>
-                <div class="dot active" onclick="goTo(2)"></div>
-                <div class="dot" onclick="goTo(3)"></div>
-                <div class="dot" onclick="goTo(4)"></div>
+            <div class="work-grid">
+
+                <div class="work-card">
+                    <span class="wc-num">01</span>
+                    <h3 class="wc-title">EDI Invoicing & Vendor Automation</h3>
+                    <p class="wc-desc">Automated electronic invoicing for 50+ vendors. Completed full EDI automation for Coremark covering 80% of inventory across all sites.</p>
+                    <div class="wc-tags">
+                        <span class="tag">EDI</span>
+                        <span class="tag">SAP</span>
+                        <span class="tag">PDI</span>
+                        <span class="tag">Azure Data Factory</span>
+                    </div>
+                </div>
+
+                <div class="work-card">
+                    <span class="wc-num">02</span>
+                    <h3 class="wc-title">Financial Data Pipeline</h3>
+                    <p class="wc-desc">Key integrations for a multi-million dollar back-office modernization, building financial data pipelines between PDI and SAP with Azure Data Factory.</p>
+                    <div class="wc-tags">
+                        <span class="tag">Azure Data Factory</span>
+                        <span class="tag">SAP</span>
+                        <span class="tag">PDI</span>
+                        <span class="tag">ETL</span>
+                    </div>
+                </div>
+
+                <div class="work-card">
+                    <span class="wc-num">03</span>
+                    <h3 class="wc-title">Samsung Retail Media Network</h3>
+                    <p class="wc-desc">In-store digital signage pilot at ExtraMile stations using 4K Samsung displays, AI-driven social content, real-time weather triggers, and foot traffic analytics.</p>
+                    <div class="wc-tags">
+                        <span class="tag">VXT CMS</span>
+                        <span class="tag">Digital signage</span>
+                        <span class="tag">Analytics</span>
+                        <span class="tag">Power BI</span>
+                    </div>
+                    <a class="wc-link" href="https://news.samsung.com/us/samsung-fuels-new-era-of-in-store-engagement" target="_blank">
+                        <i class="fa fa-external-link"></i> Samsung announcement
+                    </a>
+                </div>
+
+                <div class="work-card">
+                    <span class="wc-num">04</span>
+                    <h3 class="wc-title">Electronic Shelf Labels</h3>
+                    <p class="wc-desc">Hanshow ESL integration enabling real-time pricing updates and promotional automation across store shelves, replacing manual label changes. Integrated directly with our back-office system</p>
+                    <div class="wc-tags">
+                        <span class="tag">Hanshow</span>
+                        <span class="tag">Real-time pricing</span>
+                        <span class="tag">Azure Data Factory</span>
+                        <span class="tag">PDI</span>
+                        <span class="tag">Batch Scripting</span>
+                    </div>
+                </div>
+
+                <div class="work-card">
+                    <span class="wc-num">05</span>
+                    <h3 class="wc-title">Coremark Vendor Integration</h3>
+                    <p class="wc-desc">Built secure processes directly into our back office environment to interface with Coremark, the main distributor that delivers roughly 80% of our inventory across the 300+ station network.  This includes a seamless Order export and acknowledgement process, automated invoicing, delivery schedules, and price book imports</p>
+                    <div class="wc-tags">
+                        <span class="tag">PDi</span>
+                        <span class="tag">Bat Scripting</span>
+                        <span class="tag">SFTP</span>
+                    </div>
+                </div>
+
+                <div class="work-card">
+                    <span class="wc-num">06</span>
+                    <h3 class="wc-title">Workjam Workforce Platform</h3>
+                    <p class="wc-desc">App and software engineer for Workjam across the COCO network. Built custom Azure Logic Apps to pipe daily task completions into Power BI dashboards.</p>
+                    <div class="wc-tags">
+                        <span class="tag">Workjam</span>
+                        <span class="tag">Azure Logic App</span>
+                        <span class="tag">Power BI</span>
+                        <span class="tag">REST API</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Projects -->
     <div class="section" id="projects">
-        <h1 class="title">Projects</h1>
-        <h1 class="subtitle">Frog Hero</h1>
-        <h1 class="subtitle">VIM Paint Tool</h1>
+        <h1 class="section-title">Projects</h1>
+        <p class="section-sub">Frog Hero</p>
+        <p class="section-sub">VIM Paint Tool</p>
     </div>
 
     <!-- Resume -->
     <div class="section" id="resume">
-        <iframe 
-            src="files/Spencer_Leff.pdf#view=Fit"
-            style="
-                width: 90%;
-                height: 90vh;
-                border: none;
-                border-radius: 12px;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            "
+        <iframe
+            src="Files/Spencer_Leff.pdf#view=Fit"
+            style="width: 90%; height: 90vh; border: none; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);"
         ></iframe>
     </div>
 
-    <!-- Scripts -->
     <script src="scripts.js"></script>
 </body>
 </html>
