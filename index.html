@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Spencer Leff</title>
     <meta charset="UTF-8">
@@ -7,9 +8,12 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Figtree:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
 
     <!-- Nav -->
@@ -22,7 +26,6 @@
             <li><a href="#about"><i class="fa fa-user"></i><span>About Me</span></a></li>
             <li><a href="#work"><i class="fa fa-briefcase"></i><span>Work</span></a></li>
             <li><a href="#projects"><i class="fa fa-folder-open"></i><span>Projects</span></a></li>
-            <li><a href="#resume"><i class="fa fa-file"></i><span>Resume</span></a></li>
         </ul>
     </div>
 
@@ -34,52 +37,110 @@
             <p class="hero-tagline">These hands were made for typing</p>
         </div>
         <a class="scroll-hint" href="#about">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"/>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9" />
             </svg>
         </a>
     </div>
 
     <!-- About -->
     <div class="section" id="about">
-        <div class="about-wrap">
+        <div class="about-card">
+            <div class="about-slider">
+                <div class="about-slide">
+                    <div class="about-content">
+                        <div class="about-text">
+                            <h2 class="about-name">Hi, I'm Spencer</h2>
+                            <p class="about-bio">
+                                I'm a software engineer building full-stack applications and vendor integrations that
+                                support Chevron's West Coast station network.
+                            </p>
+                            <p class="about-bio">
+                                Outside of work, I'm a big fan of gaming. Whether it's challenging myself in Beat Saber,
+                                exploring worlds in Hollow Knight and Pokémon, or building something new in Minecraft,
+                                games have always been one of my favorite creative outlets.
+                            </p>
+                            <p class="about-bio">
+                                I also enjoy baking, a hobby that started with my mom and grandma and has become one of
+                                my favorite ways to spend time with family whenever I'm back home.
+                            </p>
+                            <p class="about-bio">
+                                When I'm away from the computer, you'll usually find me playing basketball, tennis,
+                                pickleball, running, biking, or staying active in the gym.
+                            </p>
 
-            <div class="about-left">
-                <h2 class="about-name">Spencer Leff</h2>
-                <p class="about-role">Software Engineer · Chevron</p>
-                <p class="about-bio">I'm a software engineer building full-stack applications and vendor integrations that support Chevron's West Coast station network.</p>
-                <p class="about-bio">Outside of work, I'm a big fan of gaming. Whether it's challenging myself playing Beat Saber, exploring worlds in Hollow Knight and Pokémon, or building something new in Minecraft, games have always been one of my favorite creative outlets.</p>
-                <p class="about-bio">I also enjoy baking, a hobby that started with my mom and grandma and has become one of my favorite ways to spend time with family whenever I'm back home.</p>
-                <p class="about-bio">Outside of software, I like to stay active — playing basketball, tennis, or pickleball, going for a run, or spending time in the gym.</p>
-                <div class="about-socials">
-                    <a href="https://www.youtube.com/@goosebugs/shorts" target="_blank" class="social-link" aria-label="YouTube">
-                        <i class="fa-brands fa-youtube"></i>
-                    </a>
-                    <a href="https://www.instagram.com/froggybugs/" target="_blank" class="social-link" aria-label="Instagram">
-                        <i class="fa-brands fa-instagram"></i>
-                    </a>
-                    <a href="https://www.threads.com/@froggybugs" target="_blank" class="social-link" aria-label="Threads">
-                        <i class="fa-brands fa-threads"></i>
-                    </a>
-                    <a href="https://www.linkedin.com/in/spencer-leff-a7b17a196/" target="_blank" class="social-link" aria-label="LinkedIn">
-                        <i class="fa-brands fa-linkedin"></i>
-                    </a>
+                            <div class="about-footer">
+                                <div class="about-socials">
+                                    <a href="mailto:YOUR_EMAIL" class="social-link">
+                                        <i class="fa-solid fa-envelope"></i>
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/spencer-leff-a7b17a196/" target="_blank"
+                                        class="social-link">
+                                        <i class="fa-brands fa-linkedin"></i>
+                                    </a>
+                                    <a href="https://github.com/spencerleff" target="_blank" class="social-link">
+                                        <i class="fa-brands fa-github"></i>
+                                    </a>
+                                </div>
+                                <div class="about-resume">
+                                    <a href="Files/Spencer_Leff.pdf" download class="resume-button">
+                                        <i class="fa-solid fa-download"></i>
+                                        Resume
+                                    </a>
+                                    <a href="Files/Spencer_Leff.pdf" target="_blank" class="social-link">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="about-media">
+                            <img src="Images/pfp.jpg" class="about-photo">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-slide">
+                    <div class="about-content">
+                        <div class="about-text">
+                            <h2 class="about-name">Beat Saber</h2>
+                            <p class="about-bio">
+                                Beat Saber has become one of my favorite competitive hobbies.
+                            </p>
+                            <p class="about-bio">
+                                What started as a rhythm game eventually turned into a long-term pursuit of improving
+                                speed, accuracy, consistency, and overall ranking.
+                            </p>
+                            <p class="about-bio">
+                                I enjoy the combination of music, athleticism, and continuous improvement. It's one of
+                                the most fun ways I've found to stay active while still feeding my competitive side.
+                            </p>
+                            <div class="about-footer">
+                                <div class="about-socials">
+                                    <a href="https://www.youtube.com/@goosebugs/shorts" target="_blank"
+                                        class="social-link">
+                                        <i class="fa-brands fa-youtube"></i>
+                                    </a>
+                                    <a href="https://beatleader.com/u/froggybugs/ranked" target="_blank"
+                                        class="social-link">
+                                        <i class="fa-solid fa-trophy"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="about-media">
+                            <video class="about-video" autoplay muted loop playsinline>
+                                <source src="Images/BeatSaber.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="about-center">
-                <img src="Images/pfp.jpg" alt="Spencer Leff" class="about-photo" />
+            <div class="about-pagination">
+                <button class="page-dot active"></button>
+                <button class="page-dot"></button>
             </div>
-
-            <div class="about-right">
-                <video class="about-video" autoplay muted loop playsinline>
-                    <source src="Images/Bball.mp4" type="video/mp4">
-                </video>
-                <video class="about-video" autoplay muted loop playsinline>
-                    <source src="Images/BeatSaber.mp4" type="video/mp4">
-                </video>
-            </div>
-
         </div>
     </div>
 
@@ -98,7 +159,9 @@
                 <div class="work-card">
                     <span class="wc-num">01</span>
                     <h3 class="wc-title">EDI Invoicing & Vendor Automation</h3>
-                    <p class="wc-desc">Automated electronic invoicing for 50+ vendors, including custom vendor setups and a Fintech integration for alcohol invoicing, delivering an estimated $8M+ annual time savings across a 300+ station network.</p>
+                    <p class="wc-desc">Automated electronic invoicing for 50+ vendors, including custom vendor setups
+                        and a Fintech integration for alcohol invoicing, delivering an estimated $8M+ annual time
+                        savings across a 300+ station network.</p>
                     <div class="wc-tags">
                         <span class="tag">EDI</span>
                         <span class="tag">SAP</span>
@@ -110,7 +173,8 @@
                 <div class="work-card">
                     <span class="wc-num">02</span>
                     <h3 class="wc-title">Financial Data Pipeline</h3>
-                    <p class="wc-desc">Key integrations for a multi-million dollar back-office modernization, building financial data pipelines between PDI and SAP with Azure Data Factory.</p>
+                    <p class="wc-desc">Key integrations for a multi-million dollar back-office modernization, building
+                        financial data pipelines between PDI and SAP with Azure Data Factory.</p>
                     <div class="wc-tags">
                         <span class="tag">Azure Data Factory</span>
                         <span class="tag">SAP</span>
@@ -122,8 +186,10 @@
                 <div class="work-card">
                     <span class="wc-num">03</span>
                     <h3 class="wc-title">Samsung Retail Media Network</h3>
-                    <p class="wc-desc">In-store digital signage pilot at ExtraMile stations using 4K Samsung displays, AI-driven social content, real-time weather triggers, and foot traffic analytics.</p>
-                    <a class="wc-link" href="https://news.samsung.com/us/samsung-fuels-new-era-of-in-store-engagement" target="_blank">
+                    <p class="wc-desc">In-store digital signage pilot at ExtraMile stations using 4K Samsung displays,
+                        AI-driven social content, real-time weather triggers, and foot traffic analytics.</p>
+                    <a class="wc-link" href="https://news.samsung.com/us/samsung-fuels-new-era-of-in-store-engagement"
+                        target="_blank">
                         <i class="fa fa-external-link"></i> Samsung announcement
                     </a>
                     <div class="wc-tags">
@@ -137,7 +203,9 @@
                 <div class="work-card">
                     <span class="wc-num">04</span>
                     <h3 class="wc-title">Electronic Shelf Labels</h3>
-                    <p class="wc-desc">Hanshow ESL integration enabling real-time pricing updates and promotional automation across store shelves, replacing manual label changes. Integrated directly with our back-office system</p>
+                    <p class="wc-desc">Hanshow ESL integration enabling real-time pricing updates and promotional
+                        automation across store shelves, replacing manual label changes. Integrated directly with our
+                        back-office system</p>
                     <div class="wc-tags">
                         <span class="tag">Hanshow</span>
                         <span class="tag">Azure Data Factory</span>
@@ -149,7 +217,9 @@
                 <div class="work-card">
                     <span class="wc-num">05</span>
                     <h3 class="wc-title">Coremark Vendor Integrations</h3>
-                    <p class="wc-desc">Built secure integrations between PDI and CoreMark, the primary distributor for our stations. Automated order processing, invoicing, delivery schedules, and pricebook imports to streamline supply chain operations.</p>
+                    <p class="wc-desc">Built secure integrations between PDI and CoreMark, the primary distributor for
+                        our stations. Automated order processing, invoicing, delivery schedules, and pricebook imports
+                        to streamline supply chain operations.</p>
                     <div class="wc-tags">
                         <span class="tag">PDi</span>
                         <span class="tag">Bat Scripting</span>
@@ -160,7 +230,8 @@
                 <div class="work-card">
                     <span class="wc-num">06</span>
                     <h3 class="wc-title">Workjam Workforce Platform</h3>
-                    <p class="wc-desc">App and software engineer for Workjam across the COCO network. Built custom Azure Logic Apps to pipe daily task completions into Power BI dashboards.</p>
+                    <p class="wc-desc">App and software engineer for Workjam across the COCO network. Built custom Azure
+                        Logic Apps to pipe daily task completions into Power BI dashboards.</p>
                     <div class="wc-tags">
                         <span class="tag">Workjam</span>
                         <span class="tag">Azure Logic App</span>
@@ -180,20 +251,8 @@
         <p class="section-sub">Hyper Enchants</p>
     </div>
 
-    <!-- Resume -->
-    <div class="section" id="resume">
-        <iframe 
-            src="Files/Spencer_Leff.pdf"
-            style="
-                width: 90%;
-                height: 90vh;
-                border: none;
-                border-radius: 12px;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            "
-        ></iframe>
-    </div>
-
+    <!-- JavaScript -->
     <script src="scripts.js"></script>
 </body>
+
 </html>
