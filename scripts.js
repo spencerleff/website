@@ -18,49 +18,50 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 
 /* About Slider */
 const aboutSlider = document.querySelector('.about-slider');
-const dots = document.querySelectorAll('.page-dot');
+const dots        = document.querySelectorAll('.page-dot');
+let currentPage   = 0;
+const maxPage     = dots.length - 1;
+
+function goToSlide(index) {
+    currentPage = index;
+    aboutSlider.style.transform = `translateX(-${currentPage * 100}%)`;
+    dots.forEach(d => d.classList.remove('active'));
+    dots[currentPage].classList.add('active');
+}
+
+/* Dot navigation */
 dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-
-        aboutSlider.style.transform =
-            `translateX(-${index * 100}%)`;
-
-        dots.forEach(d =>
-            d.classList.remove('active')
-        );
-
-        dot.classList.add('active');
-    });
+    dot.addEventListener('click', () => goToSlide(index));
 });
 
-/* About Card Swipe Functionality */
+/* Touch / swipe support */
 let startX = 0;
-let currentPage = 0;
-const maxPage = dots.length - 1;
-aboutSlider.addEventListener("touchstart", e => {
+
+aboutSlider.addEventListener('touchstart', e => {
     startX = e.touches[0].clientX;
-});
-aboutSlider.addEventListener("touchend", e => {
+}, { passive: true });
 
-    const endX = e.changedTouches[0].clientX;
-    const diff = startX - endX;
-
+aboutSlider.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
     if (Math.abs(diff) < 50) return;
 
     if (diff > 0 && currentPage < maxPage) {
-        currentPage++;
+        goToSlide(currentPage + 1);
+    } else if (diff < 0 && currentPage > 0) {
+        goToSlide(currentPage - 1);
     }
+});
 
-    if (diff < 0 && currentPage > 0) {
-        currentPage--;
+/* Keyboard arrow navigation when about section is in view */
+document.addEventListener('keydown', e => {
+    const aboutSection = document.getElementById('about');
+    const rect = aboutSection.getBoundingClientRect();
+    const inView = rect.top >= -window.innerHeight / 2 && rect.bottom <= window.innerHeight * 1.5;
+    if (!inView) return;
+
+    if (e.key === 'ArrowRight' && currentPage < maxPage) {
+        goToSlide(currentPage + 1);
+    } else if (e.key === 'ArrowLeft' && currentPage > 0) {
+        goToSlide(currentPage - 1);
     }
-
-    aboutSlider.style.transform =
-        `translateX(-${currentPage * 100}%)`;
-
-    dots.forEach(dot =>
-        dot.classList.remove("active")
-    );
-
-    dots[currentPage].classList.add("active");
 });

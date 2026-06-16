@@ -22,10 +22,10 @@
             <button class="hamburger" onclick="toggleNav()">☰</button>
         </div>
         <ul class="nav-list">
-            <li><a href="#home"><i class="fa fa-home"></i><span>Home</span></a></li>
-            <li><a href="#about"><i class="fa fa-user"></i><span>About Me</span></a></li>
-            <li><a href="#work"><i class="fa fa-briefcase"></i><span>Work</span></a></li>
-            <li><a href="#projects"><i class="fa fa-folder-open"></i><span>Projects</span></a></li>
+            <li><a href="#home"><i class="fa fa-home nav-icon"></i><span>Home</span></a></li>
+            <li><a href="#about"><i class="fa fa-user nav-icon"></i><span>About Me</span></a></li>
+            <li><a href="#work"><i class="fa fa-briefcase nav-icon"></i><span>Work</span></a></li>
+            <li><a href="#projects"><i class="fa fa-folder-open nav-icon"></i><span>Projects</span></a></li>
         </ul>
     </div>
 
@@ -48,87 +48,140 @@
     <div class="section" id="about">
         <div class="about-card">
             <div class="about-slider">
+
+                <!-- Slide 1: Hi, I'm Spencer -->
                 <div class="about-slide">
                     <div class="about-content">
                         <div class="about-text">
                             <h2 class="about-name">Hi, I'm Spencer</h2>
-                            <p class="about-bio">
-                                I'm a software engineer building full-stack applications and vendor integrations that
-                                support Chevron's West Coast station network.
-                            </p>
-                            <p class="about-bio">
-                                Outside of work, I'm a big fan of gaming. Whether it's challenging myself in Beat Saber,
-                                exploring worlds in Hollow Knight and Pokémon, or building something new in Minecraft,
-                                games have always been one of my favorite creative outlets.
-                            </p>
-                            <p class="about-bio">
-                                I also enjoy baking, a hobby that started with my mom and grandma and has become one of
-                                my favorite ways to spend time with family whenever I'm back home.
-                            </p>
-                            <p class="about-bio">
-                                When I'm away from the computer, you'll usually find me playing basketball, tennis,
-                                pickleball, running, biking, or staying active in the gym.
-                            </p>
-
+                            <div class="about-bios">
+                                <p class="about-bio">I'm a software engineer based in the Bay Area, California,
+                                    currently working at Chevron. I build full-stack applications and vendor
+                                    integrations for the company's network of 300+ company-owned stations across the
+                                    West Coast — connecting back-office systems, automating supply chain operations, and
+                                    rolling out new in-store technology at scale.</p>
+                                <p class="about-bio">I care about building things that actually work — clean systems,
+                                    reliable integrations, and experiences that make people's jobs easier. Whether I'm
+                                    debugging a data pipeline or piloting a new retail platform, I'm drawn to problems
+                                    with real-world impact.</p>
+                                <p class="about-bio">Outside of work, I stay active, cook, and game — sometimes all in
+                                    the same day. Swipe to see what keeps me busy off the clock.</p>
+                            </div>
                             <div class="about-footer">
                                 <div class="about-socials">
-                                    <a href="mailto:YOUR_EMAIL" class="social-link">
+                                    <a href="mailto:Spencerleff@gmail.com" class="social-link" aria-label="Email">
                                         <i class="fa-solid fa-envelope"></i>
                                     </a>
                                     <a href="https://www.linkedin.com/in/spencer-leff-a7b17a196/" target="_blank"
-                                        class="social-link">
+                                        class="social-link" aria-label="LinkedIn">
                                         <i class="fa-brands fa-linkedin"></i>
                                     </a>
-                                    <a href="https://github.com/spencerleff" target="_blank" class="social-link">
+                                    <a href="https://github.com/spencerleff" target="_blank" class="social-link"
+                                        aria-label="GitHub">
                                         <i class="fa-brands fa-github"></i>
                                     </a>
+                                    <a href="Files/Spencer_Leff.pdf" target="_blank" class="social-link resume-link">Resume</a>
                                 </div>
-                                <div class="about-resume">
-                                    <a href="Files/Spencer_Leff.pdf" download class="resume-button">
-                                        <i class="fa-solid fa-download"></i>
-                                        Resume
-                                    </a>
-                                    <a href="Files/Spencer_Leff.pdf" target="_blank" class="social-link">
-                                        <i class="fa-solid fa-magnifying-glass"></i>
+                            </div>
+                        </div>
+                        <div class="about-media">
+                            <img src="Images/pfp.jpg" class="about-photo" alt="Spencer Leff">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2: Staying Active -->
+                <div class="about-slide">
+                    <div class="about-content">
+                        <div class="about-text">
+                            <h2 class="about-name">Staying Active</h2>
+                            <div class="about-bios">
+                                <p class="about-bio">Sports have been a constant throughout my life. I've played
+                                    basketball, soccer, tennis, and pickleball for as long as I can remember — and that
+                                    competitive drive hasn't faded. Most weekends you'll still find me on a court or
+                                    field somewhere.</p>
+                                <p class="about-bio">I also stay active through regular runs, bike rides, and gym
+                                    sessions. Training consistently matters to me — I find real satisfaction in the
+                                    discipline and incremental progress that comes with it.</p>
+                                <p class="about-bio">My current goal: dunking a basketball in a real game. I recently
+                                    threw down a clean volleyball dunk during practice, which tells me the hops are
+                                    there. The full-size rim is very close.</p>
+                            </div>
+                            <div class="about-footer">
+                                <div class="about-socials">
+                                    <a href="https://strava.app.link/yTod6r84W3b" target="_blank" class="social-link"
+                                        aria-label="Strava">
+                                        <i class="fa-brands fa-strava"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
                         <div class="about-media">
-                            <img src="Images/pfp.jpg" class="about-photo">
+                            <video class="about-video" autoplay muted loop playsinline>
+                                <source src="Images/Bball.mp4" type="video/mp4">
+                            </video>
                         </div>
                     </div>
                 </div>
 
+                <!-- Slide 3: Chef Leff -->
                 <div class="about-slide">
                     <div class="about-content">
                         <div class="about-text">
-                            <h2 class="about-name">Beat Saber</h2>
-                            <p class="about-bio">
-                                Beat Saber has become one of my favorite competitive hobbies.
-                            </p>
-                            <p class="about-bio">
-                                What started as a rhythm game eventually turned into a long-term pursuit of improving
-                                speed, accuracy, consistency, and overall ranking.
-                            </p>
-                            <p class="about-bio">
-                                I enjoy the combination of music, athleticism, and continuous improvement. It's one of
-                                the most fun ways I've found to stay active while still feeding my competitive side.
-                            </p>
+                            <h2 class="about-name">Chef Leff</h2>
+                            <div class="about-bios">
+                                <p class="about-bio">My love of cooking and baking started in the kitchen with my mom
+                                    and grandma. Growing up, we'd spend hours trying new recipes alongside the
+                                    classics — including their chocolate chip cookies, which remain completely
+                                    undefeated.</p>
+                                <p class="about-bio">One of my favorite traditions whenever I'm back home is setting up
+                                    a baking day with my grandma. We round up the cousins, pick a recipe none of us
+                                    have tried before, and see what happens. Part experiment, part competition, always
+                                    worth it.</p>
+                                <p class="about-bio">In 2025, I had the chance to attend a pizza-making class in
+                                    Sorrento, Italy — steps from where the original Margherita pizza was created.
+                                    Learning the full process from a real pizza master, using fresh local ingredients
+                                    and a proper wood-fired oven, was an experience I won't forget.</p>
+                            </div>
+                            <div class="about-footer"></div>
+                        </div>
+                        <div class="about-media">
+                            <img src="Images/Pizza.jpg" class="about-photo" alt="Pizza making in Sorrento, Italy">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 4: Player One -->
+                <div class="about-slide">
+                    <div class="about-content">
+                        <div class="about-text">
+                            <h2 class="about-name">Player One</h2>
+                            <div class="about-bios">
+                                <p class="about-bio">Gaming has been one of my favorite creative outlets for years. I
+                                    love games that reward patience and persistence — from the intricate world of Hollow
+                                    Knight to building something ambitious in Minecraft to Pokémon when I need something
+                                    a little more relaxing.</p>
+                                <p class="about-bio">My current competitive focus is Beat Saber, a VR rhythm game
+                                    that's far more athletic than it sounds. I'm actively working toward a top 1,000
+                                    global ranking in the ranked modded scene — a goal that's pushed my speed,
+                                    accuracy, and consistency further than I expected.</p>
+                                <p class="about-bio">On the horizon: Hollow Knight: Silksong. After years of
+                                    anticipation, I'm ready. The moment it drops, the out-of-office message is going
+                                    on.</p>
+                            </div>
                             <div class="about-footer">
                                 <div class="about-socials">
                                     <a href="https://www.youtube.com/@goosebugs/shorts" target="_blank"
-                                        class="social-link">
+                                        class="social-link" aria-label="YouTube">
                                         <i class="fa-brands fa-youtube"></i>
                                     </a>
                                     <a href="https://beatleader.com/u/froggybugs/ranked" target="_blank"
-                                        class="social-link">
+                                        class="social-link" aria-label="BeatLeader Rankings">
                                         <i class="fa-solid fa-trophy"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
-
                         <div class="about-media">
                             <video class="about-video" autoplay muted loop playsinline>
                                 <source src="Images/BeatSaber.mp4" type="video/mp4">
@@ -136,9 +189,12 @@
                         </div>
                     </div>
                 </div>
+
             </div>
             <div class="about-pagination">
                 <button class="page-dot active"></button>
+                <button class="page-dot"></button>
+                <button class="page-dot"></button>
                 <button class="page-dot"></button>
             </div>
         </div>
