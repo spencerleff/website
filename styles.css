@@ -345,8 +345,8 @@ ul.nav-list.open {
     top: 50%;
     transform: translateY(-50%);
     z-index: 5;
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     align-items: center;
     justify-content: center;
     background: rgba(255, 255, 255, 0.9);
@@ -366,8 +366,8 @@ ul.nav-list.open {
     pointer-events: none;
 }
 
-.about-arrow-left { left: 0.5rem; }
-.about-arrow-right { right: 0.5rem; }
+.about-arrow-left { left: 0.45rem; }
+.about-arrow-right { right: 0.45rem; }
 
 .about-content {
     height: 100%;
@@ -410,7 +410,7 @@ ul.nav-list.open {
 .about-bio {
     margin: 0.3vh 0.5vw 0 0vw;
     color: var(--text-secondary);
-    font-size: clamp(1.25rem, 1.35cqw, 2.35rem);
+    font-size: clamp(1.4rem, 1.45cqw, 2.5rem);
     line-height: 1.75;
 }
 
@@ -485,7 +485,7 @@ ul.nav-list.open {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.65rem;
+    gap: 1rem;
     border-top: 1px solid var(--border);
     padding-bottom: 10px;
 }
@@ -494,8 +494,8 @@ ul.nav-list.open {
     appearance: none;
     -webkit-appearance: none;
     padding: 0;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border: none;
     border-radius: 50%;
     background: var(--border-strong);
@@ -774,7 +774,7 @@ ul.nav-list.open {
     }
 
     .about-photo, .about-video {
-        zoom: 10%;
+        margin-top: 0;
     }
 }
 
@@ -793,7 +793,7 @@ ul.nav-list.open {
     }
 
     .about-card {
-        height: calc(100vh - 6rem);
+        height: calc(100vh - 5rem);
         height: 80dvh;
         margin-top: 1rem;
     }
@@ -804,7 +804,26 @@ ul.nav-list.open {
     }
 
     .about-bio {
-        font-size: clamp(0.7rem, 1cqw, 1.2rem);
+        font-size: clamp(0.75rem, 1cqw, 1.2rem);
+    }
+
+    .social-link {
+        width: 38px;
+        height: 38px;
+        margin-bottom: 0;
+    }
+
+    .social-link i {
+        font-size: clamp(1rem, 0.8cqw, 2.3rem);
+    }
+
+    .resume-link {
+        font-size: clamp(0.85rem, 0.8cqw, 2.3rem);
+        margin-left: -0.2rem;
+    }
+
+    .about-socials, .about-resume {
+        gap: 0.5rem;
     }
 
     .work-grid {
