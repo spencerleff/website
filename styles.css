@@ -694,8 +694,9 @@ ul.nav-list.open {
     }
 
     .page-dot {
-        height: 7px;
-        width: 7px;
+        height: 9px;
+        width: 9px;
+        margin: 0rem 0.3vw;
     }
 }
 
@@ -723,13 +724,13 @@ ul.nav-list.open {
 @media (max-width: 480px) {
 
     .section {
-        padding:  1.25rem 5%;
+        padding: 1.25rem 5%;
     }
 
     .about-card {
-        height: calc(100vh - 2.5rem);
-        height: calc(100dvh - 2.5rem);
-        margin-top: 0;
+        height: 82vh;
+        height: 82svh;
+        margin-top: 3.5rem;
     }
 
     .about-name {
