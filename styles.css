@@ -311,7 +311,7 @@ ul.nav-list.open {
 .about-card {
     width: clamp(320px, 80vw, 3000px);
     height: clamp(520px, 80vh, 2000px);
-    height: clamp(520px, 80svh, 2000px);
+    height: clamp(520px, 80dvh, 2000px);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 28px;
@@ -741,7 +741,7 @@ ul.nav-list.open {
     
     .about-card {
         height: 82vh;
-        height: 82svh;
+        height: 82dvh;
         margin-top: 1.75rem;
     }
 
@@ -782,6 +782,7 @@ ul.nav-list.open {
 
     .section {
         padding: 1.25rem 5%;
+        min-height: 100dvh;
     }
 
     .about-arrow {
@@ -793,8 +794,8 @@ ul.nav-list.open {
     }
 
     .about-card {
-        height: calc(100vh - 5rem);
-        height: 80dvh;
+        height: 88vh;
+        height: 88svh;
         margin-top: 1rem;
     }
 
