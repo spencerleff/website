@@ -103,7 +103,7 @@ a span {
 /* Section */
 .section {
     min-height: 100vh;
-    min-height: 100svh;
+    min-height: 100dvh;
     width: 100%;
     scroll-snap-align: start;
     scroll-snap-stop: always;
@@ -114,7 +114,6 @@ a span {
     box-sizing: border-box;
     padding: 3rem 5%;
     position: relative;
-    overflow: hidden;
 }
 
 
@@ -795,7 +794,7 @@ ul.nav-list.open {
 
     .about-card {
         height: calc(100vh - 6rem);
-        height: calc(96svh - 6rem);
+        height: 80dvh;
         margin-top: 1rem;
     }
 
