@@ -330,6 +330,7 @@ ul.nav-list.open {
     flex-wrap: nowrap;
     width: 100%;
     transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    touch-action: pan-y;
 }
 
 .about-slide {
@@ -413,11 +414,6 @@ ul.nav-list.open {
         color var(--ease);
 }
 
-.social-link:hover {
-    transform: translateY(-2px);
-    color: var(--accent);
-}
-
 .social-link i {
     font-size: clamp(1.5rem, 1.35cqw, 3rem);
 }
@@ -425,6 +421,16 @@ ul.nav-list.open {
 .resume-link {
     font-size: clamp(1.1rem, 1.1cqw, 2.25rem);
     font-weight: 600;
+}
+
+.social-link:hover, .resume-link:hover {
+    transform: translateY(-2px);
+    color: var(--accent);
+}
+
+.social-link:active i, .resume-link:active i {
+    transform: scale(1.2);
+    color: var(--accent);
 }
 
 .about-media {
@@ -454,6 +460,9 @@ ul.nav-list.open {
 }
 
 .page-dot {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 0;
     width: 10px;
     height: 10px;
     border: none;
@@ -463,6 +472,7 @@ ul.nav-list.open {
     transition:
         transform 0.25s ease,
         background 0.25s ease;
+    flex-shrink: 0;
 }
 
 .page-dot.active {
@@ -682,6 +692,11 @@ ul.nav-list.open {
     .resume-link {
         font-size: clamp(0.9rem, 1cqw, 2rem);
     }
+
+    .page-dot {
+        height: 7px;
+        width: 7px;
+    }
 }
 
 @media (max-height: 1079px) {
@@ -707,13 +722,23 @@ ul.nav-list.open {
 
 @media (max-width: 480px) {
 
+    .section {
+        padding:  1.25rem 5%;
+    }
+
+    .about-card {
+        height: calc(100vh - 2.5rem);
+        height: calc(100dvh - 2.5rem);
+        margin-top: 0;
+    }
+
     .about-name {
-        font-size: clamp(1.5rem, 1.2cqw, 3rem);
+        font-size: clamp(1.4rem, 1.1cqw, 2.9rem);
         margin-bottom: 1rem;
     }
 
     .about-bio {
-        font-size: clamp(0.6rem, 0.9cqw, 1.2rem);
+        font-size: clamp(0.7rem, 1cqw, 1.3rem);
     }
 
     .work-grid {
