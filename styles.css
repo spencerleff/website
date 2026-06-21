@@ -340,6 +340,36 @@ ul.nav-list.open {
     overflow: hidden;
 }
 
+.about-arrow {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+    transition: opacity var(--ease), transform var(--ease);
+}
+
+.about-arrow:active {
+    transform: translateY(-50%) scale(0.92);
+}
+
+.about-arrow.is-disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.about-arrow-left { left: 0.5rem; }
+.about-arrow-right { right: 0.5rem; }
+
 .about-content {
     height: 100%;
     display: grid;
@@ -655,25 +685,26 @@ ul.nav-list.open {
 @media (max-width: 1300px), (max-height: 1079px) {
 
     .hamburger {
-        font-size: 1.3rem;
-    }
-
-    .nav {
-        top: 1rem;
-        left: 1rem;
-    }
-
-    .nav-icon {
         font-size: 1.2rem;
     }
 
+    .nav {
+        top: 0.75rem;
+        left: 0.75rem;
+    }
+
+    .nav-icon {
+        font-size: 1rem;
+    }
+
     ul.nav-list a {
-        padding: 0.275rem;
+        padding: 0.35rem;
+        margin-bottom: 1.2rem;
     }
     
     .about-content {
         grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto minmax(110px, 1fr);
         gap: 1.5rem;
         padding: 2rem;
     }
@@ -684,7 +715,7 @@ ul.nav-list.open {
     }
 
     .about-bio {
-        font-size: clamp(0.8rem, 0.9cqw, 1.4rem);
+        font-size: clamp(0.75rem, 0.9cqw, 1.3rem);
     }
 
     .social-link {
@@ -728,19 +759,53 @@ ul.nav-list.open {
     }
 }
 
+@media (max-height: 780px) {
+    .about-name {
+        font-size: clamp(1.8rem, 2cqw, 3rem);
+        margin-bottom: 1rem;
+    }
+
+    .about-bio {
+        font-size: clamp(0.7rem, 0.85cqw, 1.1rem);
+        line-height: 1.5;
+    }
+
+    .about-bios {
+        gap: 0.6rem;
+    }
+
+    .about-photo, .about-video {
+        zoom: 10%;
+    }
+}
+
 @media (max-width: 480px) {
 
     .section {
         padding: 1.25rem 5%;
     }
 
+    .about-arrow {
+        display: flex;
+    }
+
+    .about-pagination {
+        display: none;
+    }
+
+    .about-card {
+        height: calc(100vh - 6rem);
+        height: calc(96svh - 6rem);
+        margin-top: 1rem;
+    }
+
     .about-name {
-        font-size: clamp(1.4rem, 1.1cqw, 2.9rem);
+        font-size: clamp(1.25rem, 1.1cqw, 2.6rem);
         margin-bottom: 1rem;
     }
 
     .about-bio {
-        font-size: clamp(0.7rem, 1cqw, 1.3rem);
+        font-size: clamp(0.7rem, 1cqw, 1.2rem);
     }
 
     .work-grid {

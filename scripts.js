@@ -27,6 +27,7 @@ function goToSlide(index) {
     aboutSlider.style.transform = `translateX(-${currentPage * 100}%)`;
     dots.forEach(d => d.classList.remove('active'));
     dots[currentPage].classList.add('active');
+    updateArrows();
 }
 
 dots.forEach((dot, index) => {
@@ -35,18 +36,23 @@ dots.forEach((dot, index) => {
 
 /* About swipe support */
 let startX = 0;
+let startY = 0;
 
 aboutSlider.addEventListener('touchstart', e => {
     startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
 }, { passive: true });
 
 aboutSlider.addEventListener('touchend', e => {
-    const diff = startX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) < 50) return;
+    const diffX = startX - e.changedTouches[0].clientX;
+    const diffY = startY - e.changedTouches[0].clientY;
 
-    if (diff > 0 && currentPage < maxPage) {
+    if (Math.abs(diffX) < 50) return;
+    if (Math.abs(diffX) < Math.abs(diffY) * 1.5) return;
+
+    if (diffX > 0 && currentPage < maxPage) {
         goToSlide(currentPage + 1);
-    } else if (diff < 0 && currentPage > 0) {
+    } else if (diffX < 0 && currentPage > 0) {
         goToSlide(currentPage - 1);
     }
 });
@@ -63,4 +69,19 @@ document.addEventListener('keydown', e => {
     } else if (e.key === 'ArrowLeft' && currentPage > 0) {
         goToSlide(currentPage - 1);
     }
+});
+
+function updateArrows() {
+    const left = document.querySelector('.about-arrow-left');
+    const right = document.querySelector('.about-arrow-right');
+    left.classList.toggle('is-disabled', currentPage === 0);
+    right.classList.toggle('is-disabled', currentPage === maxPage);
+}
+
+document.querySelector('.about-arrow-left').addEventListener('click', () => {
+    if (currentPage > 0) goToSlide(currentPage - 1);
+});
+
+document.querySelector('.about-arrow-right').addEventListener('click', () => {
+    if (currentPage < maxPage) goToSlide(currentPage + 1);
 });
