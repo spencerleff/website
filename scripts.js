@@ -1,4 +1,4 @@
-/* Nav Toggle */
+/* Nav toggle */
 function toggleNav() {
     const navList = document.querySelector('.nav-list');
     const nav     = document.querySelector('.nav');
@@ -6,7 +6,7 @@ function toggleNav() {
     nav.classList.toggle('open');
 }
 
-/* Page Smooth Scroll */
+/* Section smooth scroll */
 document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', function (e) {
         const target = document.querySelector(this.getAttribute('href'));
@@ -34,43 +34,7 @@ dots.forEach((dot, index) => {
     dot.addEventListener('click', () => goToSlide(index));
 });
 
-/* About swipe support */
-let startX = 0;
-let startY = 0;
-
-aboutSlider.addEventListener('touchstart', e => {
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-}, { passive: true });
-
-aboutSlider.addEventListener('touchend', e => {
-    const diffX = startX - e.changedTouches[0].clientX;
-    const diffY = startY - e.changedTouches[0].clientY;
-
-    if (Math.abs(diffX) < 50) return;
-    if (Math.abs(diffX) < Math.abs(diffY) * 1.5) return;
-
-    if (diffX > 0 && currentPage < maxPage) {
-        goToSlide(currentPage + 1);
-    } else if (diffX < 0 && currentPage > 0) {
-        goToSlide(currentPage - 1);
-    }
-});
-
-/* About keyboard arrow navigation */
-document.addEventListener('keydown', e => {
-    const aboutSection = document.getElementById('about');
-    const rect = aboutSection.getBoundingClientRect();
-    const inView = rect.top >= -window.innerHeight / 2 && rect.bottom <= window.innerHeight * 1.5;
-    if (!inView) return;
-
-    if (e.key === 'ArrowRight' && currentPage < maxPage) {
-        goToSlide(currentPage + 1);
-    } else if (e.key === 'ArrowLeft' && currentPage > 0) {
-        goToSlide(currentPage - 1);
-    }
-});
-
+/* About arrow slider */
 function updateArrows() {
     const left = document.querySelector('.about-arrow-left');
     const right = document.querySelector('.about-arrow-right');
