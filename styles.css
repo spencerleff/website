@@ -103,7 +103,7 @@ a span {
 /* Section */
 .section {
     min-height: 100vh;
-    min-height: 100dvh;
+    min-height: 100svh;
     width: 100%;
     scroll-snap-align: start;
     scroll-snap-stop: always;
@@ -114,7 +114,7 @@ a span {
     box-sizing: border-box;
     padding: 3rem 5%;
     position: relative;
-    overflow: clip;
+    overflow: hidden;
 }
 
 
@@ -312,7 +312,7 @@ ul.nav-list.open {
 .about-card {
     width: clamp(320px, 80vw, 3000px);
     height: clamp(520px, 80vh, 2000px);
-    height: clamp(520px, 80dvh, 2000px);
+    height: clamp(520px, 80svh, 2000px);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 28px;
@@ -374,6 +374,8 @@ ul.nav-list.open {
     display: flex;
     flex-direction: column;
     gap: clamp(1rem, 1.25cqw, 3rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .about-bio {
@@ -385,11 +387,11 @@ ul.nav-list.open {
 
 .about-footer {
     margin-top: auto;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: clamp(0.75rem, 1cqw, 2rem);
-    flex-shrink: 0;
 }
 
 .about-socials,
@@ -656,12 +658,17 @@ ul.nav-list.open {
         font-size: 1.3rem;
     }
 
+    .nav {
+        top: 1rem;
+        left: 1rem;
+    }
+
     .nav-icon {
         font-size: 1.2rem;
     }
 
     ul.nav-list a {
-        padding: 0.3rem;
+        padding: 0.275rem;
     }
     
     .about-content {
@@ -704,7 +711,7 @@ ul.nav-list.open {
     
     .about-card {
         height: 82vh;
-        height: 82dvh;
+        height: 82svh;
         margin-top: 1.75rem;
     }
 
@@ -725,12 +732,6 @@ ul.nav-list.open {
 
     .section {
         padding: 1.25rem 5%;
-    }
-
-    .about-card {
-        height: 82vh;
-        height: 82svh;
-        margin-top: 3.5rem;
     }
 
     .about-name {
