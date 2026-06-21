@@ -277,13 +277,24 @@ ul.nav-list.open {
     justify-content: center;
     padding: 0.4rem;
     border-radius: 50%;
-    animation: bounce-arrow 2.8s ease-in-out infinite;
     transition: color var(--ease);
 }
 
 .scroll-hint:hover {
     color: var(--accent);
-    animation-play-state: paused;
+}
+
+.scroll-hint-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: bounce-arrow 2.8s ease-in-out infinite;
+    will-change: transform, opacity;
+}
+
+.scroll-hint--off .scroll-hint-inner {
+    animation: none;
+    opacity: 0;
 }
 
 .scroll-hint svg {
@@ -293,14 +304,12 @@ ul.nav-list.open {
 }
 
 @keyframes bounce-arrow {
-    0%,
-    100% {
-        transform: translateX(-50%) translateY(0);
+    0%, 100% {
+        transform: translateY(0);
         opacity: 0.65;
     }
-
     50% {
-        transform: translateX(-50%) translateY(10px);
+        transform: translateY(10px);
         opacity: 1;
     }
 }

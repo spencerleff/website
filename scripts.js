@@ -16,6 +16,13 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     });
 });
 
+/* Scroll hint off */
+const hint = document.querySelector('.scroll-hint');
+
+window.addEventListener('scroll', () => {
+  hint.classList.add('scroll-hint--off');
+}, { once: true });
+
 /* About dot slider */
 const aboutSlider = document.querySelector('.about-slider');
 const dots        = document.querySelectorAll('.page-dot');
