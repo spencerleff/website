@@ -102,7 +102,6 @@ a span {
 
 /* Section */
 .section {
-    min-height: 100vh;
     min-height: 100dvh;
     width: 100%;
     scroll-snap-align: start;
@@ -310,7 +309,6 @@ ul.nav-list.open {
 /* About */
 .about-card {
     width: clamp(320px, 80vw, 3000px);
-    height: clamp(520px, 80vh, 2000px);
     height: clamp(520px, 80dvh, 2000px);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -740,7 +738,6 @@ ul.nav-list.open {
 @media (max-height: 1079px) {
     
     .about-card {
-        height: 82vh;
         height: 82dvh;
         margin-top: 1.75rem;
     }
@@ -794,8 +791,7 @@ ul.nav-list.open {
     }
 
     .about-card {
-        height: 86vh;
-        height: 86svh;
+        height: 85dvh;
         margin-top: 1.2rem;
     }
 
