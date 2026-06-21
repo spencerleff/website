@@ -60,11 +60,13 @@
 
 html {
     scroll-snap-type: y mandatory;
+    scroll-padding-top: 0px;
     overflow-y: scroll;
     height: 100%;
 }
 
 body {
+    scroll-snap-type: y mandatory;
     height: 100%;
     font-family: var(--font-body);
     font-size: var(--fs-body);
@@ -102,7 +104,8 @@ a span {
 
 /* Section */
 .section {
-    min-height: 100dvh;
+    min-height: 100vh;
+    min-height: 100svh;
     width: 100%;
     scroll-snap-align: start;
     scroll-snap-stop: always;
@@ -277,24 +280,13 @@ ul.nav-list.open {
     justify-content: center;
     padding: 0.4rem;
     border-radius: 50%;
+    animation: bounce-arrow 2.8s ease-in-out infinite;
     transition: color var(--ease);
 }
 
 .scroll-hint:hover {
     color: var(--accent);
-}
-
-.scroll-hint-inner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: bounce-arrow 2.8s ease-in-out infinite;
-    will-change: transform, opacity;
-}
-
-.scroll-hint--off .scroll-hint-inner {
-    animation: none;
-    opacity: 0;
+    animation-play-state: paused;
 }
 
 .scroll-hint svg {
@@ -304,12 +296,14 @@ ul.nav-list.open {
 }
 
 @keyframes bounce-arrow {
-    0%, 100% {
-        transform: translateY(0);
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0);
         opacity: 0.65;
     }
+
     50% {
-        transform: translateY(10px);
+        transform: translateX(-50%) translateY(10px);
         opacity: 1;
     }
 }
@@ -318,7 +312,8 @@ ul.nav-list.open {
 /* About */
 .about-card {
     width: clamp(320px, 80vw, 3000px);
-    height: clamp(520px, 80dvh, 2000px);
+    height: clamp(520px, 80vh, 2000px);
+    height: clamp(520px, 80svh, 2000px);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 28px;
@@ -747,7 +742,8 @@ ul.nav-list.open {
 @media (max-height: 1079px) {
     
     .about-card {
-        height: 82dvh;
+        height: 82vh;
+        height: 82svh;
         margin-top: 1.75rem;
     }
 
@@ -788,7 +784,8 @@ ul.nav-list.open {
 
     .section {
         padding: 1.25rem 5%;
-        min-height: 100dvh;
+        min-height: 100vh;
+        min-height: 100svh;
     }
 
     .about-arrow {
@@ -800,7 +797,8 @@ ul.nav-list.open {
     }
 
     .about-card {
-        height: 85dvh;
+        height: 85vh;
+        height: 85svh;
         margin-top: 1.2rem;
     }
 
