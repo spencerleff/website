@@ -54,20 +54,6 @@ dots.forEach((dot, index) => {
     dot.addEventListener('click', () => goToSlide(index));
 });
 
-/* About slider: touch swipe */
-let touchStartX = 0;
-
-aboutSlider.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX;
-}, { passive: true });
-
-aboutSlider.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 44) {
-        goToSlide(currentPage + (dx < 0 ? 1 : -1));
-    }
-}, { passive: true });
-
 /* About arrows */
 function updateArrows() {
     document.querySelector('.about-arrow-left').classList.toggle('is-disabled', currentPage === 0);
