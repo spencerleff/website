@@ -12,26 +12,73 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
         const target = document.querySelector(this.getAttribute('href'));
         if (!target) return;
         e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth' });
+
+        document.querySelector('.nav-list').classList.remove('open');
+        document.querySelector('.nav').classList.remove('open');
+
+        const targetTop = target.offsetTop;
+
+        document.documentElement.style.scrollSnapType = 'none';
+        window.scrollTo({ top: targetTop, behavior: 'smooth' });
+
+        const restore = () => {
+            window.scrollTo({ top: targetTop, behavior: 'instant' });
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                document.documentElement.style.scrollSnapType = '';
+            }));
+        };
+
+        if ('onscrollend' in window) {
+            window.addEventListener('scrollend', restore, { once: true });
+        } else {
+            setTimeout(restore, 900);
+        }
     });
 });
 
-/* About dot slider */
+/* About slider */
 const aboutSlider = document.querySelector('.about-slider');
 const dots        = document.querySelectorAll('.page-dot');
 let currentPage   = 0;
 const maxPage     = dots.length - 1;
 
 function goToSlide(index) {
-    currentPage = index;
+    currentPage = Math.max(0, Math.min(index, maxPage));
     aboutSlider.style.transform = `translateX(-${currentPage * 100}%)`;
     dots.forEach(d => d.classList.remove('active'));
-    dots[currentPage].classList.add('active');
+    if (dots[currentPage]) dots[currentPage].classList.add('active');
     updateArrows();
 }
 
 dots.forEach((dot, index) => {
     dot.addEventListener('click', () => goToSlide(index));
+});
+
+/* About slider: touch swipe */
+let touchStartX = 0;
+
+aboutSlider.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+}, { passive: true });
+
+aboutSlider.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 44) {
+        goToSlide(currentPage + (dx < 0 ? 1 : -1));
+    }
+}, { passive: true });
+
+/* About arrows */
+function updateArrows() {
+    document.querySelector('.about-arrow-left').classList.toggle('is-disabled', currentPage === 0);
+    document.querySelector('.about-arrow-right').classList.toggle('is-disabled', currentPage === maxPage);
+}
+
+document.querySelector('.about-arrow-left').addEventListener('click', () => {
+    if (currentPage > 0) goToSlide(currentPage - 1);
+});
+document.querySelector('.about-arrow-right').addEventListener('click', () => {
+    if (currentPage < maxPage) goToSlide(currentPage + 1);
 });
 
 /* About arrow slider */
