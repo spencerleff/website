@@ -146,17 +146,20 @@ document.addEventListener(
     { passive: true }
 );
 
+
 /* Ensure section index is up to date */
 window.addEventListener('scroll', () => {
     if (isAnimating) return;
     updateCurrentSection();
 });
 
+
 /* Update on screen resize */
 window.addEventListener('resize', () => {
     if (isAnimating) return;
     updateCurrentSection();
 });
+
 
 /* Detect current section immediately */
 updateCurrentSection();
