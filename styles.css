@@ -59,14 +59,10 @@
 }
 
 html {
-    scroll-snap-type: y mandatory;
-    scroll-padding-top: 0px;
-    overflow-y: scroll;
     height: 100%;
 }
 
 body {
-    height: 100%;
     font-family: var(--font-body);
     font-size: var(--fs-body);
     line-height: 1.65;
@@ -103,11 +99,8 @@ a span {
 
 /* Section */
 .section {
-    min-height: 100vh;
-    min-height: 100svh;
+    height: 100vh;
     width: 100%;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -115,11 +108,6 @@ a span {
     box-sizing: border-box;
     padding: 5rem 5%;
     position: relative;
-}
-
-.section-gap {
-    padding: 20vh;
-    padding: 20svh;
 }
 
 
@@ -217,7 +205,6 @@ ul.nav-list.open {
     flex-direction: column;
     align-items: center;
     gap: 1.2rem;
-    flex: 1;
     justify-content: center;
 }
 
@@ -269,7 +256,6 @@ ul.nav-list.open {
     font-size: var(--fs-h3);
     color: var(--text-muted);
     margin: 1vh 0 0;
-    margin: 1svh 0 0;
     font-weight: 400;
 }
 
@@ -318,7 +304,6 @@ ul.nav-list.open {
 .about-card {
     width: clamp(320px, 80vw, 3000px);
     height: clamp(520px, 85vh, 2000px);
-    height: clamp(520px, 85svh, 2000px);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 28px;
@@ -416,7 +401,6 @@ ul.nav-list.open {
 
 .about-bio {
     margin: 0.3vh 0.5vw 0 0vw;
-    margin: 0.3svh 0.5vw 0 0vw;
     color: var(--text-secondary);
     font-size: clamp(1.4rem, 1.45cqw, 2.5rem);
     line-height: 1.75;
@@ -749,7 +733,6 @@ ul.nav-list.open {
     
     .about-card {
         height: 85vh;
-        height: 85svh;
         margin-top: 1.75rem;
     }
 
@@ -799,12 +782,6 @@ ul.nav-list.open {
 
     .about-pagination {
         display: none;
-    }
-
-    .about-card {
-        height: 95vh;
-        height: 95svh;
-        margin-top: 1.2rem;
     }
 
     .about-name {
