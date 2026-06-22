@@ -692,6 +692,10 @@ ul.nav-list.open {
         padding: 0.35rem;
         margin-bottom: 1.2rem;
     }
+
+    .about-card {
+        height: clamp(520px, 85svh, 2000px);
+    }
     
     .about-content {
         grid-template-columns: 1fr;
@@ -750,6 +754,7 @@ ul.nav-list.open {
 }
 
 @media (max-height: 780px) {
+
     .about-name {
         font-size: clamp(1.8rem, 2cqw, 3rem);
         margin-bottom: 1rem;
@@ -820,7 +825,6 @@ ul.nav-list.open {
     .wc-num {
         font-size: 0.65rem;
     }
-
 
     .wc-title {
         font-size: 0.75rem;
