@@ -104,6 +104,7 @@ a span {
 /* Section */
 .section {
     min-height: 100vh;
+    min-height: 100svh;
     width: 100%;
     scroll-snap-align: start;
     scroll-snap-stop: always;
@@ -117,7 +118,8 @@ a span {
 }
 
 .section-gap {
-    padding: 25vh;
+    padding: 20vh;
+    padding: 20svh;
 }
 
 
@@ -267,6 +269,7 @@ ul.nav-list.open {
     font-size: var(--fs-h3);
     color: var(--text-muted);
     margin: 1vh 0 0;
+    margin: 1svh 0 0;
     font-weight: 400;
 }
 
@@ -314,7 +317,7 @@ ul.nav-list.open {
 /* About */
 .about-card {
     width: clamp(320px, 80vw, 3000px);
-    height: clamp(520px, 80vh, 2000px);
+    height: clamp(520px, 85vh, 2000px);
     height: clamp(520px, 85svh, 2000px);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -413,6 +416,7 @@ ul.nav-list.open {
 
 .about-bio {
     margin: 0.3vh 0.5vw 0 0vw;
+    margin: 0.3svh 0.5vw 0 0vw;
     color: var(--text-secondary);
     font-size: clamp(1.4rem, 1.45cqw, 2.5rem);
     line-height: 1.75;
@@ -744,7 +748,7 @@ ul.nav-list.open {
 @media (max-height: 1079px) {
     
     .about-card {
-        height: 82vh;
+        height: 85vh;
         height: 85svh;
         margin-top: 1.75rem;
     }
@@ -798,8 +802,8 @@ ul.nav-list.open {
     }
 
     .about-card {
-        height: 85vh;
-        height: 90svh;
+        height: 95vh;
+        height: 95svh;
         margin-top: 1.2rem;
     }
 
