@@ -39,30 +39,39 @@ function easeInOutCubic(t) {
 
 //Smooth Scroll
 let animationFrameId = null;
+let wheelLocked = false;
 
 function smoothScrollTo(targetY, duration = 800) {
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
     }
+
     const startY = window.pageYOffset;
     const distance = targetY - startY;
     const startTime = performance.now();
+
     isAnimating = true;
+    wheelLocked = true;
 
     function animate(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
+
         window.scrollTo(
             0,
             startY + distance * easeInOutCubic(progress)
         );
+
         if (progress < 1) {
             animationFrameId = requestAnimationFrame(animate);
-        }
-        else {
+        } else {
             isAnimating = false;
             animationFrameId = null;
+
+            setTimeout(() => {
+                wheelLocked = false;
+            }, 100);
         }
     }
 
@@ -109,17 +118,18 @@ window.addEventListener(
     'wheel',
     e => {
         if (window.innerWidth <= 480) return;
-        if (isAnimating || wheelCooldown) return;
+        if (wheelLocked) {
+            e.preventDefault();
+            return;
+        }
         if (Math.abs(e.deltaY) < 30) return;
-        wheelCooldown = true;
-        setTimeout(() => {
-            wheelCooldown = false;
-        }, 300);
+        wheelLocked = true;
         if (e.deltaY > 0) {
             goToSection(currentSection + 1);
         } else {
             goToSection(currentSection - 1);
         }
+
         e.preventDefault();
     },
     { passive: false }
@@ -204,6 +214,16 @@ window.addEventListener('scroll', () => {
 window.addEventListener('resize', () => {
     if (isAnimating) return;
     updateCurrentSection();
+    snapToCurrentSection();
+});
+
+
+//Delay and update on screen rotation
+window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+        updateCurrentSection();
+        snapToCurrentSection();
+    }, 150);
 });
 
 
@@ -273,3 +293,15 @@ document
     });
 
 updateArrows();
+
+
+//Locate current section on rotation
+function snapToCurrentSection() {
+    const section = sections[currentSection];
+    if (!section) return;
+
+    window.scrollTo({
+        top: section.offsetTop,
+        behavior: 'auto'
+    });
+}
