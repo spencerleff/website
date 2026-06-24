@@ -354,7 +354,7 @@ ul.nav-list.open {
 }
 
 .about-arrow.is-disabled {
-    opacity: 0.3;
+    opacity: 0;
     pointer-events: none;
 }
 
@@ -676,16 +676,16 @@ ul.nav-list.open {
 @media (max-width: 1300px), (max-height: 1079px) {
 
     .hamburger {
-        font-size: 1.2rem;
+        font-size: 1.35rem;
     }
 
     .nav {
-        top: 0.75rem;
-        left: 0.75rem;
+        top: 0.5rem;
+        left: 0.5rem;
     }
 
     .nav-icon {
-        font-size: 1rem;
+        font-size: 1.2rem;
     }
 
     ul.nav-list a {
@@ -734,11 +734,6 @@ ul.nav-list.open {
 }
 
 @media (max-height: 1079px) {
-    
-    .about-card {
-        height: 85vh;
-        margin-top: 1.75rem;
-    }
 
     .about-name {
         margin-bottom: 1.25rem;

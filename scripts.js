@@ -1,4 +1,4 @@
-/* Nav toggle */
+//Nav toggle
 function toggleNav() {
     const navList = document.querySelector('.nav-list');
     const nav     = document.querySelector('.nav');
@@ -7,7 +7,7 @@ function toggleNav() {
 }
 
 
-/* Section navigation */
+//Section navigation
 const sections = [...document.querySelectorAll('.section')];
 let currentSection = 0;
 let isAnimating = false;
@@ -29,7 +29,7 @@ function updateCurrentSection() {
 }
 
 
-/* Smoothing algorithm */
+//Smoothing algorithm
 function easeInOutCubic(t) {
     return t < 0.5
         ? 4 * t * t * t
@@ -37,8 +37,14 @@ function easeInOutCubic(t) {
 }
 
 
-/* Smooth Scroll */
+//Smooth Scroll
+let animationFrameId = null;
+
 function smoothScrollTo(targetY, duration = 800) {
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
     const startY = window.pageYOffset;
     const distance = targetY - startY;
     const startTime = performance.now();
@@ -52,17 +58,18 @@ function smoothScrollTo(targetY, duration = 800) {
             startY + distance * easeInOutCubic(progress)
         );
         if (progress < 1) {
-            requestAnimationFrame(animate);
+            animationFrameId = requestAnimationFrame(animate);
         }
         else {
             isAnimating = false;
+            animationFrameId = null;
         }
     }
 
-    requestAnimationFrame(animate);
+    animationFrameId = requestAnimationFrame(animate);
 }
 
-/* Locate correct section */
+//Locate correct section
 function goToSection(index) {
     if (isAnimating) return;
     index = Math.max(
@@ -78,7 +85,7 @@ function goToSection(index) {
 }
 
 
-/* Navbar links */
+//Navbar links
 document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', e => {
         const targetId = link.getAttribute('href');
@@ -97,7 +104,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 });
 
 
-/* Scroll wheel nav */
+//Scroll wheel nav
 window.addEventListener(
     'wheel',
     e => {
@@ -119,27 +126,66 @@ window.addEventListener(
 );
 
 
-/* Touch nav */
+//Touch nav
+let touchStartX = 0;
 let touchStartY = 0;
-let touchEndY = 0;
+let touchDirectionLocked = null;
+let isSliderTouch = false;
+
 document.addEventListener(
     'touchstart',
     e => {
+        touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
+        touchDirectionLocked = null;
+        isSliderTouch = !!e.target.closest('.about-slider');
     },
     { passive: true }
 );
+
+//Passive = false. JS runs the scroll behavior
+document.addEventListener(
+    'touchmove',
+    e => {
+        const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+        const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+        if (!touchDirectionLocked && (deltaX > 8 || deltaY > 8)) {
+            touchDirectionLocked = deltaY >= deltaX ? 'vertical' : 'horizontal';
+        }
+
+        if (
+            touchDirectionLocked === 'vertical' ||
+            (touchDirectionLocked === 'horizontal' && isSliderTouch)
+        ) {
+            e.preventDefault();
+        }
+    },
+    { passive: false }
+);
+
+//Horizontal swipe on the about slider changes slide. Vertical swipe is section navigation
 document.addEventListener(
     'touchend',
     e => {
-        if (isAnimating) return;
-        touchEndY = e.changedTouches[0].clientY;
-        const delta = touchStartY - touchEndY;
-        if (Math.abs(delta) < 60) return;
-        if (delta > 0) {
-            goToSection(currentSection + 1);
+        const deltaY = touchStartY - e.changedTouches[0].clientY;
+        const deltaX = touchStartX - e.changedTouches[0].clientX;
+
+        //Horizontal swipe on the about slider: change slide
+        if (isSliderTouch && Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (deltaX > 0 && currentPage < maxPage) {
+                goToSlide(currentPage + 1);
+            } else if (deltaX < 0 && currentPage > 0) {
+                goToSlide(currentPage - 1);
+            }
+            return;
         }
-        else {
+
+        if (isAnimating) return;
+        if (Math.abs(deltaY) < 60) return;
+        if (Math.abs(deltaX) > Math.abs(deltaY)) return;
+        if (deltaY > 0) {
+            goToSection(currentSection + 1);
+        } else {
             goToSection(currentSection - 1);
         }
     },
@@ -147,25 +193,25 @@ document.addEventListener(
 );
 
 
-/* Ensure section index is up to date */
+//Ensure section index is up to date
 window.addEventListener('scroll', () => {
     if (isAnimating) return;
     updateCurrentSection();
 });
 
 
-/* Update on screen resize */
+//Update on screen resize
 window.addEventListener('resize', () => {
     if (isAnimating) return;
     updateCurrentSection();
 });
 
 
-/* Detect current section immediately */
+//Detect current section immediately
 updateCurrentSection();
 
 
-/* About slider */
+//About slider
 const aboutSlider = document.querySelector('.about-slider');
 const dots = document.querySelectorAll('.page-dot');
 let currentPage = 0;
@@ -194,7 +240,7 @@ dots.forEach((dot, index) => {
 });
 
 
-/* About arrows */
+//About arrows
 function updateArrows() {
     const left =
         document.querySelector('.about-arrow-left');
