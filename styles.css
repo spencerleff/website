@@ -101,14 +101,13 @@ a span {
 
 /* Section */
 .section {
-    height: 100dvh;
+    height: 101dvh;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     overflow: hidden;
-    background-color: var(--bg);
 }
 
 .section-inner {
@@ -247,7 +246,7 @@ ul.nav-list.open {
 
 .scroll-hint {
     position: absolute;
-    bottom: 2.5rem;
+    bottom: 4rem;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1;
@@ -769,6 +768,11 @@ ul.nav-list.open {
     .hero-tagline {
         font-size: 90%;
         margin: 0.1rem 0 0;
+    }
+
+    .scroll-hint {
+        bottom: 2rem;
+        padding: 0.2rem;
     }
 
     .about-content {
