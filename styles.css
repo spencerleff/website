@@ -101,14 +101,14 @@ a span {
 
 /* Section */
 .section {
-    height: 100vh;
-    height: var(--app-height, 100dvh);
+    height: 100dvh;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     overflow: hidden;
+    background-color: var(--bg);
 }
 
 .section-inner {
@@ -193,10 +193,6 @@ ul.nav-list.open {
 
 
 /* Home */
-#home {
-    background-color: var(--bg);
-}
-
 #home::before {
     content: '';
     position: absolute;
@@ -293,7 +289,7 @@ ul.nav-list.open {
 /* About */
 .about-card {
     width: clamp(280px, 80vw, 3000px);
-    height: clamp(280px, calc(var(--app-height, 100dvh) * 0.85), 2000px);
+    height: clamp(280px, 85dvh, 2000px);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 28px;
@@ -496,7 +492,7 @@ ul.nav-list.open {
 /* Work */
 .work-wrap {
     width: min(1100px, 85vw);
-    height: calc(var(--app-height, 100dvh) * 0.85);
+    height: 85dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;

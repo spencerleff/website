@@ -7,21 +7,6 @@ function toggleNav() {
 }
 
 
-//Calculate true app height to avoid issues with IOS url bar
-function updateAppHeight() {
-    const height =
-        window.visualViewport?.height ||
-        window.innerHeight;
-
-    document.documentElement.style.setProperty(
-        '--app-height',
-        `${height}px`
-    );
-}
-
-updateAppHeight();
-
-
 //Section navigation
 const sections = [...document.querySelectorAll('.section')];
 let currentSection = 0;
@@ -228,29 +213,16 @@ window.addEventListener('scroll', () => {
 //Update view on screen resize (60fps)
 let resizeFrame = null;
 window.addEventListener('resize', () => {
-    updateAppHeight();
-
     if (isAnimating) return;
     if (resizeFrame) return;
 
     resizeFrame = requestAnimationFrame(() => {
         resizeFrame = null;
-
         const section = sections[currentSection];
         if (!section) return;
-
         window.scrollTo(0, section.offsetTop);
     });
 });
-
-
-//Update app height on browser resize
-if (window.visualViewport) {
-    window.visualViewport.addEventListener(
-        'resize',
-        updateAppHeight
-    );
-}
 
 
 //Remember the current section before rotating
