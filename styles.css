@@ -96,8 +96,8 @@ a span {
 
 /* Section */
 .section {
-    height: 100vh;
-    height: 100svh;
+    min-height: 100vh;
+    min-height: 100svh;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -286,9 +286,9 @@ ul.nav-list.open {
 
 /* About */
 .about-card {
-    width: clamp(320px, 80vw, 3000px);
-    height: clamp(320px, 85vh, 2000px);
-    height: clamp(320px, 85svh, 2000px);
+    width: clamp(280px, 80vw, 3000px);
+    height: clamp(280px, 85vh, 2000px);
+    height: clamp(280px, 85svh, 2000px);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 28px;
@@ -729,6 +729,20 @@ ul.nav-list.open {
     
     .nav {
         display: none;
+    }
+
+    .hero-eyebrow {
+        font-size: 80%;
+        padding: 0.35em 1em;
+    }
+
+    .hero-name {
+        font-size: clamp(3rem, 8vw, 6rem);
+    }
+
+    .hero-tagline {
+        font-size: 90%;
+        margin: 0.1rem 0 0;
     }
 
     .about-content {
