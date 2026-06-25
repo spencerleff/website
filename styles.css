@@ -720,7 +720,7 @@ ul.nav-list.open {
     }
 
     .work-role {
-        font-size: 80%;
+        font-size: var(--fs-small)
     }
 
     .work-card {
