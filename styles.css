@@ -57,6 +57,11 @@
 
 html {
     height: 100%;
+    scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+    display: none;
 }
 
 body {
@@ -104,6 +109,7 @@ a span {
     align-items: center;
     position: relative;
     overflow: hidden;
+    outline: 2px solid red;
 }
 
 .section-inner {
@@ -113,6 +119,7 @@ a span {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    outline: 2px solid blue;
 }
 
 
@@ -343,8 +350,8 @@ ul.nav-list.open {
     pointer-events: none;
 }
 
-.about-arrow-left { left: 0.45rem; }
-.about-arrow-right { right: 0.45rem; }
+.about-arrow-left { left: 0.5rem; }
+.about-arrow-right { right: 0.5rem; }
 
 .about-content {
     height: 100%;
