@@ -214,10 +214,17 @@ window.addEventListener('scroll', () => {
 });
 
 
-//Update on screen resize
+//Update view on screen resize (60fps)
+let resizeFrame = null;
 window.addEventListener('resize', () => {
     if (isAnimating) return;
-    updateCurrentSection();
+    if (resizeFrame) return;
+    resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = null;
+        const section = sections[currentSection];
+        if (!section) return;
+        window.scrollTo(0, section.offsetTop);
+    });
 });
 
 
@@ -317,4 +324,6 @@ function snapToCurrentSection() {
         top: section.offsetTop,
         behavior: 'auto'
     });
+
+    updateCurrentSection();
 }
