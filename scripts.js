@@ -14,17 +14,21 @@ let isAnimating = false;
 let wheelCooldown = false;
 
 function updateCurrentSection() {
+    const viewportCenter =
+        window.scrollY + window.innerHeight / 2;
     let closestIndex = 0;
     let closestDistance = Infinity;
     sections.forEach((section, index) => {
-        const distance = Math.abs(
-            window.scrollY - section.offsetTop
-        );
+        const sectionCenter =
+            section.offsetTop + section.offsetHeight / 2;
+        const distance =
+            Math.abs(viewportCenter - sectionCenter);
         if (distance < closestDistance) {
             closestDistance = distance;
             closestIndex = index;
         }
     });
+
     currentSection = closestIndex;
 }
 
@@ -214,16 +218,25 @@ window.addEventListener('scroll', () => {
 window.addEventListener('resize', () => {
     if (isAnimating) return;
     updateCurrentSection();
-    snapToCurrentSection();
 });
 
 
-//Delay and update on screen rotation
+//Remember the current section before rotating
+let rotatingSection = null;
 window.addEventListener('orientationchange', () => {
+    rotatingSection = currentSection;
+
     setTimeout(() => {
-        updateCurrentSection();
-        snapToCurrentSection();
-    }, 150);
+        if (rotatingSection !== null) {
+            window.scrollTo({
+                top: sections[rotatingSection].offsetTop,
+                behavior: 'auto'
+            });
+
+            currentSection = rotatingSection;
+            rotatingSection = null;
+        }
+    }, 300);
 });
 
 
