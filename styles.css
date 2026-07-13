@@ -490,7 +490,7 @@ ul.nav-list.open {
 
 /* Work */
 .work-wrap {
-    width: min(1100px, 85vw);
+    width: min(1500px, 85vw);
     height: 85dvh;
     display: flex;
     flex-direction: column;
@@ -535,7 +535,7 @@ ul.nav-list.open {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
-    min-height: 160px;
+    min-height: 250px;
     box-shadow: 0 4px 14px rgba(0,0,0,.04);
     transition: transform .3s ease, box-shadow .2s ease;
 }
@@ -669,7 +669,7 @@ ul.nav-list.open {
 
     .work-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.7rem;
+        gap: 1rem;
     }
 }
 
@@ -724,7 +724,7 @@ ul.nav-list.open {
     }
 
     .work-card {
-        padding: 0.7rem;
+        padding: 1rem;
         min-height: 0;
     }
 
@@ -733,8 +733,8 @@ ul.nav-list.open {
     }
 
     .wc-desc {
-        font-size: 0.55rem;
-        line-height: 1.1;
+        font-size: 0.525rem;
+        line-height: 1.15;
     }
     
     .wc-link {

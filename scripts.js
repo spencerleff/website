@@ -203,9 +203,39 @@ document.addEventListener(
 );
 
 
+//Prevent resize/scroll from corrupting rotation logic
+let isRotating = false;
+let rotationLockedSection = null;
+let rotationSettleTimeout = null;
+function beginRotationLock() {
+    if (!isRotating) {
+        isRotating = true;
+        rotationLockedSection = currentSection;
+    }
+    if (rotationSettleTimeout) clearTimeout(rotationSettleTimeout);
+
+    rotationSettleTimeout = setTimeout(() => {
+        if (rotationLockedSection !== null) {
+            window.scrollTo({
+                top: sections[rotationLockedSection].offsetTop,
+                behavior: 'auto'
+            });
+            currentSection = rotationLockedSection;
+        }
+        isRotating = false;
+        rotationLockedSection = null;
+    }, 400);
+}
+
+window.addEventListener('orientationchange', beginRotationLock);
+
+//Detect current section immediately
+updateCurrentSection();
+
+
 //Ensure section index is up to date
 window.addEventListener('scroll', () => {
-    if (isAnimating) return;
+    if (isAnimating || isRotating) return;
     updateCurrentSection();
 });
 
@@ -214,39 +244,17 @@ window.addEventListener('scroll', () => {
 let resizeFrame = null;
 window.addEventListener('resize', () => {
     if (isAnimating) return;
+    if (isRotating) beginRotationLock();
     if (resizeFrame) return;
 
     resizeFrame = requestAnimationFrame(() => {
         resizeFrame = null;
-        const section = sections[currentSection];
+        const targetIndex = isRotating ? rotationLockedSection : currentSection;
+        const section = sections[targetIndex];
         if (!section) return;
         window.scrollTo(0, section.offsetTop);
     });
 });
-
-
-//Remember the current section before rotating
-let rotatingSection = null;
-window.addEventListener('orientationchange', () => {
-    rotatingSection = currentSection;
-
-    setTimeout(() => {
-        if (rotatingSection !== null) {
-            window.scrollTo({
-                top: sections[rotatingSection].offsetTop,
-                behavior: 'auto'
-            });
-
-            currentSection = rotatingSection;
-            rotatingSection = null;
-        }
-    }, 300);
-});
-
-
-//Detect current section immediately
-updateCurrentSection();
-
 
 //About slider
 const aboutSlider = document.querySelector('.about-slider');
