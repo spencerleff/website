@@ -142,6 +142,7 @@ let touchStartX = 0;
 let touchStartY = 0;
 let touchDirectionLocked = null;
 let isSliderTouch = false;
+let isWorkListTouch = false;
 
 document.addEventListener(
     'touchstart',
@@ -150,6 +151,7 @@ document.addEventListener(
         touchStartY = e.touches[0].clientY;
         touchDirectionLocked = null;
         isSliderTouch = !!e.target.closest('.about-slider');
+        isWorkListTouch = !!e.target.closest('.work-list');
     },
     { passive: true }
 );
@@ -162,6 +164,11 @@ document.addEventListener(
         const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
         if (!touchDirectionLocked && (deltaX > 8 || deltaY > 8)) {
             touchDirectionLocked = deltaY >= deltaX ? 'vertical' : 'horizontal';
+        }
+
+        //Let the work list scroll natively instead of competing with section navigation
+        if (touchDirectionLocked === 'vertical' && isWorkListTouch) {
+            return;
         }
 
         if (touchDirectionLocked === 'vertical' || (touchDirectionLocked === 'horizontal' && isSliderTouch)) {
@@ -188,6 +195,8 @@ document.addEventListener(
             }
             return;
         }
+
+        if (isWorkListTouch) return;
 
         if (isAnimating) return;
         if (Math.abs(deltaY) < 60) return;
@@ -312,6 +321,17 @@ document
 
 updateArrows();
 
+//About arrow key navigation
+document.addEventListener('keydown', e => {
+    if (sections[currentSection]?.id !== 'about') return;
+
+    if (e.key === 'ArrowRight' && currentPage < maxPage) {
+        goToSlide(currentPage + 1);
+    } else if (e.key === 'ArrowLeft' && currentPage > 0) {
+        goToSlide(currentPage - 1);
+    }
+});
+
 
 //Locate current section on rotation
 function snapToCurrentSection() {
@@ -325,3 +345,62 @@ function snapToCurrentSection() {
 
     updateCurrentSection();
 }
+
+
+//Work section: accordion + entrance animation
+(function () {
+    const workItems = [...document.querySelectorAll('.work-item')];
+    if (!workItems.length) return;
+
+    const heads = workItems.map(item => item.querySelector('.work-item-head'));
+
+    function setOpen(item, head, open) {
+        item.classList.toggle('is-open', open);
+        head.setAttribute('aria-expanded', String(open));
+    }
+
+    function openItem(index) {
+        workItems.forEach((item, i) => {
+            setOpen(item, heads[i], i === index);
+        });
+    }
+
+    heads.forEach((head, index) => {
+        const item = workItems[index];
+
+        head.addEventListener('click', () => {
+            const alreadyOpen = item.classList.contains('is-open');
+            workItems.forEach((other, i) => setOpen(other, heads[i], false));
+            if (!alreadyOpen) setOpen(item, head, true);
+        });
+
+
+        head.addEventListener('keydown', e => {
+            if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+            e.preventDefault();
+            const nextIndex = e.key === 'ArrowDown'
+                ? Math.min(index + 1, heads.length - 1)
+                : Math.max(index - 1, 0);
+            heads[nextIndex].focus();
+        });
+    });
+
+    const workSection = document.getElementById('work');
+    if ('IntersectionObserver' in window && workSection) {
+        const revealObserver = new IntersectionObserver(
+            entries => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    workItems.forEach((item, i) => {
+                        setTimeout(() => item.classList.add('is-visible'), i * 90);
+                    });
+                    revealObserver.disconnect();
+                });
+            },
+            { threshold: 0.25 }
+        );
+        revealObserver.observe(workSection);
+    } else {
+        workItems.forEach(item => item.classList.add('is-visible'));
+    }
+})();

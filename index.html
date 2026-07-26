@@ -224,95 +224,174 @@
                     <h2 class="work-title">What I'm building</h2>
                     <p class="work-role">Software Engineer · Chevron</p>
                 </div>
-                <div class="work-grid">
 
-                <div class="work-card">
-                    <h3 class="wc-title">Enterprise Vendor Integrations & EDI Automation</h3>
+                <div class="work-list" id="workList">
 
-                    <p class="wc-desc">
-                        Integrated 50+ external vendors including Coremark, Fintech, & individual DSD vendors. These interfaces
-                        heavily streamlined the process for invoicing, ordering, pricebook, and delivery workflows across our 300+ 
-                        station network. <strong>$8M+</strong> in annual operational savings
-                    </p>
-
-                    <div class="wc-tags">
-                        <span class="tag">ADF</span>
-                        <span class="tag">EDI</span>
-                        <span class="tag">SFTP</span>
-                        <span class="tag">PDI</span>
-                    </div>
-                </div>
-
-                    <div class="work-card">
-                        <h3 class="wc-title">Financial Data Interfacing</h3>
-                        <p class="wc-desc">
-                            Key integrations for a multi-million dollar back-office modernization initiative, building financial data pipelines between 
-                            PDI and SAP with Azure Data Factory using custom SQL queries. Held to strict quality and testing standards given
-                            the sensitivity of financial data
-                        </p>
-                        <div class="wc-tags">
-                            <span class="tag">ADF</span>
-                            <span class="tag">SAP</span>
-                            <span class="tag">SQL</span>
-                            <span class="tag">PDI</span>
+                    <div class="work-item is-open" data-tags="ADF EDI SFTP PDI">
+                        <button class="work-item-head" aria-expanded="true" aria-controls="work-body-1">
+                            <span class="work-item-icon"><i class="fa-solid fa-network-wired"></i></span>
+                            <span class="work-item-titles">
+                                <span class="work-item-title">Vendor Integrations & EDI Automation</span>
+                                <span class="work-item-meta">
+                                    <span class="work-item-chip">$8M+ saved / yr</span>
+                                    <span class="work-item-sub">50+ vendors across 300+ stations</span>
+                                </span>
+                            </span>
+                            <span class="work-item-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                        </button>
+                        <div class="work-item-body" id="work-body-1" role="region">
+                            <div class="work-item-body-inner">
+                                <div class="work-item-body-content">
+                                    <p class="work-item-desc">Built and maintained EDI interfaces for Coremark, Fintech, and individual DSD vendors across the company's 300+ station network. These integrations streamlined invoicing, ordering, pricebook, and delivery workflows, saving more than $8M annually.</p>
+                                    <div class="work-item-tags">
+                                        <span class="tag">ADF</span>
+                                        <span class="tag">EDI</span>
+                                        <span class="tag">SFTP</span>
+                                        <span class="tag">PDI</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="work-card">
-                        <h3 class="wc-title">Samsung Retail Media Network</h3>
-                        <p class="wc-desc">In-store digital signage pilot using 4K Samsung displays for promotions & advertisements. Built an 
-                            analytics platform comparing item sales, promotion usage, and foot traffic. Project lead for software maintenance, 
-                            station support, and custom content production & management</p>
-                        <a class="wc-link" href="https://news.samsung.com/us/samsung-fuels-new-era-of-in-store-engagement"
-                            target="_blank">
-                            <i class="fa fa-external-link"></i>Press Release
-                        </a>
-                        <div class="wc-tags">
-                            <span class="tag">VXT CMS</span>
-                            <span class="tag">Power BI</span>
-                            <span class="tag">Adobe</span>
-                            <span class="tag">Samsung</span>
+                    <div class="work-item" data-tags="ADF SAP SQL PDI">
+                        <button class="work-item-head" aria-expanded="false" aria-controls="work-body-2">
+                            <span class="work-item-icon"><i class="fa-solid fa-money-bill-transfer"></i></span>
+                            <span class="work-item-titles">
+                                <span class="work-item-title">Financial Data Pipelines</span>
+                                <span class="work-item-meta">
+                                    <span class="work-item-chip">PDI → SAP</span>
+                                    <span class="work-item-sub">Back-office modernization</span>
+                                </span>
+                            </span>
+                            <span class="work-item-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                        </button>
+                        <div class="work-item-body" id="work-body-2" role="region">
+                            <div class="work-item-body-inner">
+                                <div class="work-item-body-content">
+                                    <p class="work-item-desc">Engineered financial data pipelines between PDI and SAP using Azure Data Factory and custom SQL, as part of a multi-million dollar back-office modernization initiative. The work was held to strict quality and testing standards given the sensitivity of financial data.</p>
+                                    <div class="work-item-tags">
+                                        <span class="tag">ADF</span>
+                                        <span class="tag">SAP</span>
+                                        <span class="tag">SQL</span>
+                                        <span class="tag">PDI</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="work-card">
-                        <h3 class="wc-title">Digital Compliance Binder</h3>
-                        <p class="wc-desc">Digitized the station's physical document binder, enabling direct access to organized compliance documents 
-                            through a custom-built Angular application. Authentication handled dynamically via an Azure Function, which seamlessly pulls 
-                            in data from both OTMM and SharePoint</p>
-                        <div class="wc-tags">
-                            <span class="tag">Angular</span>
-                            <span class="tag">Azure Function</span>
-                            <span class="tag">OTMM</span>
-                            <span class="tag">REST API</span>
+                    <div class="work-item" data-tags="VXT CMS Power BI Adobe Samsung">
+                        <button class="work-item-head" aria-expanded="false" aria-controls="work-body-3">
+                            <span class="work-item-icon"><i class="fa-solid fa-tv"></i></span>
+                            <span class="work-item-titles">
+                                <span class="work-item-title">Samsung Retail Media Network</span>
+                                <span class="work-item-meta">
+                                    <span class="work-item-chip">4K in-store signage</span>
+                                    <span class="work-item-sub">Analytics-driven promotions</span>
+                                </span>
+                            </span>
+                            <span class="work-item-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                        </button>
+                        <div class="work-item-body" id="work-body-3" role="region">
+                            <div class="work-item-body-inner">
+                                <div class="work-item-body-content">
+                                    <p class="work-item-desc">Led a digital signage pilot on 4K Samsung displays, building an analytics platform to compare sales, promotions, and foot traffic. Served as project lead for software maintenance, station support, and custom content production.</p>
+                                    <a class="work-item-link" href="https://news.samsung.com/us/samsung-fuels-new-era-of-in-store-engagement" target="_blank">
+                                        <i class="fa fa-external-link"></i>Press Release
+                                    </a>
+                                    <div class="work-item-tags">
+                                        <span class="tag">VXT CMS</span>
+                                        <span class="tag">Power BI</span>
+                                        <span class="tag">Adobe</span>
+                                        <span class="tag">Samsung</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="work-card">
-                        <h3 class="wc-title">Electronic Shelf Labels</h3>
-                        <p class="wc-desc">Custom solution replacing paper price tags with digital shelf labels, syncing price and promotional 
-                            updates directly with POS in real time. Supports custom promotional templates for various scenarios, 
-                            pulling live data through custom SQL queries against the back-office system</p>
-                        <div class="wc-tags">
-                            <span class="tag">ADF</span>
-                            <span class="tag">SQL</span>
-                            <span class="tag">Bat Scripting</span>
-                            <span class="tag">PDI</span>
+                    <div class="work-item" data-tags="Angular Azure Function OTMM REST API">
+                        <button class="work-item-head" aria-expanded="false" aria-controls="work-body-4">
+                            <span class="work-item-icon"><i class="fa-solid fa-folder-tree"></i></span>
+                            <span class="work-item-titles">
+                                <span class="work-item-title">Digital Compliance Binder</span>
+                                <span class="work-item-meta">
+                                    <span class="work-item-chip">Angular · Azure</span>
+                                    <span class="work-item-sub">Paperless compliance</span>
+                                </span>
+                            </span>
+                            <span class="work-item-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                        </button>
+                        <div class="work-item-body" id="work-body-4" role="region">
+                            <div class="work-item-body-inner">
+                                <div class="work-item-body-content">
+                                    <p class="work-item-desc">Digitized the station's physical compliance binder into a custom-built Angular application, replacing paper documents with organized digital access. Authentication is handled dynamically through an Azure Function that pulls data from both OTMM and SharePoint.</p>
+                                    <div class="work-item-tags">
+                                        <span class="tag">Angular</span>
+                                        <span class="tag">Azure Function</span>
+                                        <span class="tag">OTMM</span>
+                                        <span class="tag">REST API</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="work-card">
-                        <h3 class="wc-title">Workjam Workforce Platform</h3>
-                        <p class="wc-desc">Application support for Workjam across the COCO network, enabling task management, knowledge 
-                            sharing, and communication for station employees. Built custom Azure Logic Apps to pipe daily 
-                            task-completion data into Power BI dashboards</p>
-                        <div class="wc-tags">
-                            <span class="tag">Workjam</span>
-                            <span class="tag">Logic App</span>
-                            <span class="tag">Power BI</span>
-                            <span class="tag">REST API</span>
+                    <div class="work-item" data-tags="ADF SQL Bat Scripting PDI">
+                        <button class="work-item-head" aria-expanded="false" aria-controls="work-body-5">
+                            <span class="work-item-icon"><i class="fa-solid fa-tag"></i></span>
+                            <span class="work-item-titles">
+                                <span class="work-item-title">Electronic Shelf Labels</span>
+                                <span class="work-item-meta">
+                                    <span class="work-item-chip">Real-time pricing</span>
+                                    <span class="work-item-sub">POS-synced displays</span>
+                                </span>
+                            </span>
+                            <span class="work-item-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                        </button>
+                        <div class="work-item-body" id="work-body-5" role="region">
+                            <div class="work-item-body-inner">
+                                <div class="work-item-body-content">
+                                    <p class="work-item-desc">Replaced paper price tags with digital shelf labels that sync pricing and promotions with POS in real time. The system supports custom promotional templates driven by live SQL queries against the back-office system.</p>
+                                    <div class="work-item-tags">
+                                        <span class="tag">ADF</span>
+                                        <span class="tag">SQL</span>
+                                        <span class="tag">Bat Scripting</span>
+                                        <span class="tag">PDI</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <div class="work-item" data-tags="Workjam Logic App Power BI REST API">
+                        <button class="work-item-head" aria-expanded="false" aria-controls="work-body-6">
+                            <span class="work-item-icon"><i class="fa-solid fa-users-gear"></i></span>
+                            <span class="work-item-titles">
+                                <span class="work-item-title">Workjam Workforce Platform</span>
+                                <span class="work-item-meta">
+                                    <span class="work-item-chip">Power BI dashboards</span>
+                                    <span class="work-item-sub">Task &amp; comms management</span>
+                                </span>
+                            </span>
+                            <span class="work-item-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                        </button>
+                        <div class="work-item-body" id="work-body-6" role="region">
+                            <div class="work-item-body-inner">
+                                <div class="work-item-body-content">
+                                    <p class="work-item-desc">Supported the Workjam workforce platform across the COCO network, enabling task management, knowledge sharing, and communication for station employees. Built custom Azure Logic Apps to pipe daily task-completion data into Power BI dashboards.</p>
+                                    <div class="work-item-tags">
+                                        <span class="tag">Workjam</span>
+                                        <span class="tag">Logic App</span>
+                                        <span class="tag">Power BI</span>
+                                        <span class="tag">REST API</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
