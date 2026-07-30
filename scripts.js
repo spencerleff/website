@@ -142,7 +142,7 @@ let touchStartX = 0;
 let touchStartY = 0;
 let touchDirectionLocked = null;
 let isSliderTouch = false;
-let isWorkListTouch = false;
+let isWorkSliderTouch = false;
 
 document.addEventListener(
     'touchstart',
@@ -151,7 +151,7 @@ document.addEventListener(
         touchStartY = e.touches[0].clientY;
         touchDirectionLocked = null;
         isSliderTouch = !!e.target.closest('.about-slider');
-        isWorkListTouch = !!e.target.closest('.work-list');
+        isWorkSliderTouch = !!e.target.closest('.work-viewport');
     },
     { passive: true }
 );
@@ -166,19 +166,19 @@ document.addEventListener(
             touchDirectionLocked = deltaY >= deltaX ? 'vertical' : 'horizontal';
         }
 
-        //Let the work list scroll natively instead of competing with section navigation
-        if (touchDirectionLocked === 'vertical' && isWorkListTouch) {
-            return;
-        }
-
-        if (touchDirectionLocked === 'vertical' || (touchDirectionLocked === 'horizontal' && isSliderTouch)) {
+        if (
+            touchDirectionLocked === 'vertical' ||
+            (touchDirectionLocked === 'horizontal' && (isSliderTouch || isWorkSliderTouch))
+        ) {
             e.preventDefault();
         }
     },
     { passive: false }
 );
 
-//Horizontal swipe on the about slider changes slide. Vertical swipe is still section navigation
+//Horizontal swipe on the about slider changes slide.
+//Horizontal swipe on the work slider changes page.
+//Any other vertical swipe is full-page section navigation.
 document.addEventListener(
     'touchend',
     e => {
@@ -196,7 +196,16 @@ document.addEventListener(
             return;
         }
 
-        if (isWorkListTouch) return;
+        //Horizontal swipe on the work slider to change page
+        if (isWorkSliderTouch && Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (deltaX > 0 && currentWorkPage < workPages.length - 1) {
+                goToWorkPage(currentWorkPage + 1);
+            } 
+            else if (deltaX < 0 && currentWorkPage > 0) {
+                goToWorkPage(currentWorkPage - 1);
+            }
+            return;
+        }
 
         if (isAnimating) return;
         if (Math.abs(deltaY) < 60) return;
@@ -333,6 +342,69 @@ document.addEventListener('keydown', e => {
 });
 
 
+//About slider: click-and-drag (desktop mouse) support, mirroring touch swipe
+let aboutDragStartX = 0;
+let isAboutDragging = false;
+let aboutDragMoved = false;
+
+aboutSlider.addEventListener('mousedown', e => {
+    if (e.target.closest('a, button')) return;
+    isAboutDragging = true;
+    aboutDragMoved = false;
+    aboutDragStartX = e.clientX;
+    aboutSlider.classList.add('is-dragging');
+    document.body.classList.add('is-dragging-active');
+    e.preventDefault();
+});
+
+window.addEventListener('mousemove', e => {
+    if (!isAboutDragging) return;
+    const deltaX = e.clientX - aboutDragStartX;
+    if (Math.abs(deltaX) > 4) aboutDragMoved = true;
+    aboutSlider.style.transform = `translateX(calc(-${currentPage * 100}% + ${deltaX}px))`;
+});
+
+window.addEventListener('mouseup', e => {
+    if (!isAboutDragging) return;
+    isAboutDragging = false;
+    aboutSlider.classList.remove('is-dragging');
+    document.body.classList.remove('is-dragging-active');
+
+    const deltaX = e.clientX - aboutDragStartX;
+
+    if (Math.abs(deltaX) > 60) {
+        if (deltaX < 0 && currentPage < maxPage) {
+            goToSlide(currentPage + 1);
+        } else if (deltaX > 0 && currentPage > 0) {
+            goToSlide(currentPage - 1);
+        } else {
+            goToSlide(currentPage);
+        }
+    } else {
+        goToSlide(currentPage);
+    }
+});
+
+//Suppress the click that follows a real drag, so links/buttons under the
+//cursor don't fire unintentionally when a drag ends on top of them
+document.addEventListener(
+    'click',
+    e => {
+        if (aboutDragMoved && e.target.closest('.about-slider')) {
+            e.preventDefault();
+            e.stopPropagation();
+            aboutDragMoved = false;
+        }
+        if (workDragMoved && e.target.closest('.work-viewport')) {
+            e.preventDefault();
+            e.stopPropagation();
+            workDragMoved = false;
+        }
+    },
+    true
+);
+
+
 //Locate current section on rotation
 function snapToCurrentSection() {
     const section = sections[currentSection];
@@ -347,60 +419,199 @@ function snapToCurrentSection() {
 }
 
 
-//Work section: accordion + entrance animation
-(function () {
-    const workItems = [...document.querySelectorAll('.work-item')];
-    if (!workItems.length) return;
+//Work section: horizontal pagination (mirrors the About slider)
+//Cards are written flat in the HTML (#workList); this groups them into pages
+//of 2 cards each, builds the dot pagination to match, and drives page changes
+//via dots, arrows, drag, touch swipe, and left/right arrow keys.
+const workViewport = document.querySelector('.work-viewport');
+const workSlider = document.getElementById('workList');
+const workPaginationEl = document.getElementById('workPagination');
+const allWorkItems = workSlider ? [...workSlider.querySelectorAll('.work-item')] : [];
 
-    const heads = workItems.map(item => item.querySelector('.work-item-head'));
+const workItemsPerPage = 2;
+let currentWorkPage = 0;
+let workPages = [];
+let workDots = [];
+let workRevealed = false;
 
-    function setOpen(item, head, open) {
-        item.classList.toggle('is-open', open);
-        head.setAttribute('aria-expanded', String(open));
+function buildWorkPages() {
+    workSlider.innerHTML = '';
+    const pages = [];
+
+    for (let i = 0; i < allWorkItems.length; i += workItemsPerPage) {
+        const page = document.createElement('div');
+        page.className = 'work-page';
+        allWorkItems.slice(i, i + workItemsPerPage).forEach(item => page.appendChild(item));
+        workSlider.appendChild(page);
+        pages.push(page);
     }
 
-    function openItem(index) {
-        workItems.forEach((item, i) => {
-            setOpen(item, heads[i], i === index);
-        });
+    return pages;
+}
+
+function buildWorkDots(count) {
+    workPaginationEl.innerHTML = '';
+
+    for (let i = 0; i < count; i++) {
+        const dot = document.createElement('button');
+        dot.className = 'work-dot';
+        dot.setAttribute('aria-label', `Work page ${i + 1}`);
+        dot.addEventListener('click', () => goToWorkPage(i));
+        workPaginationEl.appendChild(dot);
     }
 
-    heads.forEach((head, index) => {
-        const item = workItems[index];
+    return [...workPaginationEl.children];
+}
 
-        head.addEventListener('click', () => {
-            const alreadyOpen = item.classList.contains('is-open');
-            workItems.forEach((other, i) => setOpen(other, heads[i], false));
-            if (!alreadyOpen) setOpen(item, head, true);
-        });
+function updateWorkDots() {
+    workDots.forEach((dot, i) => dot.classList.toggle('active', i === currentWorkPage));
+}
 
+function updateWorkArrows() {
+    const left = document.querySelector('.work-arrow-left');
+    const right = document.querySelector('.work-arrow-right');
+    if (!left || !right) return;
 
-        head.addEventListener('keydown', e => {
-            if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-            e.preventDefault();
-            const nextIndex = e.key === 'ArrowDown'
-                ? Math.min(index + 1, heads.length - 1)
-                : Math.max(index - 1, 0);
-            heads[nextIndex].focus();
-        });
+    left.classList.toggle('is-disabled', currentWorkPage === 0);
+    right.classList.toggle('is-disabled', currentWorkPage === workPages.length - 1);
+}
+
+function applyWorkTransform(animate = true) {
+    if (!animate) workSlider.style.transition = 'none';
+    workSlider.style.transform = `translateX(-${currentWorkPage * 100}%)`;
+    if (!animate) {
+        void workSlider.offsetHeight;
+        workSlider.style.transition = '';
+    }
+}
+
+function revealWorkPage() {
+    const page = workPages[currentWorkPage];
+    if (!page) return;
+
+    [...page.children].forEach((item, i) => {
+        item.classList.remove('is-visible');
+        void item.offsetWidth;
+        setTimeout(() => item.classList.add('is-visible'), i * 100);
     });
+}
 
-    const workSection = document.getElementById('work');
-    if ('IntersectionObserver' in window && workSection) {
-        const revealObserver = new IntersectionObserver(
+function goToWorkPage(index) {
+    index = Math.max(0, Math.min(index, workPages.length - 1));
+    if (index === currentWorkPage) return;
+    currentWorkPage = index;
+    applyWorkTransform(true);
+    updateWorkDots();
+    updateWorkArrows();
+    revealWorkPage();
+}
+
+function renderWorkPages() {
+    workPages = buildWorkPages();
+    workDots = buildWorkDots(workPages.length);
+    currentWorkPage = Math.min(currentWorkPage, workPages.length - 1);
+    applyWorkTransform(false);
+    updateWorkDots();
+    updateWorkArrows();
+    revealWorkPage();
+}
+
+if (workViewport && workSlider && workPaginationEl && allWorkItems.length) {
+    renderWorkPages();
+
+    //Trigger the entrance animation the first time the Work section scrolls into view
+    const workSectionEl = document.getElementById('work');
+    if ('IntersectionObserver' in window && workSectionEl) {
+        const workRevealObserver = new IntersectionObserver(
             entries => {
                 entries.forEach(entry => {
-                    if (!entry.isIntersecting) return;
-                    workItems.forEach((item, i) => {
-                        setTimeout(() => item.classList.add('is-visible'), i * 90);
-                    });
-                    revealObserver.disconnect();
+                    if (!entry.isIntersecting || workRevealed) return;
+                    workRevealed = true;
+                    revealWorkPage();
+                    workRevealObserver.disconnect();
                 });
             },
             { threshold: 0.25 }
         );
-        revealObserver.observe(workSection);
+        workRevealObserver.observe(workSectionEl);
     } else {
-        workItems.forEach(item => item.classList.add('is-visible'));
+        workRevealed = true;
+        revealWorkPage();
     }
-})();
+
+    //Work arrows
+    const workArrowLeft = document.querySelector('.work-arrow-left');
+    const workArrowRight = document.querySelector('.work-arrow-right');
+
+    if (workArrowLeft) {
+        workArrowLeft.addEventListener('click', () => {
+            if (currentWorkPage > 0) goToWorkPage(currentWorkPage - 1);
+        });
+    }
+
+    if (workArrowRight) {
+        workArrowRight.addEventListener('click', () => {
+            if (currentWorkPage < workPages.length - 1) goToWorkPage(currentWorkPage + 1);
+        });
+    }
+
+    //Left/right arrow keys page through the work list while the Work section is active
+    document.addEventListener('keydown', e => {
+        if (sections[currentSection]?.id !== 'work') return;
+
+        if (e.key === 'ArrowRight' && currentWorkPage < workPages.length - 1) {
+            e.preventDefault();
+            goToWorkPage(currentWorkPage + 1);
+        } else if (e.key === 'ArrowLeft' && currentWorkPage > 0) {
+            e.preventDefault();
+            goToWorkPage(currentWorkPage - 1);
+        }
+    });
+}
+
+//Work slider: click-and-drag (desktop mouse) horizontal paging, mirroring the about slider
+let workDragStartX = 0;
+let isWorkDragging = false;
+let workDragMoved = false;
+
+if (workViewport && workSlider) {
+    workViewport.addEventListener('mousedown', e => {
+        if (e.target.closest('a, button')) return;
+        isWorkDragging = true;
+        workDragMoved = false;
+        workDragStartX = e.clientX;
+        workSlider.style.transition = 'none';
+        workViewport.classList.add('is-dragging');
+        document.body.classList.add('is-dragging-active');
+        e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', e => {
+        if (!isWorkDragging) return;
+        const deltaX = e.clientX - workDragStartX;
+        if (Math.abs(deltaX) > 4) workDragMoved = true;
+        workSlider.style.transform = `translateX(calc(-${currentWorkPage * 100}% + ${deltaX}px))`;
+    });
+
+    window.addEventListener('mouseup', e => {
+        if (!isWorkDragging) return;
+        isWorkDragging = false;
+        workViewport.classList.remove('is-dragging');
+        document.body.classList.remove('is-dragging-active');
+        workSlider.style.transition = '';
+
+        const deltaX = e.clientX - workDragStartX;
+
+        if (Math.abs(deltaX) > 60) {
+            if (deltaX < 0 && currentWorkPage < workPages.length - 1) {
+                goToWorkPage(currentWorkPage + 1);
+            } else if (deltaX > 0 && currentWorkPage > 0) {
+                goToWorkPage(currentWorkPage - 1);
+            } else {
+                applyWorkTransform(true);
+            }
+        } else {
+            applyWorkTransform(true);
+        }
+    });
+}
