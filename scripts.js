@@ -7,142 +7,74 @@ function toggleNav() {
 }
 
 
-//Section navigation
+//Sections
 const sections = [...document.querySelectorAll('.section')];
-let currentSection = 0;
-let isAnimating = false;
-let wheelCooldown = false;
 
-function updateCurrentSection() {
-    const viewportCenter = window.scrollY + window.innerHeight / 2;
-    let closestIndex = 0;
-    let closestDistance = Infinity;
+//Track which section is currently in view. This is used only to gate the
+//in-section keyboard shortcuts below (About slide arrows / Work page arrows)
+//to whichever section the user is actually looking at. It does NOT drive
+//any scrolling — the browser owns scrolling entirely.
+let activeSectionId = sections[0]?.id || null;
 
-    sections.forEach((section, index) => {
-        const sectionCenter = section.offsetTop + section.offsetHeight / 2;
-
-        const distance = Math.abs(viewportCenter - sectionCenter);
-        if (distance < closestDistance) {
-            closestDistance = distance;
-            closestIndex = index;
-        }
-    });
-
-    currentSection = closestIndex;
+if ('IntersectionObserver' in window) {
+    const sectionObserver = new IntersectionObserver(
+        entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    activeSectionId = entry.target.id;
+                }
+            });
+        },
+        { threshold: 0.5 }
+    );
+    sections.forEach(section => sectionObserver.observe(section));
 }
 
 
-//Smoothing algorithm
-function easeInOutCubic(t) {
-    return t < 0.5
-        ? 4 * t * t * t
-        : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
-
-
-//Smooth Scroll
-let animationFrameId = null;
-let wheelLocked = false;
-
-function smoothScrollTo(targetY, duration = 800) {
-    if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
-
-    const startY = window.pageYOffset;
-    const distance = targetY - startY;
-    const startTime = performance.now();
-
-    isAnimating = true;
-    wheelLocked = true;
-
-    function animate(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        window.scrollTo(
-            0,
-            startY + distance * easeInOutCubic(progress)
-        );
-
-        if (progress < 1) {
-            animationFrameId = requestAnimationFrame(animate);
-        } 
-        else {
-            isAnimating = false;
-            animationFrameId = null;
-
-            setTimeout(() => {
-                wheelLocked = false;
-            }, 100);
-        }
-    }
-
-    animationFrameId = requestAnimationFrame(animate);
-}
-
-//Locate correct section
-function goToSection(index) {
-    if (isAnimating) return;
-    index = Math.max(0, Math.min(index, sections.length - 1));
-    
-    if (index === currentSection) return;
-    currentSection = index;
-
-    smoothScrollTo(sections[index].offsetTop, 900);
-}
-
-
-//Navbar links
+//Navbar links: trigger the browser's own smooth scroll to the target section.
+//This is deliberate, user-initiated navigation (a click), not scroll-jacking —
+//wheel/touch/keyboard scrolling is still left entirely native.
 document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', e => {
         const targetId = link.getAttribute('href');
         const targetSection = document.querySelector(targetId);
-        
         if (!targetSection) return;
+
         e.preventDefault();
-        
-        const targetIndex = sections.indexOf(targetSection);
-        goToSection(targetIndex);
-        
+        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
         document.querySelector('.nav-list').classList.remove('open');
         document.querySelector('.nav').classList.remove('open');
     });
 });
 
 
-//Scroll wheel nav
-window.addEventListener(
-    'wheel',
-    e => {
-        if (window.innerWidth <= 480) return;
-        if (wheelLocked) {
-            e.preventDefault();
-            return;
-        }
-        if (Math.abs(e.deltaY) < 30) return;
+//Scroll hint (bouncing arrow on the Home section): fade it out once the user
+//has scrolled a little under their own power, and bring it back if they
+//return to the top.
+const scrollHint = document.querySelector('.scroll-hint');
+if (scrollHint) {
+    const SCROLL_HINT_THRESHOLD = 40;
 
-        const targetIndex = e.deltaY > 0 ? currentSection + 1 : currentSection - 1;
-        const clampedIndex = Math.max(0, Math.min(targetIndex, sections.length - 1));
+    const updateScrollHint = () => {
+        scrollHint.classList.toggle('is-hidden', window.scrollY > SCROLL_HINT_THRESHOLD);
+    };
 
-        e.preventDefault();
-
-        if (clampedIndex === currentSection) return;
-
-        wheelLocked = true;
-        goToSection(targetIndex);
-    },
-    { passive: false }
-);
+    updateScrollHint();
+    window.addEventListener('scroll', updateScrollHint, { passive: true });
+}
 
 
 //Touch nav
+//Only horizontal swipes on the About slider or Projects carousel are
+//intercepted (to page through slides/cards). Vertical touches are left
+//completely alone so the browser's native scroll handles moving between
+//sections.
 let touchStartX = 0;
 let touchStartY = 0;
 let touchDirectionLocked = null;
 let isSliderTouch = false;
-let isWorkSliderTouch = false;
+let touchSliderType = null; // 'about' | 'projects' | null
 
 document.addEventListener(
     'touchstart',
@@ -150,135 +82,95 @@ document.addEventListener(
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
         touchDirectionLocked = null;
-        isSliderTouch = !!e.target.closest('.about-slider');
-        isWorkSliderTouch = !!e.target.closest('.work-viewport');
+        touchSliderType = e.target.closest('.about-slider')
+            ? 'about'
+            : e.target.closest('.projects-carousel')
+                ? 'projects'
+                : null;
+        isSliderTouch = !!touchSliderType;
     },
     { passive: true }
 );
 
-//Passive = false. JS runs all scroll behavior
 document.addEventListener(
     'touchmove',
     e => {
+        //Not on a slider — let native scroll handle everything, don't even
+        //bother tracking direction.
+        if (!isSliderTouch) return;
+
         const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
         const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
         if (!touchDirectionLocked && (deltaX > 8 || deltaY > 8)) {
             touchDirectionLocked = deltaY >= deltaX ? 'vertical' : 'horizontal';
         }
 
-        if (
-            touchDirectionLocked === 'vertical' ||
-            (touchDirectionLocked === 'horizontal' && (isSliderTouch || isWorkSliderTouch))
-        ) {
+        //Only take over the touch when it's a horizontal swipe on the slider.
+        //Vertical swipes always fall through to native page scroll.
+        if (touchDirectionLocked === 'horizontal') {
             e.preventDefault();
         }
     },
     { passive: false }
 );
 
-//Horizontal swipe on the about slider changes slide.
-//Horizontal swipe on the work slider changes page.
-//Any other vertical swipe is full-page section navigation.
+//Horizontal swipe on the About slider or Projects carousel changes slide.
+//Vertical swipes are never intercepted — native scrolling owns them.
 document.addEventListener(
     'touchend',
     e => {
         const deltaY = touchStartY - e.changedTouches[0].clientY;
         const deltaX = touchStartX - e.changedTouches[0].clientX;
 
-        //Horizontal swipe on the about slider to change slide
         if (isSliderTouch && Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (deltaX > 0 && currentPage < maxPage) {
-                goToSlide(currentPage + 1);
-            } 
-            else if (deltaX < 0 && currentPage > 0) {
-                goToSlide(currentPage - 1);
+            if (touchSliderType === 'about') {
+                if (deltaX > 0 && currentPage < maxPage) {
+                    goToSlide(currentPage + 1);
+                } else if (deltaX < 0 && currentPage > 0) {
+                    goToSlide(currentPage - 1);
+                }
+            } else if (touchSliderType === 'projects') {
+                if (deltaX > 0 && currentProjectPage < projectMaxPage) {
+                    goToProjectSlide(currentProjectPage + 1);
+                } else if (deltaX < 0 && currentProjectPage > 0) {
+                    goToProjectSlide(currentProjectPage - 1);
+                }
             }
-            return;
-        }
-
-        //Horizontal swipe on the work slider to change page
-        if (isWorkSliderTouch && Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (deltaX > 0 && currentWorkPage < workPages.length - 1) {
-                goToWorkPage(currentWorkPage + 1);
-            } 
-            else if (deltaX < 0 && currentWorkPage > 0) {
-                goToWorkPage(currentWorkPage - 1);
-            }
-            return;
-        }
-
-        if (isAnimating) return;
-        if (Math.abs(deltaY) < 60) return;
-        if (Math.abs(deltaX) > Math.abs(deltaY)) return;
-        if (deltaY > 0) {
-            goToSection(currentSection + 1);
-        } 
-        else {
-            goToSection(currentSection - 1);
         }
     },
     { passive: true }
 );
 
-
-//Prevent resize/scroll from corrupting rotation logic
-let isRotating = false;
-let rotationLockedSection = null;
-let rotationSettleTimeout = null;
-function beginRotationLock() {
-    if (!isRotating) {
-        isRotating = true;
-        rotationLockedSection = currentSection;
-    }
-    if (rotationSettleTimeout) clearTimeout(rotationSettleTimeout);
-
-    rotationSettleTimeout = setTimeout(() => {
-        if (rotationLockedSection !== null) {
-            window.scrollTo({
-                top: sections[rotationLockedSection].offsetTop,
-                behavior: 'auto'
-            });
-            currentSection = rotationLockedSection;
-        }
-        isRotating = false;
-        rotationLockedSection = null;
-    }, 400);
-}
-
-window.addEventListener('orientationchange', beginRotationLock);
-
-//Detect current section immediately
-updateCurrentSection();
-
-
-//Ensure section index is up to date
-window.addEventListener('scroll', () => {
-    if (isAnimating || isRotating) return;
-    updateCurrentSection();
-});
-
-
-//Update view on screen resize (60fps)
-let resizeFrame = null;
-window.addEventListener('resize', () => {
-    if (isAnimating) return;
-    if (isRotating) beginRotationLock();
-    if (resizeFrame) return;
-
-    resizeFrame = requestAnimationFrame(() => {
-        resizeFrame = null;
-        const targetIndex = isRotating ? rotationLockedSection : currentSection;
-        const section = sections[targetIndex];
-        if (!section) return;
-        window.scrollTo(0, section.offsetTop);
-    });
-});
-
 //About slider
 const aboutSlider = document.querySelector('.about-slider');
-const dots = document.querySelectorAll('.page-dot');
+const aboutSlides = document.querySelectorAll('.about-slide');
+const dots = document.querySelectorAll('.about-pagination .page-dot');
 let currentPage = 0;
 const maxPage = dots.length - 1;
+
+//Only the active slide's video should ever be playing. With every slide
+//rendered in the DOM at once, letting offscreen videos autoplay/loop in the
+//background makes them compete for the device's decode pipeline, which is
+//what causes choppy playback once you actually swipe to one. Pausing
+//everything except the current slide fixes that.
+function syncAboutVideos() {
+    aboutSlides.forEach((slide, i) => {
+        const video = slide.querySelector('video');
+        if (!video) return;
+
+        if (i === currentPage) {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    //Autoplay can be blocked in rare cases (e.g. low-power mode);
+                    //failing silently is fine since the video simply stays paused.
+                });
+            }
+        } else if (!video.paused) {
+            video.pause();
+        }
+    });
+}
 
 function goToSlide(index) {
     currentPage = Math.max(
@@ -294,6 +186,7 @@ function goToSlide(index) {
     }
 
     updateArrows();
+    syncAboutVideos();
 }
 
 dots.forEach((dot, index) => {
@@ -329,10 +222,11 @@ document
     });
 
 updateArrows();
+syncAboutVideos();
 
-//About arrow key navigation
+//About arrow key navigation (only while the About section is in view)
 document.addEventListener('keydown', e => {
-    if (sections[currentSection]?.id !== 'about') return;
+    if (activeSectionId !== 'about') return;
 
     if (e.key === 'ArrowRight' && currentPage < maxPage) {
         goToSlide(currentPage + 1);
@@ -395,223 +289,225 @@ document.addEventListener(
             e.stopPropagation();
             aboutDragMoved = false;
         }
-        if (workDragMoved && e.target.closest('.work-viewport')) {
-            e.preventDefault();
-            e.stopPropagation();
-            workDragMoved = false;
-        }
     },
     true
 );
 
 
-//Locate current section on rotation
-function snapToCurrentSection() {
-    const section = sections[currentSection];
-    if (!section) return;
+//Work section: vertical accordion list
+const workItems = [...document.querySelectorAll('.work-item')];
 
-    window.scrollTo({
-        top: section.offsetTop,
-        behavior: 'auto'
-    });
+function toggleWorkItem(item) {
+    const header = item.querySelector('.work-item-header');
+    const isOpen = item.classList.toggle('is-open');
+    header.setAttribute('aria-expanded', String(isOpen));
 
-    updateCurrentSection();
-}
-
-
-//Work section: horizontal pagination (mirrors the About slider)
-//Cards are written flat in the HTML (#workList); this groups them into pages
-//of 2 cards each, builds the dot pagination to match, and drives page changes
-//via dots, arrows, drag, touch swipe, and left/right arrow keys.
-const workViewport = document.querySelector('.work-viewport');
-const workSlider = document.getElementById('workList');
-const workPaginationEl = document.getElementById('workPagination');
-const allWorkItems = workSlider ? [...workSlider.querySelectorAll('.work-item')] : [];
-
-const workItemsPerPage = 2;
-let currentWorkPage = 0;
-let workPages = [];
-let workDots = [];
-let workRevealed = false;
-
-function buildWorkPages() {
-    workSlider.innerHTML = '';
-    const pages = [];
-
-    for (let i = 0; i < allWorkItems.length; i += workItemsPerPage) {
-        const page = document.createElement('div');
-        page.className = 'work-page';
-        allWorkItems.slice(i, i + workItemsPerPage).forEach(item => page.appendChild(item));
-        workSlider.appendChild(page);
-        pages.push(page);
+    //Accordion behavior: closing every other open card when this one opens
+    if (isOpen) {
+        workItems.forEach(other => {
+            if (other !== item && other.classList.contains('is-open')) {
+                other.classList.remove('is-open');
+                other.querySelector('.work-item-header').setAttribute('aria-expanded', 'false');
+            }
+        });
     }
-
-    return pages;
 }
 
-function buildWorkDots(count) {
-    workPaginationEl.innerHTML = '';
+workItems.forEach(item => {
+    const header = item.querySelector('.work-item-header');
+    header.addEventListener('click', () => toggleWorkItem(item));
 
-    for (let i = 0; i < count; i++) {
-        const dot = document.createElement('button');
-        dot.className = 'work-dot';
-        dot.setAttribute('aria-label', `Work page ${i + 1}`);
-        dot.addEventListener('click', () => goToWorkPage(i));
-        workPaginationEl.appendChild(dot);
+    //Clicking anywhere in the expanded details area also closes the card,
+    //as long as the click isn't on a real link (e.g. the press release link).
+    const body = item.querySelector('.work-item-body-inner');
+    if (body) {
+        body.addEventListener('click', e => {
+            if (e.target.closest('a')) return;
+            if (item.classList.contains('is-open')) {
+                toggleWorkItem(item);
+            }
+        });
     }
+});
 
-    return [...workPaginationEl.children];
+//Reveal each card with a staggered fade-up as it individually scrolls into
+//view. Unlike the old single-trigger reveal, this works for a list that can
+//grow past one screen — cards animate in as the user reaches them.
+if ('IntersectionObserver' in window && workItems.length) {
+    const workRevealObserver = new IntersectionObserver(
+        entries => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const item = entry.target;
+                const delay = (workItems.indexOf(item) % 2) * 90;
+                setTimeout(() => item.classList.add('is-visible'), delay);
+                workRevealObserver.unobserve(item);
+            });
+        },
+        { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+    );
+    workItems.forEach(item => workRevealObserver.observe(item));
+} else {
+    workItems.forEach(item => item.classList.add('is-visible'));
 }
 
-function updateWorkDots() {
-    workDots.forEach((dot, i) => dot.classList.toggle('active', i === currentWorkPage));
+//Up/Down arrow keys move focus between work item headers (only while the
+//Work section is in view, and only when a header already has focus)
+document.addEventListener('keydown', e => {
+    if (activeSectionId !== 'work') return;
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+
+    const headers = workItems.map(item => item.querySelector('.work-item-header'));
+    const focusedIndex = headers.indexOf(document.activeElement);
+    if (focusedIndex === -1) return;
+
+    e.preventDefault();
+    const nextIndex = e.key === 'ArrowDown'
+        ? Math.min(focusedIndex + 1, headers.length - 1)
+        : Math.max(focusedIndex - 1, 0);
+
+    headers[nextIndex].focus();
+});
+
+
+//Projects carousel
+//A centered "peek" slider: the active card sits in the middle of the
+//viewport with slivers of its neighbors visible on either side. Position is
+//calculated in pixels (rather than percentages, like the About slider) so
+//that mismatched gaps/card widths always center correctly.
+const projectsCarousel = document.querySelector('.projects-carousel');
+const projectsTrack = document.getElementById('projectsTrack');
+const projectCards = [...document.querySelectorAll('.project-card')];
+const projectDots = document.querySelectorAll('#projectsPagination .page-dot');
+let currentProjectPage = 1;
+const projectMaxPage = projectCards.length - 1;
+
+function getProjectCenterOffset(page) {
+    const cardEl = projectCards[page];
+    if (!projectsCarousel || !cardEl) return 0;
+    const containerWidth = projectsCarousel.clientWidth;
+    return containerWidth / 2 - cardEl.offsetLeft - cardEl.offsetWidth / 2;
 }
 
-function updateWorkArrows() {
-    const left = document.querySelector('.work-arrow-left');
-    const right = document.querySelector('.work-arrow-right');
+function centerProjectsTrack(withTransition = true) {
+    if (!projectsTrack) return;
+    if (!withTransition) projectsTrack.style.transition = 'none';
+    projectsTrack.style.transform = `translateX(${getProjectCenterOffset(currentProjectPage)}px)`;
+    if (!withTransition) {
+        //Force a reflow so the transition-less jump applies immediately,
+        //then hand control back to the CSS transition for future moves.
+        void projectsTrack.offsetHeight;
+        projectsTrack.style.transition = '';
+    }
+}
+
+function updateProjectArrows() {
+    const left = document.querySelector('.projects-arrow-left');
+    const right = document.querySelector('.projects-arrow-right');
     if (!left || !right) return;
-
-    left.classList.toggle('is-disabled', currentWorkPage === 0);
-    right.classList.toggle('is-disabled', currentWorkPage === workPages.length - 1);
+    left.classList.toggle('is-disabled', currentProjectPage === 0);
+    right.classList.toggle('is-disabled', currentProjectPage === projectMaxPage);
 }
 
-function applyWorkTransform(animate = true) {
-    if (!animate) workSlider.style.transition = 'none';
-    workSlider.style.transform = `translateX(-${currentWorkPage * 100}%)`;
-    if (!animate) {
-        void workSlider.offsetHeight;
-        workSlider.style.transition = '';
-    }
+function updateProjectActiveStates() {
+    projectCards.forEach((card, i) => card.classList.toggle('is-active', i === currentProjectPage));
+    projectDots.forEach((dot, i) => dot.classList.toggle('active', i === currentProjectPage));
+    updateProjectArrows();
 }
 
-function revealWorkPage() {
-    const page = workPages[currentWorkPage];
-    if (!page) return;
+function goToProjectSlide(index) {
+    currentProjectPage = Math.max(0, Math.min(index, projectMaxPage));
+    updateProjectActiveStates();
+    centerProjectsTrack();
+}
 
-    [...page.children].forEach((item, i) => {
-        item.classList.remove('is-visible');
-        void item.offsetWidth;
-        setTimeout(() => item.classList.add('is-visible'), i * 100);
+if (projectsTrack && projectCards.length) {
+    projectDots.forEach((dot, index) => {
+        dot.addEventListener('click', () => goToProjectSlide(index));
     });
-}
 
-function goToWorkPage(index) {
-    index = Math.max(0, Math.min(index, workPages.length - 1));
-    if (index === currentWorkPage) return;
-    currentWorkPage = index;
-    applyWorkTransform(true);
-    updateWorkDots();
-    updateWorkArrows();
-    revealWorkPage();
-}
+    document.querySelector('.projects-arrow-left')?.addEventListener('click', () => {
+        if (currentProjectPage > 0) goToProjectSlide(currentProjectPage - 1);
+    });
 
-function renderWorkPages() {
-    workPages = buildWorkPages();
-    workDots = buildWorkDots(workPages.length);
-    currentWorkPage = Math.min(currentWorkPage, workPages.length - 1);
-    applyWorkTransform(false);
-    updateWorkDots();
-    updateWorkArrows();
-    revealWorkPage();
-}
+    document.querySelector('.projects-arrow-right')?.addEventListener('click', () => {
+        if (currentProjectPage < projectMaxPage) goToProjectSlide(currentProjectPage + 1);
+    });
 
-if (workViewport && workSlider && workPaginationEl && allWorkItems.length) {
-    renderWorkPages();
+    updateProjectActiveStates();
+    centerProjectsTrack(false);
 
-    //Trigger the entrance animation the first time the Work section scrolls into view
-    const workSectionEl = document.getElementById('work');
-    if ('IntersectionObserver' in window && workSectionEl) {
-        const workRevealObserver = new IntersectionObserver(
-            entries => {
-                entries.forEach(entry => {
-                    if (!entry.isIntersecting || workRevealed) return;
-                    workRevealed = true;
-                    revealWorkPage();
-                    workRevealObserver.disconnect();
-                });
-            },
-            { threshold: 0.25 }
-        );
-        workRevealObserver.observe(workSectionEl);
-    } else {
-        workRevealed = true;
-        revealWorkPage();
-    }
+    //Recenter (without animating) if the viewport or card sizing changes
+    window.addEventListener('resize', () => centerProjectsTrack(false));
+    window.addEventListener('load', () => centerProjectsTrack(false));
 
-    //Work arrows
-    const workArrowLeft = document.querySelector('.work-arrow-left');
-    const workArrowRight = document.querySelector('.work-arrow-right');
-
-    if (workArrowLeft) {
-        workArrowLeft.addEventListener('click', () => {
-            if (currentWorkPage > 0) goToWorkPage(currentWorkPage - 1);
-        });
-    }
-
-    if (workArrowRight) {
-        workArrowRight.addEventListener('click', () => {
-            if (currentWorkPage < workPages.length - 1) goToWorkPage(currentWorkPage + 1);
-        });
-    }
-
-    //Left/right arrow keys page through the work list while the Work section is active
+    //Left/Right arrow keys move between projects (only while the Projects
+    //section is in view)
     document.addEventListener('keydown', e => {
-        if (sections[currentSection]?.id !== 'work') return;
+        if (activeSectionId !== 'projects') return;
 
-        if (e.key === 'ArrowRight' && currentWorkPage < workPages.length - 1) {
-            e.preventDefault();
-            goToWorkPage(currentWorkPage + 1);
-        } else if (e.key === 'ArrowLeft' && currentWorkPage > 0) {
-            e.preventDefault();
-            goToWorkPage(currentWorkPage - 1);
+        if (e.key === 'ArrowRight' && currentProjectPage < projectMaxPage) {
+            goToProjectSlide(currentProjectPage + 1);
+        } else if (e.key === 'ArrowLeft' && currentProjectPage > 0) {
+            goToProjectSlide(currentProjectPage - 1);
         }
     });
-}
 
-//Work slider: click-and-drag (desktop mouse) horizontal paging, mirroring the about slider
-let workDragStartX = 0;
-let isWorkDragging = false;
-let workDragMoved = false;
+    //Click-and-drag (desktop mouse) support, mirroring the About slider
+    let projectsDragStartX = 0;
+    let projectsBaseTranslate = 0;
+    let isProjectsDragging = false;
+    let projectsDragMoved = false;
 
-if (workViewport && workSlider) {
-    workViewport.addEventListener('mousedown', e => {
+    projectsTrack.addEventListener('mousedown', e => {
         if (e.target.closest('a, button')) return;
-        isWorkDragging = true;
-        workDragMoved = false;
-        workDragStartX = e.clientX;
-        workSlider.style.transition = 'none';
-        workViewport.classList.add('is-dragging');
+        isProjectsDragging = true;
+        projectsDragMoved = false;
+        projectsDragStartX = e.clientX;
+        projectsBaseTranslate = getProjectCenterOffset(currentProjectPage);
+        projectsTrack.classList.add('is-dragging');
         document.body.classList.add('is-dragging-active');
         e.preventDefault();
     });
 
     window.addEventListener('mousemove', e => {
-        if (!isWorkDragging) return;
-        const deltaX = e.clientX - workDragStartX;
-        if (Math.abs(deltaX) > 4) workDragMoved = true;
-        workSlider.style.transform = `translateX(calc(-${currentWorkPage * 100}% + ${deltaX}px))`;
+        if (!isProjectsDragging) return;
+        const deltaX = e.clientX - projectsDragStartX;
+        if (Math.abs(deltaX) > 4) projectsDragMoved = true;
+        projectsTrack.style.transform = `translateX(${projectsBaseTranslate + deltaX}px)`;
     });
 
     window.addEventListener('mouseup', e => {
-        if (!isWorkDragging) return;
-        isWorkDragging = false;
-        workViewport.classList.remove('is-dragging');
+        if (!isProjectsDragging) return;
+        isProjectsDragging = false;
+        projectsTrack.classList.remove('is-dragging');
         document.body.classList.remove('is-dragging-active');
-        workSlider.style.transition = '';
 
-        const deltaX = e.clientX - workDragStartX;
+        const deltaX = e.clientX - projectsDragStartX;
 
         if (Math.abs(deltaX) > 60) {
-            if (deltaX < 0 && currentWorkPage < workPages.length - 1) {
-                goToWorkPage(currentWorkPage + 1);
-            } else if (deltaX > 0 && currentWorkPage > 0) {
-                goToWorkPage(currentWorkPage - 1);
+            if (deltaX < 0 && currentProjectPage < projectMaxPage) {
+                goToProjectSlide(currentProjectPage + 1);
+            } else if (deltaX > 0 && currentProjectPage > 0) {
+                goToProjectSlide(currentProjectPage - 1);
             } else {
-                applyWorkTransform(true);
+                goToProjectSlide(currentProjectPage);
             }
         } else {
-            applyWorkTransform(true);
+            goToProjectSlide(currentProjectPage);
         }
     });
+
+    //Suppress the click that follows a real drag, mirroring the About slider
+    document.addEventListener(
+        'click',
+        e => {
+            if (projectsDragMoved && e.target.closest('.projects-track')) {
+                e.preventDefault();
+                e.stopPropagation();
+                projectsDragMoved = false;
+            }
+        },
+        true
+    );
 }
