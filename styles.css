@@ -45,6 +45,9 @@
     /* Motion */
     --ease: 0.2s ease;
     --ease-spring: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Section spacing */
+    --section-gap: clamp(6rem, 20vmin, 12rem);
 }
 
 
@@ -101,7 +104,7 @@ a span {
 
 /* Section */
 .section {
-    height: 100dvh;
+    height: 100vh;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -278,7 +281,7 @@ ul.nav-list.open {
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: bounce-arrow 2.8s ease-in-out infinite;
+    animation: bounce-arrow 3.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 .scroll-hint svg {
@@ -293,16 +296,27 @@ ul.nav-list.open {
         opacity: 0.65;
     }
     50% {
-        transform: translateY(10px);
+        transform: translateY(9px);
         opacity: 1;
     }
 }
 
 
 /* About */
+#about {
+    height: auto;
+    overflow: visible;
+}
+
+#about .section-inner {
+    height: auto;
+    justify-content: flex-start;
+    padding: var(--section-gap) 0 calc(var(--section-gap) / 2);
+}
+
 .about-card {
     width: clamp(280px, 85vw, 3000px);
-    height: clamp(280px, 92dvh, 2000px);
+    height: clamp(280px, 92vh, 2000px);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -314,7 +328,7 @@ ul.nav-list.open {
     min-height: 0;
     display: flex;
     width: 100%;
-    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
     touch-action: pan-y;
     cursor: grab;
 }
@@ -533,7 +547,7 @@ body.is-dragging-active {
     display: flex;
     flex-direction: column;
     gap: clamp(2rem, 5vmin, 3.5rem);
-    padding: clamp(5rem, 14vmin, 9rem) 0 clamp(3rem, 8vmin, 6rem);
+    padding: calc(var(--section-gap) / 2) 0 calc(var(--section-gap) / 2);
     container-type: inline-size;
 }
 
@@ -597,7 +611,7 @@ body.is-dragging-active {
     grid-template-columns: 56px 1fr auto;
     align-items: center;
     gap: clamp(1.1rem, 1.5vw, 1.75rem);
-    padding: clamp(1.25rem, 2vw, 1.85rem) clamp(1.5rem, 1.8vw, 2rem);
+    padding: clamp(1.1rem, 1.7vw, 1.7rem) clamp(1.5rem, 1.8vw, 2rem);
     background: none;
     border: none;
     text-align: left;
@@ -629,7 +643,7 @@ body.is-dragging-active {
 .work-item-title {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(1.2rem, 1.45vw, 1.65rem);
+    font-size: clamp(1.25rem, 1.5vw, 1.75rem);
     line-height: 1.25;
     color: var(--text-primary);
 }
@@ -642,7 +656,7 @@ body.is-dragging-active {
 }
 
 .work-item-chip {
-    font-size: clamp(0.65rem, 0.75vw, 0.8rem);
+    font-size: clamp(0.7rem, 0.8vw, 0.85rem);
     font-weight: 600;
     color: var(--accent);
     background: var(--accent-bg);
@@ -653,7 +667,7 @@ body.is-dragging-active {
 }
 
 .work-item-sub {
-    font-size: clamp(0.8rem, 0.9vw, 0.95rem);
+    font-size: clamp(0.85rem, 0.95vw, 1rem);
     line-height: 1.2;
     color: var(--text-muted);
 }
@@ -681,6 +695,7 @@ body.is-dragging-active {
 .work-item-body {
     display: grid;
     grid-template-rows: 0fr;
+    overflow: hidden;
     transition: grid-template-rows 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -693,8 +708,8 @@ body.is-dragging-active {
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    padding: 0 clamp(1.5rem, 1.8vw, 2rem) clamp(1.5rem, 2vw, 1.85rem);
+    gap: 0.85rem;
+    padding: 0 clamp(1.5rem, 1.8vw, 2rem) clamp(1.1rem, 1.5vw, 1.4rem);
     opacity: 0;
     transition: opacity 0.2s ease;
     text-align: left;
@@ -709,8 +724,8 @@ body.is-dragging-active {
 .work-item-desc {
     margin: 0;
     color: var(--text-secondary);
-    font-size: clamp(0.9rem, 1vw, 1.05rem);
-    line-height: 1.65;
+    font-size: clamp(0.95rem, 1.05vw, 1.1rem);
+    line-height: 1.6;
 }
 
 .work-item-link {
@@ -757,27 +772,39 @@ body.is-dragging-active {
 }
 
 /* Projects */
+#projects {
+    height: auto;
+    overflow: visible;
+}
+
+#projects .section-inner {
+    height: auto;
+    justify-content: flex-start;
+}
+
 .projects-wrap {
     width: clamp(280px, 85vw, 3000px);
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: clamp(2rem, 5vmin, 3.5rem);
-    padding: clamp(5rem, 14vmin, 9rem) 0 clamp(3rem, 8vmin, 6rem);
+    padding: calc(var(--section-gap) / 2) 0 1rem;
     container-type: inline-size;
 }
 
 .projects-carousel {
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: visible;
     width: 100%;
+    padding: 1.25rem 0;
 }
 
 .projects-track {
     display: flex;
     align-items: stretch;
     gap: clamp(1.25rem, 2.5cqw, 3rem);
-    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 1.38s cubic-bezier(0.16, 1, 0.3, 1);
     touch-action: pan-y;
     cursor: grab;
     will-change: transform;
@@ -789,8 +816,8 @@ body.is-dragging-active {
 }
 
 .project-card {
-    flex: 0 0 clamp(240px, 52cqw, 620px);
-    aspect-ratio: 4 / 5;
+    flex: 0 0 clamp(280px, 60vw, 2820px);
+    height: clamp(280px, 75vh, 2000px);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -798,16 +825,20 @@ body.is-dragging-active {
     text-align: center;
     padding: clamp(1.5rem, 2.5cqw, 3rem);
     border-radius: var(--radius-lg);
-    box-shadow: 0 2.2px 8.6px rgba(0, 0, 0, 0.065);
+    box-shadow: 0 1.8px 6px rgba(0, 0, 0, 0.05);
     opacity: 0.35;
     transform: scale(0.9);
-    transition: opacity 0.5s var(--ease-spring), transform 0.5s var(--ease-spring), box-shadow 0.5s var(--ease-spring);
+    transition: opacity 0.3s var(--ease-spring), transform 0.2s var(--ease-spring), box-shadow 0.1s var(--ease-spring);
 }
 
 .project-card.is-active {
     opacity: 1;
     transform: scale(1);
     box-shadow: 0 8.6px 30px rgba(0, 0, 0, 0.097);
+}
+
+.project-card:not(.is-active) {
+    cursor: pointer;
 }
 
 .project-title {
@@ -817,6 +848,92 @@ body.is-dragging-active {
     color: var(--text-primary);
     margin: 0;
     letter-spacing: -0.02em;
+}
+
+.project-card--frog {
+    position: relative;
+    background-image: url('Images/moon_surface.png');
+    background-size: cover;
+    background-position: center;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.project-card--frog::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 12, 20, 0.55) 0%, rgba(10, 12, 20, 0.2) 42%, rgba(10, 12, 20, 0.6) 100%);
+    z-index: 1;
+}
+
+.frog-sprite {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: clamp(48px, 12cqw, 125px);
+    height: auto;
+    z-index: 2;
+    pointer-events: none;
+    user-select: none;
+    will-change: transform;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+}
+
+.project-card-content {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: clamp(1rem, 1.75cqw, 2rem);
+    color: #ffffff;
+}
+
+.project-card--frog .project-title {
+    color: #ffffff;
+    font-size: clamp(3rem, 3.4cqw, 6.4rem);
+}
+
+.project-desc {
+    margin: 0;
+    max-width: 46ch;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: clamp(0.95rem, 1.5cqw, 1.35rem);
+    line-height: 1.65;
+}
+
+.project-link {
+    position: relative;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    font-weight: 600;
+    font-size: clamp(0.85rem, 1.15cqw, 1.15rem);
+    color: #ffffff;
+    padding: 0.6em 1.3em;
+    border: 1.5px solid rgba(255, 255, 255, 0.55);
+    border-radius: 999px;
+    transition: background var(--ease), border-color var(--ease), transform var(--ease);
+}
+
+.project-link i {
+    font-size: 1.05em;
+}
+
+.project-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.14);
+    border-color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.project-link:active {
+    transform: translateY(0) scale(0.97);
 }
 
 .projects-arrow {
@@ -879,20 +996,20 @@ body.is-dragging-active {
     }
 
     .work-item-title {
-        font-size: clamp(1.4rem, 1.4vw, 1.9rem);
+        font-size: clamp(1.5rem, 1.5vw, 2rem);
     }
 
     .work-item-chip {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         padding: 0.15em 0.65em;
     }
 
     .work-item-sub {
-        font-size: 1.05rem;
+        font-size: 1.1rem;
     }
 
     .work-item-desc {
-        font-size: clamp(1.05rem, 1.1vw, 1.25rem);
+        font-size: clamp(1.1rem, 1.15vw, 1.3rem);
     }
 
     .tag {
@@ -966,7 +1083,6 @@ body.is-dragging-active {
 
     .work-wrap {
         gap: 1.5rem;
-        padding: 2.5rem 0;
     }
 
     .work-role {
@@ -1222,8 +1338,7 @@ body.is-dragging-active {
         margin: 0;
     }
 
-.work-wrap {
-        padding: 1.5rem 0;
+    .work-wrap {
         gap: 0.75rem;
     }
 

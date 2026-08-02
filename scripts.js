@@ -1,4 +1,4 @@
-//Nav toggle
+//Toggles the nav menu open/closed
 function toggleNav() {
     const navList = document.querySelector('.nav-list');
     const nav = document.querySelector('.nav');
@@ -7,15 +7,13 @@ function toggleNav() {
 }
 
 
-//Sections
+//All full-page sections
 const sections = [...document.querySelectorAll('.section')];
 
-//Track which section is currently in view. This is used only to gate the
-//in-section keyboard shortcuts below (About slide arrows / Work page arrows)
-//to whichever section the user is actually looking at. It does NOT drive
-//any scrolling — the browser owns scrolling entirely.
+//Tracks which section is in view, so in-section keyboard shortcuts know which slider to control
 let activeSectionId = sections[0]?.id || null;
 
+//Watches sections to keep activeSectionId up to date
 if ('IntersectionObserver' in window) {
     const sectionObserver = new IntersectionObserver(
         entries => {
@@ -31,9 +29,30 @@ if ('IntersectionObserver' in window) {
 }
 
 
-//Navbar links: trigger the browser's own smooth scroll to the target section.
-//This is deliberate, user-initiated navigation (a click), not scroll-jacking —
-//wheel/touch/keyboard scrolling is still left entirely native.
+//Eases a 0-1 progress value for the smooth-scroll animation
+function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+//Animates window scroll to a target Y position
+function smoothScrollTo(targetY, duration = 1100) {
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    if (Math.abs(distance) < 1) return;
+
+    const startTime = performance.now();
+
+    function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+        if (progress < 1) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+}
+
+//Nav links trigger an eased scroll to their target section on click
 document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', e => {
         const targetId = link.getAttribute('href');
@@ -41,7 +60,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
         if (!targetSection) return;
 
         e.preventDefault();
-        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        smoothScrollTo(targetSection.offsetTop, 1100);
 
         document.querySelector('.nav-list').classList.remove('open');
         document.querySelector('.nav').classList.remove('open');
@@ -49,9 +68,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 });
 
 
-//Scroll hint (bouncing arrow on the Home section): fade it out once the user
-//has scrolled a little under their own power, and bring it back if they
-//return to the top.
+//Fades the scroll-hint arrow out once the user scrolls, and back in at the top
 const scrollHint = document.querySelector('.scroll-hint');
 if (scrollHint) {
     const SCROLL_HINT_THRESHOLD = 40;
@@ -65,17 +82,14 @@ if (scrollHint) {
 }
 
 
-//Touch nav
-//Only horizontal swipes on the About slider or Projects carousel are
-//intercepted (to page through slides/cards). Vertical touches are left
-//completely alone so the browser's native scroll handles moving between
-//sections.
+//Touch state for slider swipe detection
 let touchStartX = 0;
 let touchStartY = 0;
 let touchDirectionLocked = null;
 let isSliderTouch = false;
 let touchSliderType = null; // 'about' | 'projects' | null
 
+//Records touch start position and which slider (if any) was touched
 document.addEventListener(
     'touchstart',
     e => {
@@ -92,11 +106,10 @@ document.addEventListener(
     { passive: true }
 );
 
+//Locks swipe direction and blocks page scroll only during horizontal slider drags
 document.addEventListener(
     'touchmove',
     e => {
-        //Not on a slider — let native scroll handle everything, don't even
-        //bother tracking direction.
         if (!isSliderTouch) return;
 
         const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
@@ -105,8 +118,6 @@ document.addEventListener(
             touchDirectionLocked = deltaY >= deltaX ? 'vertical' : 'horizontal';
         }
 
-        //Only take over the touch when it's a horizontal swipe on the slider.
-        //Vertical swipes always fall through to native page scroll.
         if (touchDirectionLocked === 'horizontal') {
             e.preventDefault();
         }
@@ -114,8 +125,7 @@ document.addEventListener(
     { passive: false }
 );
 
-//Horizontal swipe on the About slider or Projects carousel changes slide.
-//Vertical swipes are never intercepted — native scrolling owns them.
+//Changes the About/Projects slide on a horizontal swipe
 document.addEventListener(
     'touchend',
     e => {
@@ -141,18 +151,14 @@ document.addEventListener(
     { passive: true }
 );
 
-//About slider
+//About slider elements and state
 const aboutSlider = document.querySelector('.about-slider');
 const aboutSlides = document.querySelectorAll('.about-slide');
 const dots = document.querySelectorAll('.about-pagination .page-dot');
 let currentPage = 0;
 const maxPage = dots.length - 1;
 
-//Only the active slide's video should ever be playing. With every slide
-//rendered in the DOM at once, letting offscreen videos autoplay/loop in the
-//background makes them compete for the device's decode pipeline, which is
-//what causes choppy playback once you actually swipe to one. Pausing
-//everything except the current slide fixes that.
+//Plays only the active slide's video, pausing the rest to avoid choppy playback
 function syncAboutVideos() {
     aboutSlides.forEach((slide, i) => {
         const video = slide.querySelector('video');
@@ -162,8 +168,7 @@ function syncAboutVideos() {
             const playPromise = video.play();
             if (playPromise !== undefined) {
                 playPromise.catch(() => {
-                    //Autoplay can be blocked in rare cases (e.g. low-power mode);
-                    //failing silently is fine since the video simply stays paused.
+                    //Autoplay can be blocked in rare cases; failing silently is fine
                 });
             }
         } else if (!video.paused) {
@@ -172,6 +177,7 @@ function syncAboutVideos() {
     });
 }
 
+//Moves the About slider to the given page index
 function goToSlide(index) {
     currentPage = Math.max(
         0,
@@ -189,6 +195,7 @@ function goToSlide(index) {
     syncAboutVideos();
 }
 
+//Dot clicks jump to that slide
 dots.forEach((dot, index) => {
     dot.addEventListener('click', () => {
         goToSlide(index);
@@ -196,7 +203,7 @@ dots.forEach((dot, index) => {
 });
 
 
-//About arrows
+//Enables/disables the About arrows at the first/last slide
 function updateArrows() {
     const left = document.querySelector('.about-arrow-left');
     const right = document.querySelector('.about-arrow-right');
@@ -205,6 +212,7 @@ function updateArrows() {
     right.classList.toggle('is-disabled', currentPage === maxPage);
 }
 
+//Arrow buttons step through About slides
 document
     .querySelector('.about-arrow-left')
     .addEventListener('click', () => {
@@ -224,7 +232,7 @@ document
 updateArrows();
 syncAboutVideos();
 
-//About arrow key navigation (only while the About section is in view)
+//Left/right arrow keys step through About slides when that section is in view
 document.addEventListener('keydown', e => {
     if (activeSectionId !== 'about') return;
 
@@ -236,11 +244,12 @@ document.addEventListener('keydown', e => {
 });
 
 
-//About slider: click-and-drag (desktop mouse) support, mirroring touch swipe
+//Mouse drag state for the About slider
 let aboutDragStartX = 0;
 let isAboutDragging = false;
 let aboutDragMoved = false;
 
+//Starts a drag on the About slider
 aboutSlider.addEventListener('mousedown', e => {
     if (e.target.closest('a, button')) return;
     isAboutDragging = true;
@@ -251,6 +260,7 @@ aboutSlider.addEventListener('mousedown', e => {
     e.preventDefault();
 });
 
+//Follows the cursor while dragging the About slider
 window.addEventListener('mousemove', e => {
     if (!isAboutDragging) return;
     const deltaX = e.clientX - aboutDragStartX;
@@ -258,6 +268,7 @@ window.addEventListener('mousemove', e => {
     aboutSlider.style.transform = `translateX(calc(-${currentPage * 100}% + ${deltaX}px))`;
 });
 
+//Ends the drag and snaps to the nearest slide
 window.addEventListener('mouseup', e => {
     if (!isAboutDragging) return;
     isAboutDragging = false;
@@ -279,8 +290,7 @@ window.addEventListener('mouseup', e => {
     }
 });
 
-//Suppress the click that follows a real drag, so links/buttons under the
-//cursor don't fire unintentionally when a drag ends on top of them
+//Blocks the click that follows a real drag, so links/buttons don't fire unintentionally
 document.addEventListener(
     'click',
     e => {
@@ -294,15 +304,15 @@ document.addEventListener(
 );
 
 
-//Work section: vertical accordion list
+//Work item accordion elements
 const workItems = [...document.querySelectorAll('.work-item')];
 
+//Opens a work item and closes any other open one
 function toggleWorkItem(item) {
     const header = item.querySelector('.work-item-header');
     const isOpen = item.classList.toggle('is-open');
     header.setAttribute('aria-expanded', String(isOpen));
 
-    //Accordion behavior: closing every other open card when this one opens
     if (isOpen) {
         workItems.forEach(other => {
             if (other !== item && other.classList.contains('is-open')) {
@@ -313,12 +323,11 @@ function toggleWorkItem(item) {
     }
 }
 
+//Header click toggles the item; body click closes it (unless clicking a link)
 workItems.forEach(item => {
     const header = item.querySelector('.work-item-header');
     header.addEventListener('click', () => toggleWorkItem(item));
 
-    //Clicking anywhere in the expanded details area also closes the card,
-    //as long as the click isn't on a real link (e.g. the press release link).
     const body = item.querySelector('.work-item-body-inner');
     if (body) {
         body.addEventListener('click', e => {
@@ -330,9 +339,7 @@ workItems.forEach(item => {
     }
 });
 
-//Reveal each card with a staggered fade-up as it individually scrolls into
-//view. Unlike the old single-trigger reveal, this works for a list that can
-//grow past one screen — cards animate in as the user reaches them.
+//Fades in each work card with a staggered delay as it scrolls into view
 if ('IntersectionObserver' in window && workItems.length) {
     const workRevealObserver = new IntersectionObserver(
         entries => {
@@ -351,8 +358,7 @@ if ('IntersectionObserver' in window && workItems.length) {
     workItems.forEach(item => item.classList.add('is-visible'));
 }
 
-//Up/Down arrow keys move focus between work item headers (only while the
-//Work section is in view, and only when a header already has focus)
+//Up/down arrow keys move focus between work item headers when Work is in view
 document.addEventListener('keydown', e => {
     if (activeSectionId !== 'work') return;
     if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
@@ -370,11 +376,7 @@ document.addEventListener('keydown', e => {
 });
 
 
-//Projects carousel
-//A centered "peek" slider: the active card sits in the middle of the
-//viewport with slivers of its neighbors visible on either side. Position is
-//calculated in pixels (rather than percentages, like the About slider) so
-//that mismatched gaps/card widths always center correctly.
+//Projects carousel elements and state
 const projectsCarousel = document.querySelector('.projects-carousel');
 const projectsTrack = document.getElementById('projectsTrack');
 const projectCards = [...document.querySelectorAll('.project-card')];
@@ -382,6 +384,7 @@ const projectDots = document.querySelectorAll('#projectsPagination .page-dot');
 let currentProjectPage = 1;
 const projectMaxPage = projectCards.length - 1;
 
+//Calculates the pixel offset needed to center a given project card
 function getProjectCenterOffset(page) {
     const cardEl = projectCards[page];
     if (!projectsCarousel || !cardEl) return 0;
@@ -389,18 +392,18 @@ function getProjectCenterOffset(page) {
     return containerWidth / 2 - cardEl.offsetLeft - cardEl.offsetWidth / 2;
 }
 
+//Centers the track on the current project page
 function centerProjectsTrack(withTransition = true) {
     if (!projectsTrack) return;
     if (!withTransition) projectsTrack.style.transition = 'none';
     projectsTrack.style.transform = `translateX(${getProjectCenterOffset(currentProjectPage)}px)`;
     if (!withTransition) {
-        //Force a reflow so the transition-less jump applies immediately,
-        //then hand control back to the CSS transition for future moves.
         void projectsTrack.offsetHeight;
         projectsTrack.style.transition = '';
     }
 }
 
+//Enables/disables the Projects arrows at the first/last card
 function updateProjectArrows() {
     const left = document.querySelector('.projects-arrow-left');
     const right = document.querySelector('.projects-arrow-right');
@@ -409,12 +412,14 @@ function updateProjectArrows() {
     right.classList.toggle('is-disabled', currentProjectPage === projectMaxPage);
 }
 
+//Updates active card, active dot, and arrow states
 function updateProjectActiveStates() {
     projectCards.forEach((card, i) => card.classList.toggle('is-active', i === currentProjectPage));
     projectDots.forEach((dot, i) => dot.classList.toggle('active', i === currentProjectPage));
     updateProjectArrows();
 }
 
+//Moves the Projects carousel to the given page index
 function goToProjectSlide(index) {
     currentProjectPage = Math.max(0, Math.min(index, projectMaxPage));
     updateProjectActiveStates();
@@ -422,10 +427,12 @@ function goToProjectSlide(index) {
 }
 
 if (projectsTrack && projectCards.length) {
+    //Dot clicks jump to that project
     projectDots.forEach((dot, index) => {
         dot.addEventListener('click', () => goToProjectSlide(index));
     });
 
+    //Arrow buttons step through project cards
     document.querySelector('.projects-arrow-left')?.addEventListener('click', () => {
         if (currentProjectPage > 0) goToProjectSlide(currentProjectPage - 1);
     });
@@ -437,12 +444,20 @@ if (projectsTrack && projectCards.length) {
     updateProjectActiveStates();
     centerProjectsTrack(false);
 
-    //Recenter (without animating) if the viewport or card sizing changes
+    //Clicking a peeking (non-active) card brings it to center
+    projectCards.forEach((card, index) => {
+        card.addEventListener('click', () => {
+            if (index !== currentProjectPage) {
+                goToProjectSlide(index);
+            }
+        });
+    });
+
+    //Recenters the track without animating on resize/load
     window.addEventListener('resize', () => centerProjectsTrack(false));
     window.addEventListener('load', () => centerProjectsTrack(false));
 
-    //Left/Right arrow keys move between projects (only while the Projects
-    //section is in view)
+    //Left/right arrow keys step through project cards when that section is in view
     document.addEventListener('keydown', e => {
         if (activeSectionId !== 'projects') return;
 
@@ -453,12 +468,13 @@ if (projectsTrack && projectCards.length) {
         }
     });
 
-    //Click-and-drag (desktop mouse) support, mirroring the About slider
+    //Mouse drag state for the Projects carousel
     let projectsDragStartX = 0;
     let projectsBaseTranslate = 0;
     let isProjectsDragging = false;
     let projectsDragMoved = false;
 
+    //Starts a drag on the Projects carousel
     projectsTrack.addEventListener('mousedown', e => {
         if (e.target.closest('a, button')) return;
         isProjectsDragging = true;
@@ -470,6 +486,7 @@ if (projectsTrack && projectCards.length) {
         e.preventDefault();
     });
 
+    //Follows the cursor while dragging the Projects carousel
     window.addEventListener('mousemove', e => {
         if (!isProjectsDragging) return;
         const deltaX = e.clientX - projectsDragStartX;
@@ -477,6 +494,7 @@ if (projectsTrack && projectCards.length) {
         projectsTrack.style.transform = `translateX(${projectsBaseTranslate + deltaX}px)`;
     });
 
+    //Ends the drag and snaps to the nearest project card
     window.addEventListener('mouseup', e => {
         if (!isProjectsDragging) return;
         isProjectsDragging = false;
@@ -498,7 +516,7 @@ if (projectsTrack && projectCards.length) {
         }
     });
 
-    //Suppress the click that follows a real drag, mirroring the About slider
+    //Blocks the click that follows a real drag, mirroring the About slider
     document.addEventListener(
         'click',
         e => {
@@ -511,3 +529,79 @@ if (projectsTrack && projectCards.length) {
         true
     );
 }
+
+
+//Makes the frog sprite drift and bounce around its card, DVD-logo style
+function initFrogBounce() {
+    const card = document.querySelector('.project-card--frog');
+    const frog = card ? card.querySelector('.frog-sprite') : null;
+    if (!card || !frog) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let cardW = card.clientWidth;
+    let cardH = card.clientHeight;
+    let frogW = frog.offsetWidth;
+    let frogH = frog.offsetHeight;
+
+    let x = Math.random() * Math.max(cardW - frogW, 0);
+    let y = Math.random() * Math.max(cardH - frogH, 0);
+
+    const speed = 64; //px per second
+    const angle = Math.random() * Math.PI * 2;
+    let vx = Math.cos(angle) * speed;
+    let vy = Math.sin(angle) * speed;
+
+    //Avoids a near-vertical or near-horizontal starting angle
+    if (Math.abs(vx) < speed * 0.35) vx = speed * 0.35 * Math.sign(vx || 1);
+    if (Math.abs(vy) < speed * 0.35) vy = speed * 0.35 * Math.sign(vy || 1);
+
+    let lastTime = null;
+
+    //Re-measures card/frog size and clamps position on resize
+    function measure() {
+        cardW = card.clientWidth;
+        cardH = card.clientHeight;
+        frogW = frog.offsetWidth;
+        frogH = frog.offsetHeight;
+        x = Math.min(x, Math.max(cardW - frogW, 0));
+        y = Math.min(y, Math.max(cardH - frogH, 0));
+    }
+    window.addEventListener('resize', measure);
+
+    //Advances the frog's position each frame and bounces it off the edges
+    function step(time) {
+        if (lastTime === null) lastTime = time;
+        const dt = Math.min((time - lastTime) / 1000, 0.05); //clamp huge tab-switch gaps
+        lastTime = time;
+
+        x += vx * dt;
+        y += vy * dt;
+
+        const maxX = Math.max(cardW - frogW, 0);
+        const maxY = Math.max(cardH - frogH, 0);
+
+        if (x <= 0) {
+            x = 0;
+            vx = Math.abs(vx);
+        } else if (x >= maxX) {
+            x = maxX;
+            vx = -Math.abs(vx);
+        }
+
+        if (y <= 0) {
+            y = 0;
+            vy = Math.abs(vy);
+        } else if (y >= maxY) {
+            y = maxY;
+            vy = -Math.abs(vy);
+        }
+
+        frog.style.transform = `translate(${x}px, ${y}px)`;
+        requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+}
+
+initFrogBounce();
