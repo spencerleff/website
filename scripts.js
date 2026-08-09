@@ -191,7 +191,6 @@ function goToSlide(index) {
         dots[currentPage].classList.add('active');
     }
 
-    updateArrows();
     syncAboutVideos();
 }
 
@@ -203,33 +202,6 @@ dots.forEach((dot, index) => {
 });
 
 
-//Enables/disables the About arrows at the first/last slide
-function updateArrows() {
-    const left = document.querySelector('.about-arrow-left');
-    const right = document.querySelector('.about-arrow-right');
-    
-    left.classList.toggle('is-disabled', currentPage === 0);
-    right.classList.toggle('is-disabled', currentPage === maxPage);
-}
-
-//Arrow buttons step through About slides
-document
-    .querySelector('.about-arrow-left')
-    .addEventListener('click', () => {
-        if (currentPage > 0) {
-            goToSlide(currentPage - 1);
-        }
-    });
-
-document
-    .querySelector('.about-arrow-right')
-    .addEventListener('click', () => {
-        if (currentPage < maxPage) {
-            goToSlide(currentPage + 1);
-        }
-    });
-
-updateArrows();
 syncAboutVideos();
 
 //Left/right arrow keys step through About slides when that section is in view
@@ -377,87 +349,27 @@ document.addEventListener('keydown', e => {
 
 
 //Projects carousel elements and state
-const projectsCarousel = document.querySelector('.projects-carousel');
 const projectsTrack = document.getElementById('projectsTrack');
-const projectCards = [...document.querySelectorAll('.project-card')];
+const projectSlides = document.querySelectorAll('.project-slide');
 const projectDots = document.querySelectorAll('#projectsPagination .page-dot');
-let currentProjectPage = 1;
-const projectMaxPage = projectCards.length - 1;
+let currentProjectPage = 0;
+const projectMaxPage = projectSlides.length - 1;
 
-//Calculates the pixel offset needed to center a given project card
-function getProjectCenterOffset(page) {
-    const cardEl = projectCards[page];
-    if (!projectsCarousel || !cardEl) return 0;
-    const containerWidth = projectsCarousel.clientWidth;
-    return containerWidth / 2 - cardEl.offsetLeft - cardEl.offsetWidth / 2;
-}
-
-//Centers the track on the current project page
-function centerProjectsTrack(withTransition = true) {
-    if (!projectsTrack) return;
-    if (!withTransition) projectsTrack.style.transition = 'none';
-    projectsTrack.style.transform = `translateX(${getProjectCenterOffset(currentProjectPage)}px)`;
-    if (!withTransition) {
-        void projectsTrack.offsetHeight;
-        projectsTrack.style.transition = '';
-    }
-}
-
-//Enables/disables the Projects arrows at the first/last card
-function updateProjectArrows() {
-    const left = document.querySelector('.projects-arrow-left');
-    const right = document.querySelector('.projects-arrow-right');
-    if (!left || !right) return;
-    left.classList.toggle('is-disabled', currentProjectPage === 0);
-    right.classList.toggle('is-disabled', currentProjectPage === projectMaxPage);
-}
-
-//Updates active card, active dot, and arrow states
-function updateProjectActiveStates() {
-    projectCards.forEach((card, i) => card.classList.toggle('is-active', i === currentProjectPage));
-    projectDots.forEach((dot, i) => dot.classList.toggle('active', i === currentProjectPage));
-    updateProjectArrows();
-}
-
-//Moves the Projects carousel to the given page index
+//Moves the Projects slider to the given page index
 function goToProjectSlide(index) {
     currentProjectPage = Math.max(0, Math.min(index, projectMaxPage));
-    updateProjectActiveStates();
-    centerProjectsTrack();
+
+    projectsTrack.style.transform = `translateX(-${currentProjectPage * 100}%)`;
+    projectDots.forEach((dot, i) => dot.classList.toggle('active', i === currentProjectPage));
 }
 
-if (projectsTrack && projectCards.length) {
+if (projectsTrack && projectSlides.length) {
     //Dot clicks jump to that project
     projectDots.forEach((dot, index) => {
         dot.addEventListener('click', () => goToProjectSlide(index));
     });
 
-    //Arrow buttons step through project cards
-    document.querySelector('.projects-arrow-left')?.addEventListener('click', () => {
-        if (currentProjectPage > 0) goToProjectSlide(currentProjectPage - 1);
-    });
-
-    document.querySelector('.projects-arrow-right')?.addEventListener('click', () => {
-        if (currentProjectPage < projectMaxPage) goToProjectSlide(currentProjectPage + 1);
-    });
-
-    updateProjectActiveStates();
-    centerProjectsTrack(false);
-
-    //Clicking a peeking (non-active) card brings it to center
-    projectCards.forEach((card, index) => {
-        card.addEventListener('click', () => {
-            if (index !== currentProjectPage) {
-                goToProjectSlide(index);
-            }
-        });
-    });
-
-    //Recenters the track without animating on resize/load
-    window.addEventListener('resize', () => centerProjectsTrack(false));
-    window.addEventListener('load', () => centerProjectsTrack(false));
-
-    //Left/right arrow keys step through project cards when that section is in view
+    //Left/right arrow keys step through project slides when that section is in view
     document.addEventListener('keydown', e => {
         if (activeSectionId !== 'projects') return;
 
@@ -468,33 +380,31 @@ if (projectsTrack && projectCards.length) {
         }
     });
 
-    //Mouse drag state for the Projects carousel
+    //Mouse drag state for the Projects slider
     let projectsDragStartX = 0;
-    let projectsBaseTranslate = 0;
     let isProjectsDragging = false;
     let projectsDragMoved = false;
 
-    //Starts a drag on the Projects carousel
+    //Starts a drag on the Projects slider
     projectsTrack.addEventListener('mousedown', e => {
         if (e.target.closest('a, button')) return;
         isProjectsDragging = true;
         projectsDragMoved = false;
         projectsDragStartX = e.clientX;
-        projectsBaseTranslate = getProjectCenterOffset(currentProjectPage);
         projectsTrack.classList.add('is-dragging');
         document.body.classList.add('is-dragging-active');
         e.preventDefault();
     });
 
-    //Follows the cursor while dragging the Projects carousel
+    //Follows the cursor while dragging the Projects slider
     window.addEventListener('mousemove', e => {
         if (!isProjectsDragging) return;
         const deltaX = e.clientX - projectsDragStartX;
         if (Math.abs(deltaX) > 4) projectsDragMoved = true;
-        projectsTrack.style.transform = `translateX(${projectsBaseTranslate + deltaX}px)`;
+        projectsTrack.style.transform = `translateX(calc(-${currentProjectPage * 100}% + ${deltaX}px))`;
     });
 
-    //Ends the drag and snaps to the nearest project card
+    //Ends the drag and snaps to the nearest project slide
     window.addEventListener('mouseup', e => {
         if (!isProjectsDragging) return;
         isProjectsDragging = false;
@@ -531,77 +441,48 @@ if (projectsTrack && projectCards.length) {
 }
 
 
-//Makes the frog sprite drift and bounce around its card, DVD-logo style
-function initFrogBounce() {
-    const card = document.querySelector('.project-card--frog');
-    const frog = card ? card.querySelector('.frog-sprite') : null;
-    if (!card || !frog) return;
+//Swipe demo: on a slider's first appearance, nudges it partway to the next slide
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+function playSwipeDemo(trackEl, getIndex) {
+    if (!trackEl) return;
 
-    let cardW = card.clientWidth;
-    let cardH = card.clientHeight;
-    let frogW = frog.offsetWidth;
-    let frogH = frog.offsetHeight;
+    const startIndex = getIndex();
+    const basePercent = startIndex * 100;
+    const peekPercent = 16;
 
-    let x = Math.random() * Math.max(cardW - frogW, 0);
-    let y = Math.random() * Math.max(cardH - frogH, 0);
+    trackEl.style.transform = `translateX(-${basePercent + peekPercent}%)`;
 
-    const speed = 64; //px per second
-    const angle = Math.random() * Math.PI * 2;
-    let vx = Math.cos(angle) * speed;
-    let vy = Math.sin(angle) * speed;
-
-    //Avoids a near-vertical or near-horizontal starting angle
-    if (Math.abs(vx) < speed * 0.35) vx = speed * 0.35 * Math.sign(vx || 1);
-    if (Math.abs(vy) < speed * 0.35) vy = speed * 0.35 * Math.sign(vy || 1);
-
-    let lastTime = null;
-
-    //Re-measures card/frog size and clamps position on resize
-    function measure() {
-        cardW = card.clientWidth;
-        cardH = card.clientHeight;
-        frogW = frog.offsetWidth;
-        frogH = frog.offsetHeight;
-        x = Math.min(x, Math.max(cardW - frogW, 0));
-        y = Math.min(y, Math.max(cardH - frogH, 0));
-    }
-    window.addEventListener('resize', measure);
-
-    //Advances the frog's position each frame and bounces it off the edges
-    function step(time) {
-        if (lastTime === null) lastTime = time;
-        const dt = Math.min((time - lastTime) / 1000, 0.05); //clamp huge tab-switch gaps
-        lastTime = time;
-
-        x += vx * dt;
-        y += vy * dt;
-
-        const maxX = Math.max(cardW - frogW, 0);
-        const maxY = Math.max(cardH - frogH, 0);
-
-        if (x <= 0) {
-            x = 0;
-            vx = Math.abs(vx);
-        } else if (x >= maxX) {
-            x = maxX;
-            vx = -Math.abs(vx);
-        }
-
-        if (y <= 0) {
-            y = 0;
-            vy = Math.abs(vy);
-        } else if (y >= maxY) {
-            y = maxY;
-            vy = -Math.abs(vy);
-        }
-
-        frog.style.transform = `translate(${x}px, ${y}px)`;
-        requestAnimationFrame(step);
-    }
-
-    requestAnimationFrame(step);
+    setTimeout(() => {
+        //Leaves the transform alone if the user has already navigated during the demo
+        if (getIndex() !== startIndex) return;
+        trackEl.style.transform = `translateX(-${basePercent}%)`;
+    }, 700);
 }
 
-initFrogBounce();
+//Triggers a slider's swipe demo once, the first time its section scrolls into view
+if ('IntersectionObserver' in window && !prefersReducedMotion) {
+    const swipeDemoTargets = [
+        { section: document.getElementById('about'), track: aboutSlider, getIndex: () => currentPage },
+        { section: document.getElementById('projects'), track: projectsTrack, getIndex: () => currentProjectPage }
+    ];
+
+    swipeDemoTargets.forEach(({ section, track, getIndex }) => {
+        if (!section || !track) return;
+
+        const demoObserver = new IntersectionObserver(
+            entries => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    demoObserver.disconnect();
+                    setTimeout(() => {
+                        if (getIndex() !== 0) return; //user already navigated away from the first slide
+                        playSwipeDemo(track, getIndex);
+                    }, 450);
+                });
+            },
+            { threshold: 0.5 }
+        );
+        demoObserver.observe(section);
+    });
+}

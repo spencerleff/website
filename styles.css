@@ -47,7 +47,7 @@
     --ease-spring: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 
     /* Section spacing */
-    --section-gap: clamp(6rem, 20vmin, 12rem);
+    --section-pad: clamp(2.4rem, 8vmin, 5rem);
 }
 
 
@@ -311,7 +311,7 @@ ul.nav-list.open {
 #about .section-inner {
     height: auto;
     justify-content: flex-start;
-    padding: var(--section-gap) 0 calc(var(--section-gap) / 2);
+    padding: var(--section-pad) 0;
 }
 
 .about-card {
@@ -349,39 +349,6 @@ body.is-dragging-active {
     height: 100%;
     overflow: hidden;
 }
-
-.about-arrow {
-    display: none;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 5;
-    width: 28px;
-    height: 28px;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    transition: opacity var(--ease), transform var(--ease), color var(--ease);
-}
-
-.about-arrow:hover {
-    color: var(--accent);
-}
-
-.about-arrow:active {
-    transform: translateY(-50%) scale(0.92);
-}
-
-.about-arrow.is-disabled {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.about-arrow-left { left: 0.5rem; }
-.about-arrow-right { right: 0.5rem; }
 
 .about-content {
     height: 100%;
@@ -547,7 +514,7 @@ body.is-dragging-active {
     display: flex;
     flex-direction: column;
     gap: clamp(2rem, 5vmin, 3.5rem);
-    padding: calc(var(--section-gap) / 2) 0 calc(var(--section-gap) / 2);
+    padding: var(--section-pad) 0;
     container-type: inline-size;
 }
 
@@ -788,26 +755,27 @@ body.is-dragging-active {
     display: flex;
     flex-direction: column;
     gap: clamp(2rem, 5vmin, 3.5rem);
-    padding: calc(var(--section-gap) / 2) 0 1rem;
-    container-type: inline-size;
+    padding: var(--section-pad) 0 0;
 }
 
 .projects-carousel {
-    position: relative;
-    overflow-x: hidden;
-    overflow-y: visible;
     width: 100%;
-    padding: 1.25rem 0;
+    height: clamp(280px, 74vh, 1700px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    container-type: inline-size;
 }
 
 .projects-track {
+    flex: 1;
+    min-height: 0;
     display: flex;
-    align-items: stretch;
-    gap: clamp(1.25rem, 2.5cqw, 3rem);
-    transition: transform 1.38s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 100%;
+    transition: transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
     touch-action: pan-y;
     cursor: grab;
-    will-change: transform;
 }
 
 .projects-track.is-dragging {
@@ -815,9 +783,17 @@ body.is-dragging-active {
     transition: none;
 }
 
+.project-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 .project-card {
-    flex: 0 0 clamp(280px, 60vw, 2820px);
-    height: clamp(280px, 75vh, 2000px);
+    position: relative;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -825,38 +801,25 @@ body.is-dragging-active {
     text-align: center;
     padding: clamp(1.5rem, 2.5cqw, 3rem);
     border-radius: var(--radius-lg);
-    box-shadow: 0 1.8px 6px rgba(0, 0, 0, 0.05);
-    opacity: 0.35;
-    transform: scale(0.9);
-    transition: opacity 0.3s var(--ease-spring), transform 0.2s var(--ease-spring), box-shadow 0.1s var(--ease-spring);
-}
-
-.project-card.is-active {
-    opacity: 1;
-    transform: scale(1);
+    background: #fefdfb;
     box-shadow: 0 8.6px 30px rgba(0, 0, 0, 0.097);
-}
-
-.project-card:not(.is-active) {
-    cursor: pointer;
+    overflow: hidden;
 }
 
 .project-title {
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: clamp(1.5rem, 2.2cqw, 2.75rem);
+    font-size: clamp(1.75rem, 2.6cqw, 3.25rem);
     color: var(--text-primary);
     margin: 0;
     letter-spacing: -0.02em;
 }
 
 .project-card--frog {
-    position: relative;
     background-image: url('Images/moon_surface.png');
     background-size: cover;
     background-position: center;
     justify-content: flex-start;
-    overflow: hidden;
 }
 
 .project-card--frog::before {
@@ -867,17 +830,25 @@ body.is-dragging-active {
     z-index: 1;
 }
 
-.frog-sprite {
+.project-mascot {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: clamp(48px, 12cqw, 125px);
+    bottom: clamp(1rem, 3cqw, 2.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(80px, 14.4cqw, 198px);
     height: auto;
     z-index: 2;
     pointer-events: none;
     user-select: none;
-    will-change: transform;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+}
+
+.project-mascot--frog {
+    left: 30%;
+}
+
+.project-mascot--witch {
+    left: 70%;
 }
 
 .project-card-content {
@@ -895,14 +866,13 @@ body.is-dragging-active {
 
 .project-card--frog .project-title {
     color: #ffffff;
-    font-size: clamp(3rem, 3.4cqw, 6.4rem);
 }
 
 .project-desc {
     margin: 0;
     max-width: 46ch;
     color: rgba(255, 255, 255, 0.92);
-    font-size: clamp(0.95rem, 1.5cqw, 1.35rem);
+    font-size: clamp(1rem, 1.4cqw, 1.4rem);
     line-height: 1.65;
 }
 
@@ -936,39 +906,6 @@ body.is-dragging-active {
     transform: translateY(0) scale(0.97);
 }
 
-.projects-arrow {
-    display: none;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 5;
-    width: 28px;
-    height: 28px;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    transition: opacity var(--ease), transform var(--ease), color var(--ease);
-}
-
-.projects-arrow:hover {
-    color: var(--accent);
-}
-
-.projects-arrow:active {
-    transform: translateY(-50%) scale(0.92);
-}
-
-.projects-arrow.is-disabled {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.projects-arrow-left { left: 0.5rem; }
-.projects-arrow-right { right: 0.5rem; }
-
 .projects-pagination {
     flex-shrink: 0;
     height: 72px;
@@ -981,6 +918,13 @@ body.is-dragging-active {
 
 
 /* Responsive Sections */
+@media (orientation: landscape) {
+
+    .projects-carousel {
+        height: clamp(280px, min(42vw, 68vh), 1700px);
+    }
+}
+
 @media (min-width: 1700px) and (min-height: 800px) {
     
     .work-item-header {
@@ -1148,21 +1092,7 @@ body.is-dragging-active {
         display: none;
     }
 
-    .about-arrow {
-        display: flex;
-    }
 
-    .about-pagination {
-        display: none;
-    }
-
-    .projects-arrow {
-        display: flex;
-    }
-
-    .projects-pagination {
-        display: none;
-    }
 
     .about-name {
         font-size: clamp(1.25rem, 1.1cqw, 2.6rem);
@@ -1202,7 +1132,7 @@ body.is-dragging-active {
     }
 
     .work-wrap {
-        padding: 2rem 0;
+        padding: var(--section-pad) 0;
         gap: 1rem;
     }
 
@@ -1306,32 +1236,6 @@ body.is-dragging-active {
 
     .about-bio {
         font-size: clamp(0.625rem, 1cqw, 1rem);
-    }
-
-    .about-arrow {
-        display: flex;
-        width: 42px;
-        height: 42px;
-    }
-
-    .about-arrow-left { left: 2rem; }
-    .about-arrow-right { right: 2rem; }
-
-    .about-pagination {
-        display: none;
-    }
-
-    .projects-arrow {
-        display: flex;
-        width: 42px;
-        height: 42px;
-    }
-
-    .projects-arrow-left { left: 2rem; }
-    .projects-arrow-right { right: 2rem; }
-
-    .projects-pagination {
-        display: none;
     }
 
     .about-socials {

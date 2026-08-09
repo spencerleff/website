@@ -200,12 +200,6 @@
                     </div>
 
                 </div>
-                <button class="about-arrow about-arrow-left" aria-label="Previous">
-                    <i class="fa fa-chevron-left"></i>
-                </button>
-                <button class="about-arrow about-arrow-right" aria-label="Next">
-                    <i class="fa fa-chevron-right"></i>
-                </button>
                 <div class="about-pagination">
                     <button class="page-dot active"></button>
                     <button class="page-dot"></button>
@@ -243,7 +237,7 @@
                         </button>
                         <div class="work-item-body" id="work-panel-1">
                             <div class="work-item-body-inner">
-                                <p class="work-item-desc">Built and maintained EDI interfaces for Coremark, Fintech, and individual DSD vendors across the company's 300+ station network. These integrations streamlined invoicing, ordering, pricebook, and delivery workflows, saving more than $8M annually.</p>
+                                <p class="work-item-desc">Built and maintained EDI (Electronic Data Interchange) interfaces for Coremark, Fintech, and individual DSD vendors across the company's 300+ station network. These integrations streamlined invoicing, ordering, pricebook, and delivery workflows, saving more than $8M annually across 50+ vendors.</p>
                                 <div class="work-item-tags">
                                     <span class="tag">ADF</span>
                                     <span class="tag">EDI</span>
@@ -268,7 +262,7 @@
                         </button>
                         <div class="work-item-body" id="work-panel-2">
                             <div class="work-item-body-inner">
-                                <p class="work-item-desc">Engineered financial data pipelines between PDI and SAP using Azure Data Factory and custom SQL, as part of a multi-million dollar back-office modernization initiative. The work was held to strict quality and testing standards given the sensitivity of financial data.</p>
+                                <p class="work-item-desc">Architected and engineered financial data pipelines between PDI and SAP using Azure Data Factory and custom SQL, as part of a multi-million dollar back-office modernization initiative. The work was held to strict quality and testing standards given the sensitivity of financial data.</p>
                                 <div class="work-item-tags">
                                     <span class="tag">ADF</span>
                                     <span class="tag">SAP</span>
@@ -293,7 +287,7 @@
                         </button>
                         <div class="work-item-body" id="work-panel-3">
                             <div class="work-item-body-inner">
-                                <p class="work-item-desc">Led a digital signage pilot on 4K Samsung displays, building an analytics platform to compare sales, promotions, and foot traffic. Served as project lead for software maintenance, station support, and custom content production.</p>
+                                <p class="work-item-desc">Led a digital signage pilot on 4K Samsung displays, building an analytics platform to compare sales, promotions, and foot traffic. Served as project lead for architecture design, software maintenance, station support, and custom content production.</p>
                                 <a class="work-item-link" href="https://news.samsung.com/us/samsung-fuels-new-era-of-in-store-engagement" target="_blank">
                                     <i class="fa fa-external-link"></i>Press Release
                                 </a>
@@ -321,7 +315,7 @@
                         </button>
                         <div class="work-item-body" id="work-panel-4">
                             <div class="work-item-body-inner">
-                                <p class="work-item-desc">Digitized the station's physical compliance binder into a custom-built Angular application, replacing paper documents with organized digital access. Authentication is handled dynamically through an Azure Function that pulls data from both OTMM and SharePoint.</p>
+                                <p class="work-item-desc">Digitized the station's physical compliance binder into a custom-built Internal Angular application, replacing paper documents with organized digital access. Authentication is handled dynamically through an Azure Function that pulls data from both OTMM and SharePoint. Custom network whitelisting supported for security purposes.</p>
                                 <div class="work-item-tags">
                                     <span class="tag">Angular</span>
                                     <span class="tag">Azure Function</span>
@@ -399,34 +393,33 @@
 
                 <div class="projects-carousel">
                     <div class="projects-track" id="projectsTrack">
-                        <div class="project-card is-active">
-                            <h3 class="project-title">Piano...</h3>
-                        </div>
-                        <div class="project-card project-card--frog">
-                            <img src="Images/frog_character.png" class="frog-sprite" alt="" draggable="false">
-                            <div class="project-card-content">
-                                <h3 class="project-title">Frog Hero</h3>
-                                <p class="project-desc">A story-driven rhythm platformer built in Unity as my senior capstone, guiding a heroic frog through platforming challenges timed to an original soundtrack. It was my first Unity project, built from the ground up across gameplay programming, level design, and audio-synced mechanics.</p>
-                                <a class="project-link" href="https://github.com/spencerleff/RhythmPlatformer" target="_blank">
-                                    <i class="fa-brands fa-github"></i>View on GitHub
-                                </a>
+                        <div class="project-slide">
+                            <div class="project-card project-card--frog">
+                                <div class="project-card-content">
+                                    <h3 class="project-title">Frog Hero</h3>
+                                    <p class="project-desc">A story-driven rhythm platformer built in Unity as my senior capstone, guiding a heroic frog through platforming challenges timed to a hand-picked soundtrack. It was my first Unity project, built from the ground up across gameplay programming, level design, and audio-synced mechanics.</p>
+                                    <a class="project-link" href="https://github.com/spencerleff/RhythmPlatformer" target="_blank">
+                                        <i class="fa-brands fa-github"></i>View on GitHub
+                                    </a>
+                                </div>
+                                <img src="Images/frog_character.png" class="project-mascot project-mascot--frog" alt="" draggable="false">
+                                <img src="Images/witch_character.png" class="project-mascot project-mascot--witch" alt="" draggable="false">
                             </div>
                         </div>
-                        <div class="project-card">
+                        <div class="project-slide">
+                            <div class="project-card">
+                                <h3 class="project-title">Piano...</h3>
+                            </div>
+                        </div>
+                        <div class="project-slide">
                             <h3 class="project-title">Hyper Enchants</h3>
                         </div>
                     </div>
-                    <button class="projects-arrow projects-arrow-left" aria-label="Previous project">
-                        <i class="fa fa-chevron-left"></i>
-                    </button>
-                    <button class="projects-arrow projects-arrow-right" aria-label="Next project">
-                        <i class="fa fa-chevron-right"></i>
-                    </button>
                 </div>
 
                 <div class="projects-pagination" id="projectsPagination">
-                    <button class="page-dot"></button>
                     <button class="page-dot active"></button>
+                    <button class="page-dot"></button>
                     <button class="page-dot"></button>
                 </div>
 
