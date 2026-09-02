@@ -14,6 +14,9 @@
 
 <body>
 
+    <!-- Ocean -->
+    <div class="ocean-swim-layer" id="oceanSwimLayer" aria-hidden="true"></div>
+
     <!-- Nav -->
     <div class="nav">
         <div class="hamburger-container">
@@ -29,6 +32,9 @@
 
     <!-- Home -->
     <div class="section" id="home">
+        <button class="ocean-trigger" id="oceanTrigger" aria-haspopup="dialog" aria-label="Open creature collection">
+            <i class="fa-solid fa-water"></i>
+        </button>
         <div class="section-inner">
             <div class="hero-wrap">
                 <div class="hero-eyebrow">Software Engineer · Bay Area</div>
@@ -443,6 +449,85 @@
                     <button class="page-dot active"></button>
                     <button class="page-dot"></button>
                     <button class="page-dot"></button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Ocean modal -->
+    <div class="ocean-modal-overlay" id="oceanModalOverlay">
+        <div class="ocean-modal" role="dialog" aria-modal="true" aria-labelledby="oceanModalTitle">
+            <button class="ocean-modal-close" id="oceanModalClose" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="ocean-modal-header">
+                <h2 class="ocean-modal-title" id="oceanModalTitle">Deep Sea Collection</h2>
+            </div>
+
+            <div class="ocean-modal-body">
+
+                <div class="ocean-modal-panel" data-panel="collect">
+                    <div class="capsule-machine">
+                        <div class="capsule-window">
+                            <div class="capsule" id="capsule">
+                                <div class="capsule-half capsule-top"></div>
+                                <img class="capsule-reveal-img" id="capsuleRevealImg" src="" alt="">
+                                <div class="capsule-half capsule-bottom"></div>
+                            </div>
+                        </div>
+                        <button class="capsule-pull-btn" id="capsulePullBtn">Pull Lever</button>
+                        <p class="capsule-message" id="capsuleMessage">Pull the lever to meet a new creature.</p>
+                    </div>
+                    
+                    <div class="ocean-modal-panel" data-panel="ocean" hidden>
+                        <div class="ocean-toggle-row">
+                            <div class="ocean-toggle-copy">
+                                <span class="ocean-toggle-label">Ocean Mode</span>
+                                <p class="ocean-toggle-hint" id="oceanToggleHint">Unlock at least one creature to enable Ocean Mode.</p>
+                            </div>
+                            <label class="ocean-switch">
+                                <input type="checkbox" id="oceanModeToggle" disabled>
+                                <span class="ocean-switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="creature-grid" id="creatureGrid">
+                        <div class="creature-slot" data-creature="frog">
+                            <img src="Images/Frog.png" alt="Frog">
+                            <span class="creature-name">Frog</span>
+                        </div>
+                        <div class="creature-slot" data-creature="fish">
+                            <img src="Images/Fish.png" alt="Fish">
+                            <span class="creature-name">Fish</span>
+                        </div>
+                        <div class="creature-slot" data-creature="jellyfish">
+                            <img src="Images/Jellyfish.png" alt="Jellyfish">
+                            <span class="creature-name">Jellyfish</span>
+                        </div>
+                        <div class="creature-slot" data-creature="otter">
+                            <img src="Images/Otter.png" alt="Otter">
+                            <span class="creature-name">Otter</span>
+                        </div>
+                        <div class="creature-slot" data-creature="shark">
+                            <img src="Images/Shark.png" alt="Shark">
+                            <span class="creature-name">Shark</span>
+                        </div>
+                        <div class="creature-slot" data-creature="starfish">
+                            <img src="Images/Starfish.png" alt="Starfish">
+                            <span class="creature-name">Starfish</span>
+                        </div>
+                        <div class="creature-slot" data-creature="whale">
+                            <img src="Images/Whale.png" alt="Whale">
+                            <span class="creature-name">Whale</span>
+                        </div>
+                        <div class="creature-slot" data-creature="whaleshark">
+                            <img src="Images/WhaleShark.png" alt="Whale Shark">
+                            <span class="creature-name">Whale Shark</span>
+                        </div>
+                    </div>
                 </div>
 
             </div>
