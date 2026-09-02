@@ -465,8 +465,8 @@ if (projectsTrack && projectSlides.length) {
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 //Demo transition speed and hold time for the swipe hint animation
-const SWIPE_DEMO_TRANSITION_MS = 0.7 * 1000;
-const SWIPE_DEMO_HOLD_MS = 400;
+const SWIPE_DEMO_TRANSITION_MS = 0.75 * 1000;
+const SWIPE_DEMO_HOLD_MS = 100;
 
 //Plays a short, subtle swipe demonstration for a slider
 function playSwipeDemo(trackEl, getIndex, indicatorEl) {
@@ -474,7 +474,7 @@ function playSwipeDemo(trackEl, getIndex, indicatorEl) {
 
     const startIndex = getIndex();
     const basePercent = startIndex * 100;
-    const peekPercent = 12;
+    const peekPercent = 10;
 
     trackEl.classList.add('is-swipe-demo');
 
