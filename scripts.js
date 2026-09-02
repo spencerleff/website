@@ -34,7 +34,8 @@ function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-//Animates window scroll to a target element, recalculating each frame to handle mobile browser chrome shifts
+
+//Animates window scroll to a target element while accounting for mobile viewport changes
 function smoothScrollTo(targetEl, duration = 1100) {
     const startY = window.scrollY;
     const startTime = performance.now();
@@ -43,24 +44,33 @@ function smoothScrollTo(targetEl, duration = 1100) {
         return targetEl.getBoundingClientRect().top + window.scrollY;
     }
 
-    if (Math.abs(getTargetY() - startY) < 1) return;
+    const initialTargetY = getTargetY();
+
+    if (Math.abs(initialTargetY - startY) < 1) return;
 
     function step(now) {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const distance = getTargetY() - startY;
-        window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+        const targetY = getTargetY();
+        const distance = targetY - startY;
+
+        window.scrollTo(
+            0,
+            startY + distance * easeInOutCubic(progress)
+        );
 
         if (progress < 1) {
             requestAnimationFrame(step);
         } else {
-            //Snaps once more in case the address bar was still settling
-            requestAnimationFrame(() => window.scrollTo(0, getTargetY()));
+            requestAnimationFrame(() => {
+                window.scrollTo(0, getTargetY());
+            });
         }
     }
 
     requestAnimationFrame(step);
 }
+
 
 //Nav links trigger an eased scroll to their target section on click
 document.querySelectorAll('a[href^="#"]').forEach(link => {
@@ -454,19 +464,19 @@ if (projectsTrack && projectSlides.length) {
 //Swipe demo: on a slider's first appearance, nudges it partway to the next slide
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-//Demo transition speed and hold time, scaled from the base slide speed
-const SWIPE_DEMO_TRANSITION_MS = 0.52 * 1.15 * 0.95 * 1000;
-const SWIPE_DEMO_HOLD_MS = 700 * 1.15 * 0.95;
+//Demo transition speed and hold time for the swipe hint animation
+const SWIPE_DEMO_TRANSITION_MS = 0.7 * 1000;
+const SWIPE_DEMO_HOLD_MS = 400;
 
+//Plays a short, subtle swipe demonstration for a slider
 function playSwipeDemo(trackEl, getIndex, indicatorEl) {
     if (!trackEl) return;
 
     const startIndex = getIndex();
     const basePercent = startIndex * 100;
-    const peekPercent = 40;
+    const peekPercent = 12;
 
     trackEl.classList.add('is-swipe-demo');
-    trackEl.style.transform = `translateX(-${basePercent + peekPercent}%)`;
 
     if (indicatorEl) {
         indicatorEl.classList.remove('is-visible');
@@ -474,10 +484,14 @@ function playSwipeDemo(trackEl, getIndex, indicatorEl) {
         indicatorEl.classList.add('is-visible');
     }
 
+    requestAnimationFrame(() => {
+        if (getIndex() !== startIndex) return;
+        trackEl.style.transform = `translateX(-${basePercent + peekPercent}%)`;
+    });
+
     setTimeout(() => {
         if (indicatorEl) indicatorEl.classList.remove('is-visible');
 
-        //Leaves the transform alone if the user has already navigated during the demo
         if (getIndex() !== startIndex) {
             trackEl.classList.remove('is-swipe-demo');
             return;
@@ -485,14 +499,24 @@ function playSwipeDemo(trackEl, getIndex, indicatorEl) {
 
         trackEl.style.transform = `translateX(-${basePercent}%)`;
         setTimeout(() => trackEl.classList.remove('is-swipe-demo'), SWIPE_DEMO_TRANSITION_MS);
-    }, SWIPE_DEMO_HOLD_MS);
+    }, SWIPE_DEMO_TRANSITION_MS + SWIPE_DEMO_HOLD_MS);
 }
 
 //Triggers a slider's swipe demo once half the carousel is in view
 if ('IntersectionObserver' in window && !prefersReducedMotion) {
     const swipeDemoTargets = [
-        { visibilityTarget: aboutSlider, track: aboutSlider, getIndex: () => currentPage, indicator: document.querySelector('.about-card .swipe-indicator') },
-        { visibilityTarget: projectsTrack, track: projectsTrack, getIndex: () => currentProjectPage, indicator: document.querySelector('.projects-carousel .swipe-indicator') }
+        {
+            visibilityTarget: aboutSlider,
+            track: aboutSlider,
+            getIndex: () => currentPage,
+            indicator: document.querySelector('.about-card .swipe-indicator')
+        },
+        {
+            visibilityTarget: projectsTrack,
+            track: projectsTrack,
+            getIndex: () => currentProjectPage,
+            indicator: document.querySelector('.projects-carousel .swipe-indicator')
+        }
     ];
 
     swipeDemoTargets.forEach(({ visibilityTarget, track, getIndex, indicator }) => {
@@ -503,14 +527,16 @@ if ('IntersectionObserver' in window && !prefersReducedMotion) {
                 entries.forEach(entry => {
                     if (!entry.isIntersecting) return;
                     demoObserver.disconnect();
+
                     setTimeout(() => {
-                        if (getIndex() !== 0) return; //user already navigated away from the first slide
+                        if (getIndex() !== 0) return;
                         playSwipeDemo(track, getIndex, indicator);
                     }, 450);
                 });
             },
             { threshold: 0.8 }
         );
+
         demoObserver.observe(visibilityTarget);
     });
 }
