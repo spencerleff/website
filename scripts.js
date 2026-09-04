@@ -555,8 +555,7 @@ const OCEAN_CREATURES = [
 ];
 
 //One capsule pull allowed per 24 hours
-//const SPIN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
-const SPIN_COOLDOWN_MS = 1;
+const SPIN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
 //Reads the unlocked creature id list from localStorage
 function getUnlockedCreatures() {
