@@ -14,9 +14,6 @@
 
 <body>
 
-    <!-- Ocean -->
-    <div class="ocean-swim-layer" id="oceanSwimLayer" aria-hidden="true"></div>
-
     <!-- Nav -->
     <div class="nav">
         <div class="hamburger-container">
@@ -32,6 +29,16 @@
 
     <!-- Home -->
     <div class="section" id="home">
+        <div class="ocean-swim-layer" id="oceanSwimLayer" aria-hidden="true"></div>
+        <div class="ocean-scene" aria-hidden="true">
+            <div class="ocean-bubbles ocean-bubbles--left"></div>
+            <div class="ocean-bubbles ocean-bubbles--right"></div>
+            <div class="ocean-coral ocean-coral--left"></div>
+            <div class="ocean-coral ocean-coral--right"></div>
+            <div class="ocean-rocks ocean-rocks--left"></div>
+            <div class="ocean-rocks ocean-rocks--right"></div>
+            <div class="ocean-floor"></div>
+        </div>
         <button class="ocean-trigger" id="oceanTrigger" aria-haspopup="dialog" aria-label="Open creature collection">
             <i class="fa-solid fa-water"></i>
         </button>
@@ -480,8 +487,8 @@
                         <button class="capsule-pull-btn" id="capsulePullBtn">Pull Lever</button>
                         <p class="capsule-message" id="capsuleMessage">Pull the lever to meet a new creature.</p>
                     </div>
-                    
-                    <div class="ocean-modal-panel" data-panel="ocean" hidden>
+
+                    <div class="ocean-modal-panel ocean-mode-panel" data-panel="ocean">
                         <div class="ocean-toggle-row">
                             <div class="ocean-toggle-copy">
                                 <span class="ocean-toggle-label">Ocean Mode</span>

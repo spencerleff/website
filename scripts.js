@@ -555,7 +555,8 @@ const OCEAN_CREATURES = [
 ];
 
 //One capsule pull allowed per 24 hours
-const SPIN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+//const SPIN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+const SPIN_COOLDOWN_MS = 1;
 
 //Reads the unlocked creature id list from localStorage
 function getUnlockedCreatures() {
@@ -592,7 +593,7 @@ function setLastSpinTime(timestamp) {
     localStorage.setItem('lastSpinTimestamp', String(timestamp));
 }
 
-//Milliseconds remaining before another pull is allowed (0 if none)
+//Milliseconds remaining before another pull is allowed
 function getSpinCooldownRemaining() {
     return Math.max(0, SPIN_COOLDOWN_MS - (Date.now() - getLastSpinTime()));
 }
@@ -623,10 +624,12 @@ const homeEasterWitch = document.getElementById('homeEasterWitch');
 let isCapsulePulling = false;
 let cooldownIntervalId = null;
 
-//Opens the ocean modal, locks page scroll, and refreshes cooldown/lock state
+//Opens the ocean modal, locks page scroll, and refreshes cooldown state
 function openOceanModal() {
     if (!oceanModalOverlay) return;
+
     oceanModalOverlay.classList.add('open');
+    document.body.classList.add('ocean-modal-open');
     document.body.style.overflow = 'hidden';
     updateCapsuleAvailability();
 
@@ -638,7 +641,9 @@ function openOceanModal() {
 //Closes the ocean modal and restores page scroll
 function closeOceanModal() {
     if (!oceanModalOverlay) return;
+
     oceanModalOverlay.classList.remove('open');
+    document.body.classList.remove('ocean-modal-open');
     document.body.style.overflow = '';
 
     if (cooldownIntervalId) {
@@ -655,134 +660,176 @@ if (oceanModalClose) {
     oceanModalClose.addEventListener('click', closeOceanModal);
 }
 
-//Clicking the dimmed backdrop (not the modal itself) closes it
+//Closes the ocean modal when the backdrop itself is clicked
 if (oceanModalOverlay) {
     oceanModalOverlay.addEventListener('click', e => {
         if (e.target === oceanModalOverlay) closeOceanModal();
     });
 }
 
-//Esc closes the ocean modal when it's open
+//Closes the ocean modal when Escape is pressed
 document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && oceanModalOverlay && oceanModalOverlay.classList.contains('open')) {
+    if (e.key === 'Escape' && oceanModalOverlay?.classList.contains('open')) {
         closeOceanModal();
     }
 });
 
-//Updates the collection grid to reflect which creatures are unlocked
+//Updates the collection grid to reflect unlocked creatures
 function updateCreatureGrid(unlockedIds) {
+    const unlockedSet = new Set(unlockedIds);
+
     creatureSlots.forEach(slot => {
-        slot.classList.toggle('unlocked', unlockedIds.includes(slot.dataset.creature));
+        slot.classList.toggle('unlocked', unlockedSet.has(slot.dataset.creature));
     });
 }
 
-//Enables/disables the Ocean Mode toggle based on whether anything has been unlocked
+//Enables or disables Ocean Mode based on collection progress
 function updateOceanToggleAvailability(unlockedIds) {
     if (!oceanModeToggle) return;
+
     const hasAny = unlockedIds.length > 0;
     oceanModeToggle.disabled = !hasAny;
 
     if (oceanToggleHint) {
         oceanToggleHint.textContent = hasAny
-            ? 'Unlocked creatures will swim slowly around the landing page.'
+            ? 'Creatures will swim around the landing page.'
             : 'Unlock at least one creature to enable Ocean Mode.';
     }
 }
 
-//Shows/hides the Frog Hero cast easter egg once the full collection is unlocked
+//Shows or hides the Frog Hero easter egg
 function updateEasterEgg(unlockedIds) {
     const complete = unlockedIds.length >= OCEAN_CREATURES.length;
-    if (homeEasterFrog) homeEasterFrog.classList.toggle('is-visible', complete);
-    if (homeEasterWitch) homeEasterWitch.classList.toggle('is-visible', complete);
+
+    if (homeEasterFrog) {
+        homeEasterFrog.classList.toggle('is-visible', complete);
+    }
+
+    if (homeEasterWitch) {
+        homeEasterWitch.classList.toggle('is-visible', complete);
+    }
 }
 
-//Keeps the nav icons legible when resting on the dark landing page during Ocean Mode
+//Updates navigation contrast for Ocean Mode
 function updateNavContrast() {
     const nav = document.querySelector('.nav');
+
     if (!nav) return;
+
     const oceanActive = document.body.classList.contains('ocean-mode');
-    nav.classList.toggle('nav--on-dark', activeSectionId === 'home' && oceanActive);
+    const homeActive = activeSectionId === 'home';
+    const oceanHomeActive = homeActive && oceanActive;
+
+    nav.classList.toggle('nav--on-dark', oceanHomeActive);
+    document.body.classList.toggle('ocean-home-active', oceanHomeActive);
 }
 
-//Removes all creatures currently swimming in the background layer
+//Removes all active swimming creatures
 function clearOceanSwimLayer() {
-    if (oceanSwimLayer) oceanSwimLayer.innerHTML = '';
+    if (!oceanSwimLayer) return;
+
+    oceanSwimLayer.replaceChildren();
 }
 
-//Populates the swim layer with one drifting image per unlocked creature
+//Creates compositor-friendly swimming creatures using CSS-only animation
 function spawnOceanSwimLayer(unlockedIds) {
     if (!oceanSwimLayer) return;
-    clearOceanSwimLayer();
 
-    unlockedIds.forEach(id => {
-        const creature = OCEAN_CREATURES.find(c => c.id === id);
+    const uniqueIds = [...new Set(unlockedIds)];
+    const fragment = document.createDocumentFragment();
+
+    uniqueIds.forEach((id, index) => {
+        const creature = OCEAN_CREATURES.find(item => item.id === id);
+
         if (!creature) return;
 
         const img = document.createElement('img');
+        const duration = 24 + index * 2.5 + Math.random() * 8;
+        const delay = -(Math.random() * duration);
+        const top = 12 + Math.random() * 68;
+        const direction = index % 2 === 0;
+
         img.src = creature.img;
         img.alt = '';
         img.draggable = false;
-        img.className = 'ocean-swim-creature';
+        img.dataset.creature = creature.id;
+        img.decoding = 'async';
+        img.className = `ocean-swim-creature${direction ? ' is-reversed' : ''}`;
 
-        const duration = 12 + Math.random() * 10;
-        const delay = -Math.random() * duration;
+        img.style.setProperty('--swim-top', `${top}%`);
+        img.style.setProperty('--swim-duration', `${duration}s`);
+        img.style.setProperty('--swim-delay', `${delay}s`);
+        img.style.setProperty('--swim-y1', `${(Math.random() * 2 - 1) * 22}px`);
+        img.style.setProperty('--swim-y2', `${(Math.random() * 2 - 1) * 42}px`);
+        img.style.setProperty('--swim-y3', `${(Math.random() * 2 - 1) * 22}px`);
+        img.style.setProperty('--swim-r1', `${(Math.random() * 2 - 1) * 3}deg`);
+        img.style.setProperty('--swim-r2', `${(Math.random() * 2 - 1) * 4}deg`);
+        img.style.setProperty('--swim-r3', `${(Math.random() * 2 - 1) * 3}deg`);
 
-        img.style.top = `${5 + Math.random() * 75}%`;
-        img.style.left = `${5 + Math.random() * 80}%`;
-        img.style.animationDuration = `${duration}s`;
-        img.style.animationDelay = `${delay}s`;
-        img.style.setProperty('--dx1', `${(Math.random() * 2 - 1) * 150}px`);
-        img.style.setProperty('--dy1', `${(Math.random() * 2 - 1) * 80}px`);
-        img.style.setProperty('--dx2', `${(Math.random() * 2 - 1) * 180}px`);
-        img.style.setProperty('--dy2', `${(Math.random() * 2 - 1) * 100}px`);
-        img.style.setProperty('--dx3', `${(Math.random() * 2 - 1) * 150}px`);
-        img.style.setProperty('--dy3', `${(Math.random() * 2 - 1) * 80}px`);
-        img.style.setProperty('--dr1', `${(Math.random() * 2 - 1) * 10}deg`);
-        img.style.setProperty('--dr2', `${(Math.random() * 2 - 1) * 10}deg`);
-
-        oceanSwimLayer.appendChild(img);
+        fragment.appendChild(img);
     });
+
+    oceanSwimLayer.replaceChildren(fragment);
 }
 
-//Turns Ocean Mode on/off: underwater landing-page theme plus the swimming layer
+//Applies Ocean Mode and only creates the swimming layer when needed
 function applyOceanMode(enabled) {
     document.body.classList.toggle('ocean-mode', enabled);
     updateNavContrast();
 
-    if (enabled) {
-        spawnOceanSwimLayer(getUnlockedCreatures());
-    } else {
+    if (!enabled) {
         clearOceanSwimLayer();
+        return;
+    }
+
+    const unlocked = getUnlockedCreatures();
+
+    if (unlocked.length) {
+        spawnOceanSwimLayer(unlocked);
     }
 }
 
 if (oceanModeToggle) {
     oceanModeToggle.addEventListener('change', () => {
-        saveOceanModeState(oceanModeToggle.checked);
-        applyOceanMode(oceanModeToggle.checked);
+        const enabled = oceanModeToggle.checked;
+
+        saveOceanModeState(enabled);
+        applyOceanMode(enabled);
     });
 }
 
-//Refreshes the pull button/label based on the once-per-day cooldown
+//Refreshes the pull button and cooldown label
 function updateCapsuleAvailability() {
     if (!capsulePullBtn || isCapsulePulling) return;
 
     const remaining = getSpinCooldownRemaining();
+
     if (remaining > 0) {
         capsulePullBtn.disabled = true;
         capsulePullBtn.textContent = `Next pull in ${formatCooldown(remaining)}`;
-    } else {
-        capsulePullBtn.disabled = false;
-        capsulePullBtn.textContent = 'Pull Lever';
+        return;
     }
+
+    capsulePullBtn.disabled = false;
+    capsulePullBtn.textContent = 'Pull Lever';
 }
 
-//Runs the capsule drop/crack animation and unlocks a new (or, once complete, a repeat) creature
+//Runs the capsule animation and unlocks a creature
 function pullCapsule() {
-    if (isCapsulePulling || !capsuleEl || getSpinCooldownRemaining() > 0) return;
+    if (
+        isCapsulePulling ||
+        !capsuleEl ||
+        !capsulePullBtn ||
+        !capsuleRevealImg ||
+        !capsuleMessage ||
+        getSpinCooldownRemaining() > 0
+    ) {
+        return;
+    }
 
     const unlocked = getUnlockedCreatures();
-    const remaining = OCEAN_CREATURES.filter(c => !unlocked.includes(c.id));
+    const unlockedSet = new Set(unlocked);
+    const remaining = OCEAN_CREATURES.filter(creature => !unlockedSet.has(creature.id));
     const isDuplicatePull = remaining.length === 0;
     const pool = isDuplicatePull ? OCEAN_CREATURES : remaining;
     const chosen = pool[Math.floor(Math.random() * pool.length)];
@@ -790,12 +837,14 @@ function pullCapsule() {
     isCapsulePulling = true;
     capsulePullBtn.disabled = true;
     capsuleMessage.textContent = '';
+
     capsuleEl.classList.remove('is-cracking');
     void capsuleEl.offsetWidth;
     capsuleEl.classList.add('is-dropping');
 
     setTimeout(() => {
         capsuleEl.classList.remove('is-dropping');
+
         capsuleRevealImg.src = chosen.img;
         capsuleRevealImg.alt = chosen.name;
         capsuleEl.classList.add('is-cracking');
@@ -806,6 +855,7 @@ function pullCapsule() {
             capsuleMessage.textContent = `Full collection! Here's the ${chosen.name} again.`;
         } else {
             const updatedUnlocked = [...unlocked, chosen.id];
+
             saveUnlockedCreatures(updatedUnlocked);
             updateCreatureGrid(updatedUnlocked);
             updateOceanToggleAvailability(updatedUnlocked);
@@ -827,15 +877,20 @@ if (capsulePullBtn) {
     capsulePullBtn.addEventListener('click', pullCapsule);
 }
 
-//Restores collection progress, Ocean Mode, and cooldown state on page load
+//Restores Ocean Mode state and collection progress on page load
 (function initOceanFeature() {
     const unlocked = getUnlockedCreatures();
+
     updateCreatureGrid(unlocked);
     updateOceanToggleAvailability(unlocked);
     updateEasterEgg(unlocked);
     updateCapsuleAvailability();
 
     const oceanModeSaved = getOceanModeSaved() && unlocked.length > 0;
-    if (oceanModeToggle) oceanModeToggle.checked = oceanModeSaved;
+
+    if (oceanModeToggle) {
+        oceanModeToggle.checked = oceanModeSaved;
+    }
+
     applyOceanMode(oceanModeSaved);
 })();

@@ -1552,8 +1552,6 @@ body.is-dragging-active {
 
 
 /* Ocean */
-
-/* Landing-page underwater scene (kelp + seafloor), scoped to #home only */
 .ocean-scene {
     position: absolute;
     inset: 0;
@@ -1561,67 +1559,142 @@ body.is-dragging-active {
     overflow: hidden;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 1s ease;
+    background:
+        radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.13) 0 1px, transparent 2px),
+        radial-gradient(circle at 18% 42%, rgba(255, 255, 255, 0.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 82% 35%, rgba(255, 255, 255, 0.10) 0 1px, transparent 2px);
+    transition: opacity 0.35s ease;
 }
 
 body.ocean-mode #home {
-    background: linear-gradient(180deg, #04314a 0%, #063d59 38%, #052840 72%, #011c2c 100%);
-    transition: background-color 0.8s ease;
+    background:
+        radial-gradient(ellipse 75% 48% at 50% 0%, rgba(103, 218, 236, 0.34) 0%, transparent 70%),
+        linear-gradient(180deg, #48b0be 0%, #1f87a0 42%, #126a8c 72%, #0c4b6b 100%);
 }
 
 body.ocean-mode #home::before {
-    background: radial-gradient(ellipse 65% 55% at 50% 28%,
-            rgba(255, 255, 255, 0.09) 0%,
-            transparent 70%);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 28%),
+        radial-gradient(ellipse 70% 45% at 50% 28%, rgba(255, 255, 255, 0.08), transparent 72%);
 }
 
 body.ocean-mode #home .ocean-scene {
     opacity: 1;
 }
 
-.ocean-seafloor {
+.ocean-floor {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: clamp(60px, 12vh, 140px);
+    left: -5%;
+    right: -5%;
+    bottom: -3%;
+    height: clamp(70px, 13.2vh, 165px);
+    border-radius: 50% 50% 0 0 / 24% 24% 0 0;
     background:
-        radial-gradient(circle at 8% 55%, rgba(255, 255, 255, 0.16) 0 6px, transparent 7px),
-        radial-gradient(circle at 22% 38%, rgba(255, 255, 255, 0.13) 0 5px, transparent 6px),
-        radial-gradient(circle at 38% 62%, rgba(255, 255, 255, 0.15) 0 7px, transparent 8px),
-        radial-gradient(circle at 55% 35%, rgba(255, 255, 255, 0.11) 0 5px, transparent 6px),
-        radial-gradient(circle at 70% 55%, rgba(255, 255, 255, 0.14) 0 6px, transparent 7px),
-        radial-gradient(circle at 85% 38%, rgba(255, 255, 255, 0.12) 0 5px, transparent 6px),
-        radial-gradient(circle at 95% 60%, rgba(255, 255, 255, 0.15) 0 6px, transparent 7px),
-        linear-gradient(180deg, rgba(1, 20, 28, 0) 0%, rgba(1, 16, 24, 0.85) 100%);
+        radial-gradient(circle at 12% 38%, rgba(255, 255, 255, 0.18) 0 4px, transparent 5px),
+        radial-gradient(circle at 28% 58%, rgba(255, 255, 255, 0.15) 0 5px, transparent 6px),
+        radial-gradient(circle at 48% 34%, rgba(255, 255, 255, 0.16) 0 4px, transparent 5px),
+        radial-gradient(circle at 68% 62%, rgba(255, 255, 255, 0.13) 0 5px, transparent 6px),
+        radial-gradient(circle at 86% 42%, rgba(255, 255, 255, 0.15) 0 4px, transparent 5px),
+        linear-gradient(180deg, #e7bd73 0%, #dca45b 100%);
 }
 
-.ocean-kelp {
+.ocean-bubbles {
+    position: absolute;
+    bottom: 7%;
+    width: 170px;
+    height: 78%;
+    opacity: 0.72;
+    background:
+        radial-gradient(circle at 18% 88%, transparent 0 7px, rgba(255, 255, 255, 0.72) 8px 10px, transparent 11px),
+        radial-gradient(circle at 55% 67%, transparent 0 4px, rgba(255, 255, 255, 0.62) 5px 7px, transparent 8px),
+        radial-gradient(circle at 31% 48%, transparent 0 8px, rgba(255, 255, 255, 0.58) 9px 11px, transparent 12px),
+        radial-gradient(circle at 74% 30%, transparent 0 5px, rgba(255, 255, 255, 0.58) 6px 8px, transparent 9px),
+        radial-gradient(circle at 46% 11%, transparent 0 3px, rgba(255, 255, 255, 0.55) 4px 6px, transparent 7px);
+    animation: ocean-bubble-rise 7s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+body.ocean-home-active .ocean-bubbles {
+    animation-play-state: running;
+}
+
+.ocean-bubbles--left { left: 0; }
+.ocean-bubbles--right { right: 0; animation-delay: -3.5s; transform: scaleX(-1); }
+
+@keyframes ocean-bubble-rise {
+    0%, 100% { transform: translateY(8px); }
+    50% { transform: translateY(-10px); }
+}
+
+.ocean-bubbles--right {
+    animation-name: ocean-bubble-rise-right;
+}
+
+@keyframes ocean-bubble-rise-right {
+    0%, 100% { transform: scaleX(-1) translateY(8px); }
+    50% { transform: scaleX(-1) translateY(-10px); }
+}
+
+.ocean-coral {
+    position: absolute;
+    bottom: clamp(42px, 7vh, 82px);
+    width: clamp(100px, 13vw, 190px);
+    height: clamp(105px, 17vh, 190px);
+    opacity: 0.95;
+    filter: none;
+}
+
+.ocean-coral::before,
+.ocean-coral::after {
+    content: '';
     position: absolute;
     bottom: 0;
-    width: clamp(14px, 1.6vw, 26px);
-    background: linear-gradient(180deg, #1f6b4d 0%, #164f3a 60%, #0d3626 100%);
-    border-radius: 50% 50% 8% 8% / 60% 60% 8% 8%;
-    transform-origin: bottom center;
-    animation: kelp-sway ease-in-out infinite;
-    opacity: 0.85;
+    border-radius: 999px 999px 18px 18px;
+    background: linear-gradient(180deg, #ff7f8f 0%, #ed526b 100%);
 }
 
-.ocean-kelp--1 { left: 4%; height: clamp(100px, 24vh, 260px); animation-duration: 7s; }
-.ocean-kelp--2 { left: 12%; height: clamp(140px, 32vh, 320px); animation-delay: -2s; animation-duration: 8s; }
-.ocean-kelp--3 { right: 18%; height: clamp(110px, 26vh, 280px); animation-delay: -4s; animation-duration: 6.5s; }
-.ocean-kelp--4 { right: 8%; height: clamp(150px, 34vh, 340px); animation-delay: -1s; animation-duration: 7.5s; }
-.ocean-kelp--5 { right: 2%; height: clamp(90px, 20vh, 220px); animation-delay: -3s; animation-duration: 6s; }
-
-@keyframes kelp-sway {
-    0%, 100% { transform: rotate(-4deg); }
-    50% { transform: rotate(4deg); }
+.ocean-coral::before {
+    left: 20%;
+    width: 20px;
+    height: 76%;
+    box-shadow:
+        27px 18px 0 -2px #f36b7c,
+        51px 0 0 2px #e95770,
+        72px 24px 0 -3px #f47886;
+    transform: rotate(-4deg);
 }
 
-/* Hero content visibility over the dark underwater background */
+.ocean-coral::after {
+    left: 48%;
+    width: 17px;
+    height: 52%;
+    box-shadow:
+        24px 10px 0 -1px #ff8794,
+        -34px 15px 0 -2px #f66f80;
+    transform: rotate(7deg);
+}
+
+.ocean-coral--left { left: -8px; }
+.ocean-coral--right { right: -8px; transform: scaleX(-1); }
+
+.ocean-rocks {
+    position: absolute;
+    bottom: clamp(38px, 6vh, 70px);
+    width: clamp(90px, 12vw, 180px);
+    height: 80px;
+    opacity: 0.9;
+    background:
+        radial-gradient(ellipse at 18% 78%, #775b61 0 22px, transparent 23px),
+        radial-gradient(ellipse at 48% 68%, #8a686c 0 30px, transparent 31px),
+        radial-gradient(ellipse at 78% 82%, #6e555b 0 24px, transparent 25px);
+}
+
+.ocean-rocks--left { left: 8%; }
+.ocean-rocks--right { right: 8%; transform: scaleX(-1); }
+
 body.ocean-mode #home .hero-eyebrow {
-    color: #04314a;
-    background: rgba(255, 250, 240, 0.94);
+    color: #07546a;
+    background: rgba(255, 255, 255, 0.88);
     border-color: rgba(255, 255, 255, 0.5);
 }
 
@@ -1630,18 +1703,17 @@ body.ocean-mode #home .hero-name {
 }
 
 body.ocean-mode #home .hero-tagline {
-    color: rgba(255, 250, 240, 0.85);
+    color: rgba(255, 255, 255, 0.88);
 }
 
 body.ocean-mode #home .scroll-hint {
-    color: rgba(255, 250, 240, 0.75);
+    color: rgba(255, 255, 255, 0.82);
 }
 
 body.ocean-mode #home .scroll-hint:hover {
     color: #ffffff;
 }
 
-/* Nav needs light icons while resting on the dark landing page during Ocean Mode */
 .nav.nav--on-dark .hamburger,
 .nav.nav--on-dark .nav-icon {
     color: #ffffff;
@@ -1656,15 +1728,14 @@ body.ocean-mode #home .scroll-hint:hover {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Swim layer (creatures), scoped to #home only */
 .ocean-swim-layer {
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: 1;
     overflow: hidden;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.8s ease;
+    contain: layout paint;
 }
 
 body.ocean-mode #home .ocean-swim-layer {
@@ -1673,111 +1744,114 @@ body.ocean-mode #home .ocean-swim-layer {
 
 .ocean-swim-creature {
     position: absolute;
-    width: clamp(70px, 9vw, 140px);
+    top: var(--swim-top);
+    left: 0;
+    width: clamp(64px, 7.5vw, 130px);
     height: auto;
-    opacity: 0.65;
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
-    animation-name: ocean-drift;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    will-change: transform;
+    opacity: 0.88;
+    user-select: none;
+    pointer-events: none;
+    backface-visibility: hidden;
+    transform: translate3d(-18vw, 0, 0);
+    animation: ocean-swim var(--swim-duration) linear var(--swim-delay) infinite;
+    animation-play-state: paused;
 }
 
-@keyframes ocean-drift {
+.ocean-swim-creature[data-creature="whale"] {
+    width: clamp(192px, 22.5vw, 390px);
+}
+
+.ocean-swim-creature[data-creature="whaleshark"] {
+    width: clamp(320px, 37.5vw, 650px);
+}
+
+body.ocean-home-active .ocean-swim-creature {
+    animation-play-state: running;
+}
+
+.ocean-swim-creature.is-reversed {
+    animation-name: ocean-swim-reverse;
+}
+
+@keyframes ocean-swim {
     0% {
-        transform: translate(0, 0) rotate(0deg);
+        transform: translate3d(-20vw, var(--swim-y1), 0) rotate(var(--swim-r1));
     }
-    25% {
-        transform: translate(var(--dx1), var(--dy1)) rotate(var(--dr1));
-    }
+
     50% {
-        transform: translate(var(--dx2), var(--dy2)) rotate(0deg);
+        transform: translate3d(60vw, var(--swim-y2), 0) rotate(var(--swim-r2));
     }
-    75% {
-        transform: translate(var(--dx3), var(--dy3)) rotate(var(--dr2));
-    }
+
     100% {
-        transform: translate(0, 0) rotate(0deg);
+        transform: translate3d(120vw, var(--swim-y3), 0) rotate(var(--swim-r3));
     }
+}
+
+@keyframes ocean-swim-reverse {
+    0% {
+        transform: translate3d(120vw, var(--swim-y1), 0) scaleX(-1) rotate(var(--swim-r1));
+    }
+
+    50% {
+        transform: translate3d(40vw, var(--swim-y2), 0) scaleX(-1) rotate(var(--swim-r2));
+    }
+
+    100% {
+        transform: translate3d(-20vw, var(--swim-y3), 0) scaleX(-1) rotate(var(--swim-r3));
+    }
+}
+
+body.ocean-modal-open .ocean-swim-creature {
+    animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .ocean-kelp,
     .ocean-swim-creature {
         animation: none !important;
     }
 }
 
-/* Easter egg: Frog Hero cast appears once the full collection is unlocked */
-.home-easter-egg {
-    position: absolute;
-    bottom: 0;
-    z-index: 1;
-    width: clamp(90px, 12vw, 200px);
-    height: auto;
-    pointer-events: none;
-    user-select: none;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.home-easter-egg.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.home-easter-egg--frog {
-    left: clamp(1rem, 4vw, 4rem);
-}
-
-.home-easter-egg--witch {
-    right: clamp(1rem, 4vw, 4rem);
-}
-
-@media (max-width: 700px) {
-    .home-easter-egg {
-        width: clamp(60px, 18vw, 120px);
-    }
-}
-
-/* Trigger button */
 .ocean-trigger {
     position: absolute;
     top: 2rem;
     right: 2rem;
-    z-index: 2;
-    width: clamp(44px, 5vw, 54px);
-    height: clamp(44px, 5vw, 54px);
-    border-radius: 50%;
+    z-index: 3;
+    width: auto;
+    height: auto;
+    padding: 0.5rem;
     border: none;
-    background: var(--bg-alt);
+    border-radius: 0;
+    background: transparent;
     color: var(--text-primary);
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform var(--ease), box-shadow var(--ease), background-color var(--ease), color var(--ease);
+    transition: color var(--ease), transform var(--ease);
 }
 
 .ocean-trigger i {
-    font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+    font-size: 2rem;
 }
 
 .ocean-trigger:hover {
-    transform: scale(1.06);
-    box-shadow: var(--shadow-md);
-    background-color: var(--accent-bg);
-    color: var(--accent);
+    transform: scale(1.05);
+    box-shadow: none;
+    background: transparent;
+    color: var(--text-muted);
 }
 
 body.ocean-mode #home .ocean-trigger {
-    background: rgba(255, 250, 240, 0.94);
-    color: #04314a;
+    background: transparent;
+    color: #ffffff;
 }
 
-/* Modal overlay */
+.ocean-mode-panel {
+    flex: 0 0 auto;
+    padding: 0;
+}
+
 .ocean-modal-overlay {
     position: fixed;
     inset: 0;
@@ -1786,11 +1860,9 @@ body.ocean-mode #home .ocean-trigger {
     align-items: center;
     justify-content: center;
     background: rgba(10, 20, 25, 0.45);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.25s ease;
 }
 
 .ocean-modal-overlay.open {
@@ -1809,7 +1881,7 @@ body.ocean-mode #home .ocean-trigger {
     flex-direction: column;
     overflow: hidden;
     transform: scale(0.96) translateY(12px);
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ocean-modal-overlay.open .ocean-modal {
@@ -1869,7 +1941,6 @@ body.ocean-mode #home .ocean-trigger {
     padding: clamp(1rem, 2vh, 1.5rem) clamp(1.5rem, 3vw, 3rem) clamp(1.5rem, 3vh, 2.5rem);
 }
 
-/* Capsule machine */
 .capsule-machine {
     flex-shrink: 0;
     display: flex;
@@ -1934,18 +2005,10 @@ body.ocean-mode #home .ocean-trigger {
 }
 
 @keyframes capsule-drop {
-    0% {
-        transform: translateY(-140%);
-    }
-    65% {
-        transform: translateY(6%);
-    }
-    85% {
-        transform: translateY(-3%);
-    }
-    100% {
-        transform: translateY(0);
-    }
+    0% { transform: translateY(-140%); }
+    65% { transform: translateY(6%); }
+    85% { transform: translateY(-3%); }
+    100% { transform: translateY(0); }
 }
 
 .capsule.is-cracking .capsule-top {
@@ -1996,7 +2059,6 @@ body.ocean-mode #home .ocean-trigger {
     text-align: center;
 }
 
-/* Ocean mode toggle panel — sits between the reward text and the collection grid */
 .ocean-toggle-row {
     flex-shrink: 0;
     display: flex;
@@ -2064,20 +2126,10 @@ body.ocean-mode #home .ocean-trigger {
     transition: transform var(--ease);
 }
 
-.ocean-switch input:checked + .ocean-switch-slider {
-    background: var(--accent);
-}
+.ocean-switch input:checked + .ocean-switch-slider { background: var(--accent); }
+.ocean-switch input:checked + .ocean-switch-slider::before { transform: translateX(24px); }
+.ocean-switch input:disabled + .ocean-switch-slider { opacity: 0.5; cursor: not-allowed; }
 
-.ocean-switch input:checked + .ocean-switch-slider::before {
-    transform: translateX(24px);
-}
-
-.ocean-switch input:disabled + .ocean-switch-slider {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Collection grid */
 .creature-grid {
     flex: 1;
     display: grid;
@@ -2106,19 +2158,9 @@ body.ocean-mode #home .ocean-trigger {
     transition: filter 0.5s ease;
 }
 
-.creature-slot[data-creature="whale"] img {
-    width: 70%;
-    height: 70%;
-}
-
-.creature-slot[data-creature="whaleshark"] img {
-    width: 88%;
-    height: 88%;
-}
-
-.creature-slot.unlocked img {
-    filter: none;
-}
+.creature-slot[data-creature="whale"] img { width: 70%; height: 70%; }
+.creature-slot[data-creature="whaleshark"] img { width: 88%; height: 88%; }
+.creature-slot.unlocked img { filter: none; }
 
 .creature-name {
     position: absolute;
@@ -2131,25 +2173,45 @@ body.ocean-mode #home .ocean-trigger {
     color: var(--text-muted);
 }
 
-.creature-slot.unlocked .creature-name {
-    color: var(--text-secondary);
+.creature-slot.unlocked .creature-name { color: var(--text-secondary); }
+
+@media (max-width: 1250px), (max-height: 900px) {
+    .ocean-trigger {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .ocean-trigger i { font-size: 1.35rem; }
 }
 
 @media (max-width: 700px) {
-
     .ocean-modal {
         width: 96vw;
         height: 96vh;
         border-radius: var(--radius-md);
     }
 
-    .creature-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    .creature-grid { grid-template-columns: repeat(3, 1fr); }
 
     .ocean-toggle-row {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
+    }
+
+    .ocean-coral { opacity: 0.82; }
+    .ocean-rocks--left { left: -12%; }
+    .ocean-rocks--right { right: -12%; }
+}
+
+body.ocean-modal-open .ocean-swim-creature,
+body.ocean-modal-open .ocean-bubbles {
+    animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ocean-bubbles,
+    .ocean-swim-creature {
+        animation: none !important;
     }
 }
