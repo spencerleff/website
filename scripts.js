@@ -7,6 +7,446 @@ function toggleNav() {
 }
 
 
+//Opens/closes the Deep Sea Adventure menu
+function toggleOceanMenu() {
+    const menu = document.getElementById('oceanMenu');
+    const toggleBtn = document.querySelector('.ocean-toggle');
+    const isOpen = menu.classList.toggle('open');
+    toggleBtn.classList.toggle('open', isOpen);
+    toggleBtn.setAttribute('aria-expanded', String(isOpen));
+}
+
+//Closes the ocean menu when clicking outside of it
+document.addEventListener('click', e => {
+    const menu = document.getElementById('oceanMenu');
+    const toggleBtn = document.querySelector('.ocean-toggle');
+    if (!menu || !menu.classList.contains('open')) return;
+    if (menu.contains(e.target) || toggleBtn.contains(e.target)) return;
+
+    menu.classList.remove('open');
+    toggleBtn.classList.remove('open');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+});
+
+//Flips the Ocean Mode switch on/off, toggling the landing-page scene
+function toggleOceanMode() {
+    const oceanSwitch = document.getElementById('oceanSwitch');
+    const isOn = oceanSwitch.getAttribute('aria-checked') === 'true';
+    const next = !isOn;
+    oceanSwitch.setAttribute('aria-checked', String(next));
+    document.body.classList.toggle('ocean-mode-active', next);
+
+    try {
+        localStorage.setItem(OCEAN_MODE_KEY, next ? '1' : '0');
+    } catch {
+        //Storage can be unavailable in some private-browsing contexts; fail silently
+    }
+
+    if (next) {
+        renderAllOceanCreatures();
+        refreshAllOceanCreatures();
+        startOceanBubbles();
+    } else {
+        stopOceanBubbles();
+    }
+
+    updateOceanChromeContrast();
+}
+
+//Deep Sea Adventure: capsule spin, creature unlocks, and 24hr cooldown
+const OCEAN_CREATURES = ['fish', 'frog', 'jellyfish', 'otter', 'shark', 'starfish', 'whale', 'whaleshark'];
+const OCEAN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+const OCEAN_LAST_SPIN_KEY = 'oceanLastSpin';
+const OCEAN_UNLOCKED_KEY = 'oceanUnlocked';
+const OCEAN_MODE_KEY = 'oceanModeActive';
+const OCEAN_POSITIONS_KEY = 'oceanPositions';
+
+//Reads the list of already-unlocked creatures from storage
+function getOceanUnlocked() {
+    try {
+        const stored = JSON.parse(localStorage.getItem(OCEAN_UNLOCKED_KEY) || '[]');
+        return Array.isArray(stored) ? stored : [];
+    } catch {
+        return [];
+    }
+}
+
+//Saves the list of unlocked creatures
+function setOceanUnlocked(list) {
+    try {
+        localStorage.setItem(OCEAN_UNLOCKED_KEY, JSON.stringify(list));
+    } catch {
+        //Storage can be unavailable in some private-browsing contexts; fail silently
+    }
+}
+
+//Applies saved unlock state to the grid on load
+function applyOceanUnlockedState() {
+    getOceanUnlocked().forEach(name => {
+        const slot = document.querySelector(`.ocean-creature-slot[data-creature="${name}"]`);
+        if (slot) slot.classList.add('is-unlocked');
+    });
+}
+applyOceanUnlockedState();
+
+//Reads the saved on-screen position (top/left %) for each placed creature
+function getOceanPositions() {
+    try {
+        const stored = JSON.parse(localStorage.getItem(OCEAN_POSITIONS_KEY) || '{}');
+        return (stored && typeof stored === 'object') ? stored : {};
+    } catch {
+        return {};
+    }
+}
+
+//Saves the on-screen position map
+function setOceanPositions(map) {
+    try {
+        localStorage.setItem(OCEAN_POSITIONS_KEY, JSON.stringify(map));
+    } catch {
+        //Storage can be unavailable in some private-browsing contexts; fail silently
+    }
+}
+
+//Assigns a creature a random spot above the sand line the first time it's placed, then reuses it
+function getOrCreateOceanPosition(name) {
+    const positions = getOceanPositions();
+    if (!positions[name]) {
+        positions[name] = {
+            top: 8 + Math.random() * 54,
+            left: 6 + Math.random() * 82
+        };
+        setOceanPositions(positions);
+    }
+    return positions[name];
+}
+
+const oceanCreaturesLayer = document.getElementById('oceanCreatures');
+
+//Returns the scene's current pixel box plus how far down (in px) the sand line sits within it
+function getOceanSceneMetrics() {
+    const sceneEl = document.getElementById('oceanScene');
+    if (!sceneEl) return null;
+
+    const sceneRect = sceneEl.getBoundingClientRect();
+    if (!sceneRect.width || !sceneRect.height) return null;
+
+    const floorEl = document.querySelector('.ocean-floor');
+    const sandTopPx = floorEl
+        ? floorEl.getBoundingClientRect().top - sceneRect.top
+        : sceneRect.height;
+
+    return { sceneRect, sandTopPx };
+}
+
+//Picks the size multiplier for creatures based on the current display resolution
+function getOceanCreatureScaleFactor() {
+    const maxDim = Math.max(window.innerWidth, window.innerHeight);
+    const minDim = Math.min(window.innerWidth, window.innerHeight);
+    const isFullHdOrAbove = maxDim >= 1920 && minDim >= 1080;
+    return isFullHdOrAbove ? 0.4 : 0.25;
+}
+
+//Scales ocean creature sizes
+function applyOceanCreatureScale(img) {
+    const naturalWidth = img.naturalWidth;
+    const naturalHeight = img.naturalHeight;
+    if (!naturalWidth || !naturalHeight) return;
+
+    let width = naturalWidth * getOceanCreatureScaleFactor();
+
+    const metrics = getOceanSceneMetrics();
+    if (metrics) {
+        const aspect = naturalWidth / naturalHeight;
+        const maxWidth = metrics.sceneRect.width * 0.3;
+        const maxHeight = metrics.sceneRect.height * 0.3;
+
+        width = Math.min(width, maxWidth);
+        if (width / aspect > maxHeight) width = maxHeight * aspect;
+    }
+
+    img.style.width = `${width}px`;
+}
+
+//Clamp rendered creatures inside of the display area
+function clampOceanCreaturePosition(img, topPercent, leftPercent) {
+    const metrics = getOceanSceneMetrics();
+    if (!metrics) return { top: topPercent, left: leftPercent };
+
+    const { sceneRect, sandTopPx } = metrics;
+    const imgRect = img.getBoundingClientRect();
+    const w = imgRect.width || 0;
+    const h = imgRect.height || 0;
+
+    //A little breathing room above the sand line
+    const sandBuffer = 4;
+
+    const minLeftPx = 0;
+    const maxLeftPx = Math.max(minLeftPx, sceneRect.width - w);
+    const minTopPx = 0;
+    const maxTopPx = Math.max(minTopPx, sandTopPx - h - sandBuffer);
+
+    let leftPx = (leftPercent / 100) * sceneRect.width;
+    let topPx = (topPercent / 100) * sceneRect.height;
+
+    leftPx = Math.max(minLeftPx, Math.min(maxLeftPx, leftPx));
+    topPx = Math.max(minTopPx, Math.min(maxTopPx, topPx));
+
+    return {
+        top: (topPx / sceneRect.height) * 100,
+        left: (leftPx / sceneRect.width) * 100
+    };
+}
+
+//Nudges a creature to a new spot with a slow, drifting swim - always staying within the water
+function wanderOceanCreature(img, name) {
+    const currentTop = parseFloat(img.style.top) || 0;
+    const currentLeft = parseFloat(img.style.left) || 0;
+
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 15 + Math.random() * 25;
+
+    const nextTop = currentTop + Math.sin(angle) * distance;
+    const nextLeft = currentLeft + Math.cos(angle) * distance;
+
+    const clamped = clampOceanCreaturePosition(img, nextTop, nextLeft);
+
+    img.style.top = `${clamped.top}%`;
+    img.style.left = `${clamped.left}%`;
+
+    const positions = getOceanPositions();
+    positions[name] = { top: clamped.top, left: clamped.left };
+    setOceanPositions(positions);
+}
+
+//Keeps a creature drifting every 8-16 seconds while Ocean Mode stays on, with a slow swim between spots
+function scheduleOceanCreatureWander(img, name) {
+    const delay = 8000 + Math.random() * 8000;
+    setTimeout(() => {
+        if (!document.body.classList.contains('ocean-mode-active') || !img.isConnected) return;
+        wanderOceanCreature(img, name);
+        scheduleOceanCreatureWander(img, name);
+    }, delay);
+}
+
+//Places a single unlocked creature into the scene, skipping ones already placed
+function renderOceanCreature(name) {
+    if (!oceanCreaturesLayer) return;
+    if (oceanCreaturesLayer.querySelector(`[data-ocean-creature="${name}"]`)) return;
+
+    const pos = getOrCreateOceanPosition(name);
+    const img = document.createElement('img');
+    img.alt = name;
+    img.className = 'ocean-creature-asset';
+    img.dataset.oceanCreature = name;
+    img.style.top = `${pos.top}%`;
+    img.style.left = `${pos.left}%`;
+
+    img.onload = () => {
+        applyOceanCreatureScale(img);
+        const clamped = clampOceanCreaturePosition(img, pos.top, pos.left);
+        img.style.top = `${clamped.top}%`;
+        img.style.left = `${clamped.left}%`;
+    };
+    img.src = `Images/${name}.png`;
+
+    oceanCreaturesLayer.appendChild(img);
+    scheduleOceanCreatureWander(img, name);
+}
+
+//Places every already-unlocked creature into the scene
+function renderAllOceanCreatures() {
+    getOceanUnlocked().forEach(renderOceanCreature);
+}
+
+//Rescales and re-clamps every placed creature after a viewport/orientation change
+function refreshAllOceanCreatures() {
+    if (!oceanCreaturesLayer) return;
+    oceanCreaturesLayer.querySelectorAll('.ocean-creature-asset').forEach(img => {
+        applyOceanCreatureScale(img);
+        const name = img.dataset.oceanCreature;
+        const clamped = clampOceanCreaturePosition(img, parseFloat(img.style.top) || 0, parseFloat(img.style.left) || 0);
+        img.style.top = `${clamped.top}%`;
+        img.style.left = `${clamped.left}%`;
+
+        const positions = getOceanPositions();
+        if (positions[name]) {
+            positions[name] = clamped;
+            setOceanPositions(positions);
+        }
+    });
+}
+
+let oceanResizeTimer = null;
+window.addEventListener('resize', () => {
+    clearTimeout(oceanResizeTimer);
+    oceanResizeTimer = setTimeout(refreshAllOceanCreatures, 150);
+});
+
+const OCEAN_MAX_BUBBLES = 5;
+const oceanBubblesLayer = document.getElementById('oceanBubbles');
+let oceanBubbleTimer = null;
+
+//Spawns one cartoon bubble at a random spot, letting its own animation clean it up when it pops
+function spawnOceanBubble() {
+    if (!oceanBubblesLayer) return;
+    if (oceanBubblesLayer.children.length >= OCEAN_MAX_BUBBLES) return;
+
+    const bubble = document.createElement('div');
+    bubble.className = 'ocean-bubble';
+
+    const size = (10 + Math.random() * 22) * 1.75;
+    const rawDuration = 5 + Math.random() * 4;
+    const duration = Math.round((rawDuration * 0.9) * 2) / 2;
+    const drift = Math.random() * 24 - 12;
+    const left = 5 + Math.random() * 88;
+
+    //Spawn anywhere across the water, but never down in the sand
+    const metrics = getOceanSceneMetrics();
+    let maxTopPercent = 88;
+    if (metrics && metrics.sceneRect.height) {
+        maxTopPercent = Math.max(6, (metrics.sandTopPx / metrics.sceneRect.height) * 100 - 4);
+    }
+    const top = 4 + Math.random() * Math.max(2, maxTopPercent - 4);
+
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+    bubble.style.left = `${left}%`;
+    bubble.style.setProperty('--bubble-top', `${top}%`);
+    bubble.style.setProperty('--bubble-duration', `${duration}s`);
+    bubble.style.setProperty('--bubble-drift', `${drift}px`);
+
+    bubble.addEventListener('animationend', () => bubble.remove());
+    oceanBubblesLayer.appendChild(bubble);
+}
+
+//Keeps a steady trickle of bubbles going while Ocean Mode is on, respecting the on-screen cap
+function startOceanBubbles() {
+    if (oceanBubbleTimer) return;
+
+    const tick = () => {
+        spawnOceanBubble();
+        oceanBubbleTimer = setTimeout(tick, 1200 + Math.random() * 1800);
+    };
+    tick();
+}
+
+//Stops spawning and clears any bubbles currently on screen
+function stopOceanBubbles() {
+    if (oceanBubbleTimer) {
+        clearTimeout(oceanBubbleTimer);
+        oceanBubbleTimer = null;
+    }
+    if (oceanBubblesLayer) oceanBubblesLayer.innerHTML = '';
+}
+
+//Keeps the nav and ocean toggle legible: light icons only while Ocean Mode is on and Home is in view
+function updateOceanChromeContrast() {
+    const isOceanActive = document.body.classList.contains('ocean-mode-active');
+    const onDark = isOceanActive && typeof activeSectionId !== 'undefined' && activeSectionId === 'home';
+    document.querySelector('.nav')?.classList.toggle('is-on-dark', onDark);
+    document.querySelector('.ocean-toggle-wrap')?.classList.toggle('is-on-dark', onDark);
+}
+
+//Picks a creature to award, favoring ones not yet unlocked
+function pickOceanCreature() {
+    const unlocked = getOceanUnlocked();
+    const locked = OCEAN_CREATURES.filter(c => !unlocked.includes(c));
+    const pool = locked.length ? locked : OCEAN_CREATURES;
+    return pool[Math.floor(Math.random() * pool.length)];
+}
+
+//Formats milliseconds remaining as HH:MM:SS
+function formatOceanCountdown(ms) {
+    const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    return [h, m, s].map(n => String(n).padStart(2, '0')).join(':');
+}
+
+const oceanSpinBtn = document.getElementById('oceanSpinBtn');
+const oceanCapsule = document.getElementById('oceanCapsule');
+let oceanCountdownInterval = null;
+
+//Keeps the spin button in sync with the cooldown state, ticking the countdown each second
+function updateOceanSpinAvailability() {
+    if (!oceanSpinBtn) return;
+
+    const lastSpin = Number(localStorage.getItem(OCEAN_LAST_SPIN_KEY) || 0);
+    const remaining = lastSpin + OCEAN_COOLDOWN_MS - Date.now();
+
+    if (remaining > 0) {
+        oceanSpinBtn.disabled = true;
+        oceanSpinBtn.textContent = formatOceanCountdown(remaining);
+        if (!oceanCountdownInterval) {
+            oceanCountdownInterval = setInterval(updateOceanSpinAvailability, 1000);
+        }
+    } else {
+        oceanSpinBtn.disabled = false;
+        oceanSpinBtn.textContent = 'Spin';
+        if (oceanCountdownInterval) {
+            clearInterval(oceanCountdownInterval);
+            oceanCountdownInterval = null;
+        }
+    }
+}
+updateOceanSpinAvailability();
+
+//Plays the shake -> pop -> reveal capsule sequence and awards a creature
+if (oceanSpinBtn && oceanCapsule) {
+    oceanSpinBtn.addEventListener('click', () => {
+        const lastSpin = Number(localStorage.getItem(OCEAN_LAST_SPIN_KEY) || 0);
+        if (Date.now() - lastSpin < OCEAN_COOLDOWN_MS) return;
+
+        const winner = pickOceanCreature();
+
+        oceanSpinBtn.disabled = true;
+        oceanCapsule.classList.remove('is-shaking', 'is-launching', 'is-revealed');
+        void oceanCapsule.offsetWidth;
+        oceanCapsule.classList.add('is-shaking');
+
+        //Stage 1: rattle
+        setTimeout(() => {
+            oceanCapsule.classList.remove('is-shaking');
+            oceanCapsule.classList.add('is-launching');
+        }, 600);
+
+        //Stage 2: burst open and reveal the winning creature
+        setTimeout(() => {
+            oceanCapsule.classList.remove('is-launching');
+            oceanCapsule.classList.add('is-revealed');
+            oceanCapsule.innerHTML = `<img src="Images/${winner}.png" class="ocean-capsule-creature" alt="${winner}">`;
+
+            const unlocked = getOceanUnlocked();
+            if (!unlocked.includes(winner)) {
+                unlocked.push(winner);
+                setOceanUnlocked(unlocked);
+            }
+
+            if (document.body.classList.contains('ocean-mode-active')) {
+                renderOceanCreature(winner);
+            }
+
+            const slot = document.querySelector(`.ocean-creature-slot[data-creature="${winner}"]`);
+            if (slot) {
+                slot.classList.add('is-unlocked', 'is-newly-unlocked');
+                setTimeout(() => slot.classList.remove('is-newly-unlocked'), 550);
+            }
+
+            localStorage.setItem(OCEAN_LAST_SPIN_KEY, String(Date.now()));
+        }, 600 + 500);
+
+        //Stage 3: settle the capsule back to its idle state, then start the cooldown countdown
+        setTimeout(() => {
+            oceanCapsule.classList.remove('is-revealed');
+            oceanCapsule.innerHTML = '<i class="fa-solid fa-circle-question"></i>';
+            updateOceanSpinAvailability();
+        }, 600 + 500 + 2000);
+    });
+}
+
+
 //All full-page sections
 const sections = [...document.querySelectorAll('.section')];
 
@@ -20,6 +460,7 @@ if ('IntersectionObserver' in window) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     activeSectionId = entry.target.id;
+                    updateOceanChromeContrast();
                 }
             });
         },
@@ -540,3 +981,34 @@ if ('IntersectionObserver' in window && !prefersReducedMotion) {
         demoObserver.observe(visibilityTarget);
     });
 }
+
+
+//Restores Ocean Mode on load
+function applyOceanModeFromStorage() {
+    let isOn = false;
+    try {
+        isOn = localStorage.getItem(OCEAN_MODE_KEY) === '1';
+    } catch {
+        isOn = false;
+    }
+
+    const oceanSwitch = document.getElementById('oceanSwitch');
+    if (oceanSwitch) oceanSwitch.setAttribute('aria-checked', String(isOn));
+    document.body.classList.toggle('ocean-mode-active', isOn);
+
+    if (isOn) {
+        renderAllOceanCreatures();
+        refreshAllOceanCreatures();
+        startOceanBubbles();
+    }
+
+    updateOceanChromeContrast();
+}
+setTimeout(applyOceanModeFromStorage, 0);
+
+//Once the page (fonts, layout) fully settles, re-clamp in case the scene's true size shifted
+window.addEventListener('load', () => {
+    if (document.body.classList.contains('ocean-mode-active')) {
+        refreshAllOceanCreatures();
+    }
+});

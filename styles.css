@@ -194,6 +194,389 @@ ul.nav-list.open {
 }
 
 
+/* Ocean Toggle */
+.ocean-toggle-wrap {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    padding: 0.5rem;
+    display: flex;
+    z-index: 10;
+}
+
+.ocean-toggle {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color var(--ease), transform var(--ease);
+}
+
+.ocean-toggle:hover {
+    transform: scale(1.05);
+    color: var(--accent);
+}
+
+.ocean-toggle.open {
+    color: var(--accent);
+}
+
+
+/* Ocean Menu */
+.ocean-menu {
+    position: fixed;
+    top: 6.5rem;
+    right: 2rem;
+    width: min(340px, calc(100vw - 1.5rem));
+    max-height: min(75vh, 640px);
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
+    opacity: 0;
+    transform: translateY(-14px) scale(0.97);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ocean-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.ocean-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.ocean-menu-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.05rem, 1.4vw, 1.4rem);
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.ocean-mode-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.ocean-mode-label {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--fs-body);
+    color: var(--text-primary);
+}
+
+.ocean-switch {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    width: 44px;
+    height: 25px;
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: var(--border-strong);
+    cursor: pointer;
+    transition: background var(--ease-spring);
+}
+
+.ocean-switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform var(--ease-spring);
+}
+
+.ocean-switch[aria-checked="true"] {
+    background: var(--accent);
+}
+
+.ocean-switch[aria-checked="true"] .ocean-switch-thumb {
+    transform: translateX(19px);
+}
+
+.ocean-capsule-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.4rem 0.5rem;
+    background: var(--bg-alt);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.ocean-capsule {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    box-shadow: var(--shadow-sm);
+}
+
+.ocean-capsule-creature {
+    width: 76%;
+    height: 76%;
+    object-fit: contain;
+}
+
+/* Stage 1: capsule rattles like it's about to pop open */
+.ocean-capsule.is-shaking {
+    animation: ocean-capsule-shake 0.6s ease-in-out;
+    border-color: var(--accent);
+}
+
+@keyframes ocean-capsule-shake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    12% { transform: translateX(-3px) rotate(-7deg); }
+    24% { transform: translateX(3px) rotate(7deg); }
+    36% { transform: translateX(-4px) rotate(-9deg); }
+    48% { transform: translateX(4px) rotate(9deg); }
+    60% { transform: translateX(-3px) rotate(-6deg); }
+    72% { transform: translateX(3px) rotate(6deg); }
+    85% { transform: translateX(-1px) rotate(-2deg); }
+}
+
+/* Stage 2: capsule pops with a burst ring */
+.ocean-capsule.is-launching {
+    animation: ocean-capsule-launch 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    border-color: var(--accent);
+}
+
+@keyframes ocean-capsule-launch {
+    0% { transform: scale(1); }
+    35% { transform: scale(0.8) rotate(-6deg); }
+    70% { transform: scale(1.3) rotate(4deg); box-shadow: 0 0 0 10px rgba(74, 123, 245, 0.16), var(--shadow-sm); }
+    100% { transform: scale(1.05) rotate(0deg); box-shadow: 0 0 22px rgba(74, 123, 245, 0.3); }
+}
+
+.ocean-capsule.is-launching::before,
+.ocean-capsule.is-launching::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    opacity: 0.75;
+    pointer-events: none;
+    animation: ocean-capsule-ring 0.7s ease-out forwards;
+}
+
+.ocean-capsule.is-launching::after {
+    animation-delay: 0.08s;
+}
+
+@keyframes ocean-capsule-ring {
+    0% { transform: scale(0.6); opacity: 0.8; }
+    100% { transform: scale(2.1); opacity: 0; }
+}
+
+/* Stage 3: the creature reveal settles in with a bounce */
+.ocean-capsule.is-revealed {
+    animation: ocean-capsule-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-color: var(--accent);
+    box-shadow: 0 0 18px rgba(74, 123, 245, 0.28);
+}
+
+@keyframes ocean-capsule-reveal {
+    0% { transform: scale(0.35) rotate(-18deg); opacity: 0; }
+    65% { transform: scale(1.18) rotate(6deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.ocean-spin-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 96px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--fs-body);
+    font-variant-numeric: tabular-nums;
+    color: #ffffff;
+    background: var(--accent);
+    border: none;
+    padding: 0.6em 1.4em;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform var(--ease), background var(--ease), box-shadow var(--ease), color var(--ease);
+}
+
+.ocean-spin-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.ocean-spin-btn:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.ocean-spin-btn:disabled {
+    background: var(--border-strong);
+    color: var(--text-secondary);
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+}
+
+.ocean-creature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+}
+
+.ocean-creature-slot {
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.ocean-creature-img {
+    width: 68%;
+    height: 68%;
+    object-fit: contain;
+    filter: grayscale(1) brightness(0.55);
+    opacity: 0.55;
+    transition: filter var(--ease), opacity var(--ease);
+}
+
+.ocean-creature-slot[data-creature="frog"] .ocean-creature-img {
+    width: 54.4%;
+    height: 54.4%;
+}
+
+.ocean-lock {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.25);
+    transition: opacity var(--ease);
+}
+
+.ocean-creature-slot.is-unlocked .ocean-creature-img {
+    filter: none;
+    opacity: 1;
+}
+
+.ocean-creature-slot.is-unlocked .ocean-lock {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.ocean-creature-slot.is-newly-unlocked {
+    animation: ocean-slot-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes ocean-slot-pop {
+    0% { transform: scale(0.85); box-shadow: 0 0 0 0 rgba(74, 123, 245, 0.4); }
+    60% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(74, 123, 245, 0.18); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 123, 245, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ocean-capsule.is-shaking,
+    .ocean-capsule.is-launching,
+    .ocean-capsule.is-revealed,
+    .ocean-capsule.is-launching::before,
+    .ocean-capsule.is-launching::after,
+    .ocean-creature-slot.is-newly-unlocked {
+        animation: none !important;
+    }
+}
+
+@media (max-width: 1250px), (max-height: 900px) {
+
+    .ocean-toggle-wrap {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .ocean-toggle {
+        font-size: 1.35rem;
+    }
+
+    .ocean-menu {
+        top: 4.25rem;
+        right: 1rem;
+        padding: 1.25rem;
+        gap: 1.1rem;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .ocean-toggle-wrap {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .ocean-toggle {
+        font-size: 1.2rem;
+    }
+
+    .ocean-menu {
+        top: 3.5rem;
+        right: 0.5rem;
+        width: min(300px, calc(100vw - 1rem));
+        padding: 1.1rem;
+        gap: 1rem;
+    }
+
+    .ocean-creature-grid {
+        gap: 0.45rem;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+
+    .ocean-menu {
+        top: 3.25rem;
+        max-height: min(85vh, 520px);
+    }
+}
+
+
 /* Home */
 #home::before {
     content: '';
@@ -298,6 +681,193 @@ ul.nav-list.open {
     50% {
         transform: translateY(9px);
         opacity: 1;
+    }
+}
+
+
+/* Ocean Mode: background scene */
+.ocean-scene {
+    --ocean-floor-h: clamp(60px, 15vh, 160px);
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+}
+
+body.ocean-mode-active #home .ocean-scene {
+    opacity: 1;
+}
+
+body.ocean-mode-active #home::before {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.ocean-water-layer {
+    position: absolute;
+    inset: 0;
+    background-color: #082e4a;
+    background-image: url('Images/water.png');
+    background-repeat: repeat;
+    background-size: clamp(160px, 22vmin, 340px);
+}
+
+.ocean-bubbles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+.ocean-bubble {
+    position: absolute;
+    top: var(--bubble-top, 50%);
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.98) 14%, rgba(255, 255, 255, 0.55) 16% 58%, rgba(255, 255, 255, 0.3) 60% 100%);
+    border: 2.5px solid rgba(255, 255, 255, 0.95);
+    box-shadow: inset -3px -3px 0 rgba(255, 255, 255, 0.4);
+    animation: ocean-bubble-rise var(--bubble-duration, 6s) ease-in-out forwards;
+}
+
+@keyframes ocean-bubble-rise {
+    0% { transform: translateY(0) translateX(0) scale(0.4); opacity: 0; }
+    8% { opacity: 0.95; transform: translateY(-10%) translateX(0) scale(1); }
+    50% { transform: translateY(-58%) translateX(var(--bubble-drift, 12px)) scale(1); }
+    92% { opacity: 0.9; transform: translateY(-98%) translateX(calc(var(--bubble-drift, 12px) * -1)) scale(1.15); }
+    100% { transform: translateY(-108%) translateX(0) scale(1.4); opacity: 0; }
+}
+
+.ocean-creatures {
+    position: absolute;
+    inset: 0;
+}
+
+.ocean-creature-asset {
+    position: absolute;
+    height: auto;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.28));
+    transition: top 3.6s cubic-bezier(0.37, 0, 0.63, 1), left 3.6s cubic-bezier(0.37, 0, 0.63, 1);
+}
+
+.ocean-floor {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--ocean-floor-h);
+    background-color: #cdaf72;
+    background-image:
+        linear-gradient(180deg, #ddc48d 0%, #cdaf72 55%, #b9985d 100%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect x='3' y='5' width='3' height='3' fill='%23f2e0ab'/%3E%3Crect x='14' y='2' width='2' height='2' fill='%23a87d43'/%3E%3Crect x='23' y='9' width='3' height='3' fill='%23fff3d6'/%3E%3Crect x='34' y='4' width='2' height='2' fill='%23916b38'/%3E%3Crect x='41' y='13' width='3' height='3' fill='%23e9c98a'/%3E%3Crect x='8' y='17' width='2' height='2' fill='%23855f31'/%3E%3Crect x='19' y='21' width='3' height='3' fill='%23fff3d6'/%3E%3Crect x='29' y='18' width='2' height='2' fill='%23a87d43'/%3E%3Crect x='4' y='27' width='3' height='3' fill='%23916b38'/%3E%3Crect x='16' y='31' width='2' height='2' fill='%23f2e0ab'/%3E%3Crect x='26' y='29' width='3' height='3' fill='%23855f31'/%3E%3Crect x='37' y='26' width='2' height='2' fill='%23fff3d6'/%3E%3Crect x='44' y='33' width='3' height='3' fill='%23a87d43'/%3E%3Crect x='10' y='38' width='2' height='2' fill='%23e9c98a'/%3E%3Crect x='21' y='41' width='3' height='3' fill='%23855f31'/%3E%3Crect x='32' y='39' width='2' height='2' fill='%23f2e0ab'/%3E%3Crect x='2' y='43' width='3' height='3' fill='%23a87d43'/%3E%3C/svg%3E");
+    background-size: 100% 100%, 48px 48px;
+    background-repeat: no-repeat, repeat;
+    border-top: 3px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.ocean-floor-asset {
+    position: absolute;
+    bottom: calc(var(--ocean-floor-h) - 14px);
+    width: auto;
+}
+
+.ocean-kelp {
+    left: 8%;
+    height: clamp(60px, 17vh, 145px);
+}
+
+.ocean-coral1 {
+    left: 2%;
+    height: clamp(43px, 11.9vh, 102px);
+    bottom: calc(var(--ocean-floor-h) - 12px);
+    transform: rotate(3deg);
+}
+
+.ocean-coral2 {
+    left: 84%;
+    height: clamp(51px, 13.6vh, 119px);
+    bottom: calc(var(--ocean-floor-h) - 12px);
+}
+
+/* On 1080p+ displays the floor assets read as too small relative to the scene */
+@media (min-width: 1900px), (min-height: 1000px) {
+    .ocean-kelp {
+        height: clamp(128px, 25.5vh, 289px);
+    }
+
+    .ocean-coral1 {
+        height: clamp(94px, 18.7vh, 221px);
+    }
+
+    .ocean-coral2 {
+        height: clamp(111px, 22.1vh, 255px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ocean-bubble {
+        animation: none !important;
+        display: none;
+    }
+}
+
+/* Ocean Mode: hero text palette on the dark water background */
+body.ocean-mode-active #home .hero-eyebrow {
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+body.ocean-mode-active #home .hero-name {
+    color: #f6f9ff;
+}
+
+body.ocean-mode-active #home .hero-tagline {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.ocean-mode-active #home .scroll-hint {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+body.ocean-mode-active #home .scroll-hint:hover {
+    color: #ffffff;
+}
+
+/* Ocean Mode: keep the nav and ocean toggle legible while Home is the dark water scene */
+.nav.is-on-dark .hamburger,
+.nav.is-on-dark .nav-icon {
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.nav.is-on-dark .hamburger:hover,
+.nav.is-on-dark .nav-icon:hover {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.nav.is-on-dark.open {
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+.ocean-toggle-wrap.is-on-dark .ocean-toggle {
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.ocean-toggle-wrap.is-on-dark .ocean-toggle:hover,
+.ocean-toggle-wrap.is-on-dark .ocean-toggle.open {
+    color: #ffffff;
+}
+
+@media (max-width: 500px) {
+    .ocean-scene {
+        --ocean-floor-h: clamp(46px, 12vh, 90px);
+    }
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+    .ocean-scene {
+        --ocean-floor-h: clamp(40px, 18vh, 70px);
     }
 }
 

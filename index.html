@@ -27,8 +27,83 @@
         </ul>
     </div>
 
+    <!-- Ocean Toggle -->
+    <div class="ocean-toggle-wrap">
+        <div class="hamburger-container">
+            <button class="ocean-toggle" onclick="toggleOceanMenu()" aria-label="Deep Sea Adventure" aria-expanded="false" aria-controls="oceanMenu">
+                <i class="fa-solid fa-water"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Ocean Menu -->
+    <div class="ocean-menu" id="oceanMenu">
+        <div class="ocean-menu-header">
+            <h2 class="ocean-menu-title">Deep Sea Adventure</h2>
+        </div>
+
+        <div class="ocean-mode-row">
+            <span class="ocean-mode-label">Ocean Mode</span>
+            <button class="ocean-switch" id="oceanSwitch" role="switch" aria-checked="false" onclick="toggleOceanMode()">
+                <span class="ocean-switch-thumb"></span>
+            </button>
+        </div>
+
+        <div class="ocean-capsule-area">
+            <div class="ocean-capsule" id="oceanCapsule">
+                <i class="fa-solid fa-circle-question"></i>
+            </div>
+            <button class="ocean-spin-btn" id="oceanSpinBtn">Spin</button>
+        </div>
+
+        <div class="ocean-creature-grid">
+            <div class="ocean-creature-slot" data-creature="fish">
+                <img src="Images/fish.png" class="ocean-creature-img" alt="Fish">
+                <span class="ocean-lock"><i class="fa-solid fa-lock"></i></span>
+            </div>
+            <div class="ocean-creature-slot" data-creature="frog">
+                <img src="Images/frog.png" class="ocean-creature-img" alt="Frog">
+                <span class="ocean-lock"><i class="fa-solid fa-lock"></i></span>
+            </div>
+            <div class="ocean-creature-slot" data-creature="jellyfish">
+                <img src="Images/jellyfish.png" class="ocean-creature-img" alt="Jellyfish">
+                <span class="ocean-lock"><i class="fa-solid fa-lock"></i></span>
+            </div>
+            <div class="ocean-creature-slot" data-creature="otter">
+                <img src="Images/otter.png" class="ocean-creature-img" alt="Otter">
+                <span class="ocean-lock"><i class="fa-solid fa-lock"></i></span>
+            </div>
+            <div class="ocean-creature-slot" data-creature="shark">
+                <img src="Images/shark.png" class="ocean-creature-img" alt="Shark">
+                <span class="ocean-lock"><i class="fa-solid fa-lock"></i></span>
+            </div>
+            <div class="ocean-creature-slot" data-creature="starfish">
+                <img src="Images/starfish.png" class="ocean-creature-img" alt="Starfish">
+                <span class="ocean-lock"><i class="fa-solid fa-lock"></i></span>
+            </div>
+            <div class="ocean-creature-slot" data-creature="whale">
+                <img src="Images/whale.png" class="ocean-creature-img" alt="Whale">
+                <span class="ocean-lock"><i class="fa-solid fa-lock"></i></span>
+            </div>
+            <div class="ocean-creature-slot" data-creature="whaleshark">
+                <img src="Images/whaleshark.png" class="ocean-creature-img" alt="Whale shark">
+                <span class="ocean-lock"><i class="fa-solid fa-lock"></i></span>
+            </div>
+        </div>
+    </div>
+
     <!-- Home -->
     <div class="section" id="home">
+        <div class="ocean-scene" id="oceanScene" aria-hidden="true">
+            <div class="ocean-water-layer"></div>
+            <div class="ocean-bubbles" id="oceanBubbles"></div>
+            <div class="ocean-creatures" id="oceanCreatures"></div>
+            <div class="ocean-floor">
+                <img src="Images/kelp.png" class="ocean-floor-asset ocean-kelp" alt="">
+                <img src="Images/coral2.png" class="ocean-floor-asset ocean-coral2" alt="">
+                <img src="Images/coral1.png" class="ocean-floor-asset ocean-coral1" alt="">
+            </div>
+        </div>
         <div class="section-inner">
             <div class="hero-wrap">
                 <div class="hero-eyebrow">Software Engineer · Bay Area</div>
