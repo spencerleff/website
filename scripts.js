@@ -316,7 +316,7 @@ function renderOceanCreature(name) {
 
             setTimeout(() => {
                 img.dataset.oceanForm = isHero ? 'normal' : 'hero';
-                img.src = isHero ? 'Images/frog.png' : 'Images/Frog_Character.png';
+                img.src = isHero ? 'Images/frog.png' : 'Images/frog_character.png';
                 img.classList.remove('is-poofing');
                 img.classList.add('is-poofing-in');
                 setTimeout(() => img.classList.remove('is-poofing-in'), 420);
