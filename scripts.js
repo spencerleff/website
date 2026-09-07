@@ -38,9 +38,7 @@ function toggleOceanMode() {
 
     try {
         localStorage.setItem(OCEAN_MODE_KEY, next ? '1' : '0');
-    } catch {
-        //Storage can be unavailable in some private-browsing contexts; fail silently
-    }
+    } catch {}
 
     if (next) {
         renderAllOceanCreatures();
@@ -53,9 +51,8 @@ function toggleOceanMode() {
     updateOceanChromeContrast();
 }
 
-//Deep Sea Adventure: capsule spin, creature unlocks, and 24hr cooldown
 const OCEAN_CREATURES = ['fish', 'frog', 'jellyfish', 'otter', 'shark', 'starfish', 'whale', 'whaleshark'];
-const OCEAN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+const OCEAN_COOLDOWN_MS = 60 * 60 * 1000;
 const OCEAN_LAST_SPIN_KEY = 'oceanLastSpin';
 const OCEAN_UNLOCKED_KEY = 'oceanUnlocked';
 const OCEAN_MODE_KEY = 'oceanModeActive';
@@ -75,9 +72,7 @@ function getOceanUnlocked() {
 function setOceanUnlocked(list) {
     try {
         localStorage.setItem(OCEAN_UNLOCKED_KEY, JSON.stringify(list));
-    } catch {
-        //Storage can be unavailable in some private-browsing contexts; fail silently
-    }
+    } catch {}
 }
 
 //Applies saved unlock state to the grid on load
@@ -88,6 +83,18 @@ function applyOceanUnlockedState() {
     });
 }
 applyOceanUnlockedState();
+
+//True once every creature has been unlocked
+function isOceanCollectionComplete() {
+    return getOceanUnlocked().length >= OCEAN_CREATURES.length;
+}
+
+//Swaps the capsule/spin button for the completion message once everything is unlocked
+function updateOceanCompletionState() {
+    const area = document.getElementById('oceanCapsuleArea');
+    if (area) area.classList.toggle('is-complete', isOceanCollectionComplete());
+}
+updateOceanCompletionState();
 
 //Reads the saved on-screen position (top/left %) for each placed creature
 function getOceanPositions() {
@@ -103,9 +110,7 @@ function getOceanPositions() {
 function setOceanPositions(map) {
     try {
         localStorage.setItem(OCEAN_POSITIONS_KEY, JSON.stringify(map));
-    } catch {
-        //Storage can be unavailable in some private-browsing contexts; fail silently
-    }
+    } catch {}
 }
 
 //Assigns a creature a random spot above the sand line the first time it's placed, then reuses it
@@ -139,21 +144,24 @@ function getOceanSceneMetrics() {
     return { sceneRect, sandTopPx };
 }
 
-//Picks the size multiplier for creatures based on the current display resolution
-function getOceanCreatureScaleFactor() {
-    const maxDim = Math.max(window.innerWidth, window.innerHeight);
-    const minDim = Math.min(window.innerWidth, window.innerHeight);
-    const isFullHdOrAbove = maxDim >= 1920 && minDim >= 1080;
-    return isFullHdOrAbove ? 0.4 : 0.25;
+//Reads a creature's current size percentage from the matching CSS breakpoint variable
+function getOceanCreatureScale(name) {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(`--ocean-scale-${name}`);
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : 0.4;
 }
 
-//Scales ocean creature sizes
+//Scales ocean creature sizes using each creature's breakpoint-driven percentage
 function applyOceanCreatureScale(img) {
     const naturalWidth = img.naturalWidth;
     const naturalHeight = img.naturalHeight;
     if (!naturalWidth || !naturalHeight) return;
 
-    let width = naturalWidth * getOceanCreatureScaleFactor();
+    let scale = getOceanCreatureScale(img.dataset.oceanCreature);
+    if (img.dataset.oceanCreature === 'frog' && img.dataset.oceanForm === 'hero') {
+        scale *= 1.3;
+    }
+    let width = naturalWidth * scale;
 
     const metrics = getOceanSceneMetrics();
     if (metrics) {
@@ -178,7 +186,6 @@ function clampOceanCreaturePosition(img, topPercent, leftPercent) {
     const w = imgRect.width || 0;
     const h = imgRect.height || 0;
 
-    //A little breathing room above the sand line
     const sandBuffer = 4;
 
     const minLeftPx = 0;
@@ -198,7 +205,7 @@ function clampOceanCreaturePosition(img, topPercent, leftPercent) {
     };
 }
 
-//Nudges a creature to a new spot with a slow, drifting swim - always staying within the water
+//Nudges a creature to a new spot with a slow, drifting swim, occasionally flipping to face the new direction
 function wanderOceanCreature(img, name) {
     const currentTop = parseFloat(img.style.top) || 0;
     const currentLeft = parseFloat(img.style.left) || 0;
@@ -213,20 +220,63 @@ function wanderOceanCreature(img, name) {
 
     img.style.top = `${clamped.top}%`;
     img.style.left = `${clamped.left}%`;
+    img.style.transform = Math.cos(angle) < 0 ? 'scaleX(-1)' : 'scaleX(1)';
 
     const positions = getOceanPositions();
     positions[name] = { top: clamped.top, left: clamped.left };
     setOceanPositions(positions);
 }
 
-//Keeps a creature drifting every 8-16 seconds while Ocean Mode stays on, with a slow swim between spots
+//Keeps a creature drifting every 6-14 seconds while Ocean Mode stays on, with a slow swim between spots
 function scheduleOceanCreatureWander(img, name) {
-    const delay = 8000 + Math.random() * 8000;
+    const delay = 6000 + Math.random() * 8000;
     setTimeout(() => {
         if (!document.body.classList.contains('ocean-mode-active') || !img.isConnected) return;
         wanderOceanCreature(img, name);
         scheduleOceanCreatureWander(img, name);
     }, delay);
+}
+
+//Spawns a small poofing cloud (a central puff plus a few bursting dots) centered on a creature, used for the frog/frog-hero transform
+function spawnOceanPoof(img) {
+    if (!oceanCreaturesLayer) return;
+
+    const sceneEl = document.getElementById('oceanScene');
+    if (!sceneEl) return;
+
+    const sceneRect = sceneEl.getBoundingClientRect();
+    const imgRect = img.getBoundingClientRect();
+    if (!sceneRect.width || !sceneRect.height) return;
+
+    const centerX = imgRect.left + imgRect.width / 2 - sceneRect.left;
+    const centerY = imgRect.top + imgRect.height / 2 - sceneRect.top;
+    const size = Math.max(imgRect.width, imgRect.height) * 1.15;
+
+    const poof = document.createElement('div');
+    poof.className = 'ocean-poof';
+    poof.style.left = `${centerX}px`;
+    poof.style.top = `${centerY}px`;
+    poof.style.width = `${size}px`;
+    poof.style.height = `${size}px`;
+
+    const dotCount = 6;
+    for (let i = 0; i < dotCount; i++) {
+        const angle = (Math.PI * 2 * i) / dotCount + (Math.random() * 0.5 - 0.25);
+        const dist = size * (0.45 + Math.random() * 0.3);
+        const dot = document.createElement('span');
+        dot.className = 'ocean-poof-dot';
+        const dotSize = size * (0.16 + Math.random() * 0.08);
+        dot.style.width = `${dotSize}px`;
+        dot.style.height = `${dotSize}px`;
+        dot.style.setProperty('--poof-dx', `${Math.cos(angle) * dist}px`);
+        dot.style.setProperty('--poof-dy', `${Math.sin(angle) * dist}px`);
+        poof.appendChild(dot);
+    }
+
+    poof.addEventListener('animationend', e => {
+        if (e.target === poof) poof.remove();
+    });
+    oceanCreaturesLayer.appendChild(poof);
 }
 
 //Places a single unlocked creature into the scene, skipping ones already placed
@@ -244,11 +294,35 @@ function renderOceanCreature(name) {
 
     img.onload = () => {
         applyOceanCreatureScale(img);
-        const clamped = clampOceanCreaturePosition(img, pos.top, pos.left);
+        const curTop = parseFloat(img.style.top);
+        const curLeft = parseFloat(img.style.left);
+        const baseTop = Number.isFinite(curTop) ? curTop : pos.top;
+        const baseLeft = Number.isFinite(curLeft) ? curLeft : pos.left;
+        const clamped = clampOceanCreaturePosition(img, baseTop, baseLeft);
         img.style.top = `${clamped.top}%`;
         img.style.left = `${clamped.left}%`;
     };
     img.src = `Images/${name}.png`;
+
+    if (name === 'frog') {
+        img.classList.add('is-toggleable');
+        img.addEventListener('click', () => {
+            const isHero = img.dataset.oceanForm === 'hero';
+
+            spawnOceanPoof(img);
+            img.classList.remove('is-poofing-in');
+            void img.offsetWidth;
+            img.classList.add('is-poofing');
+
+            setTimeout(() => {
+                img.dataset.oceanForm = isHero ? 'normal' : 'hero';
+                img.src = isHero ? 'Images/frog.png' : 'Images/Frog_Character.png';
+                img.classList.remove('is-poofing');
+                img.classList.add('is-poofing-in');
+                setTimeout(() => img.classList.remove('is-poofing-in'), 420);
+            }, 200);
+        });
+    }
 
     oceanCreaturesLayer.appendChild(img);
     scheduleOceanCreatureWander(img, name);
@@ -295,13 +369,14 @@ function spawnOceanBubble() {
     const bubble = document.createElement('div');
     bubble.className = 'ocean-bubble';
 
-    const size = (10 + Math.random() * 22) * 1.75;
+    const bubbleScaleRaw = getComputedStyle(document.documentElement).getPropertyValue('--ocean-bubble-scale');
+    const bubbleScale = parseFloat(bubbleScaleRaw) || 1;
+    const size = (10 + Math.random() * 22) * 1.75 * bubbleScale;
     const rawDuration = 5 + Math.random() * 4;
     const duration = Math.round((rawDuration * 0.9) * 2) / 2;
     const drift = Math.random() * 24 - 12;
     const left = 5 + Math.random() * 88;
 
-    //Spawn anywhere across the water, but never down in the sand
     const metrics = getOceanSceneMetrics();
     let maxTopPercent = 88;
     if (metrics && metrics.sceneRect.height) {
@@ -373,6 +448,16 @@ let oceanCountdownInterval = null;
 function updateOceanSpinAvailability() {
     if (!oceanSpinBtn) return;
 
+    if (isOceanCollectionComplete()) {
+        oceanSpinBtn.disabled = true;
+        oceanSpinBtn.textContent = 'Spin';
+        if (oceanCountdownInterval) {
+            clearInterval(oceanCountdownInterval);
+            oceanCountdownInterval = null;
+        }
+        return;
+    }
+
     const lastSpin = Number(localStorage.getItem(OCEAN_LAST_SPIN_KEY) || 0);
     const remaining = lastSpin + OCEAN_COOLDOWN_MS - Date.now();
 
@@ -396,6 +481,8 @@ updateOceanSpinAvailability();
 //Plays the shake -> pop -> reveal capsule sequence and awards a creature
 if (oceanSpinBtn && oceanCapsule) {
     oceanSpinBtn.addEventListener('click', () => {
+        if (isOceanCollectionComplete()) return;
+
         const lastSpin = Number(localStorage.getItem(OCEAN_LAST_SPIN_KEY) || 0);
         if (Date.now() - lastSpin < OCEAN_COOLDOWN_MS) return;
 
@@ -406,13 +493,11 @@ if (oceanSpinBtn && oceanCapsule) {
         void oceanCapsule.offsetWidth;
         oceanCapsule.classList.add('is-shaking');
 
-        //Stage 1: rattle
         setTimeout(() => {
             oceanCapsule.classList.remove('is-shaking');
             oceanCapsule.classList.add('is-launching');
         }, 600);
 
-        //Stage 2: burst open and reveal the winning creature
         setTimeout(() => {
             oceanCapsule.classList.remove('is-launching');
             oceanCapsule.classList.add('is-revealed');
@@ -423,6 +508,7 @@ if (oceanSpinBtn && oceanCapsule) {
                 unlocked.push(winner);
                 setOceanUnlocked(unlocked);
             }
+            updateOceanCompletionState();
 
             if (document.body.classList.contains('ocean-mode-active')) {
                 renderOceanCreature(winner);
@@ -437,7 +523,6 @@ if (oceanSpinBtn && oceanCapsule) {
             localStorage.setItem(OCEAN_LAST_SPIN_KEY, String(Date.now()));
         }, 600 + 500);
 
-        //Stage 3: settle the capsule back to its idle state, then start the cooldown countdown
         setTimeout(() => {
             oceanCapsule.classList.remove('is-revealed');
             oceanCapsule.innerHTML = '<i class="fa-solid fa-circle-question"></i>';
@@ -447,10 +532,8 @@ if (oceanSpinBtn && oceanCapsule) {
 }
 
 
-//All full-page sections
 const sections = [...document.querySelectorAll('.section')];
 
-//Tracks which section is in view, so in-section keyboard shortcuts know which slider to control
 let activeSectionId = sections[0]?.id || null;
 
 //Watches sections to keep activeSectionId up to date
@@ -543,12 +626,11 @@ if (scrollHint) {
 }
 
 
-//Touch state for slider swipe detection
 let touchStartX = 0;
 let touchStartY = 0;
 let touchDirectionLocked = null;
 let isSliderTouch = false;
-let touchSliderType = null; // 'about' | 'projects' | null
+let touchSliderType = null;
 
 //Records touch start position and which slider (if any) was touched
 document.addEventListener(
@@ -612,7 +694,6 @@ document.addEventListener(
     { passive: true }
 );
 
-//About slider elements and state
 const aboutSlider = document.querySelector('.about-slider');
 const aboutSlides = document.querySelectorAll('.about-slide');
 const dots = document.querySelectorAll('.about-pagination .page-dot');
@@ -628,9 +709,7 @@ function syncAboutVideos() {
         if (i === currentPage) {
             const playPromise = video.play();
             if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                    //Autoplay can be blocked in rare cases; failing silently is fine
-                });
+                playPromise.catch(() => {});
             }
         } else if (!video.paused) {
             video.pause();
@@ -677,7 +756,6 @@ document.addEventListener('keydown', e => {
 });
 
 
-//Mouse drag state for the About slider
 let aboutDragStartX = 0;
 let isAboutDragging = false;
 let aboutDragMoved = false;
@@ -737,7 +815,6 @@ document.addEventListener(
 );
 
 
-//Work item accordion elements
 const workItems = [...document.querySelectorAll('.work-item')];
 
 //Opens a work item and closes any other open one
@@ -809,7 +886,6 @@ document.addEventListener('keydown', e => {
 });
 
 
-//Projects carousel elements and state
 const projectsTrack = document.getElementById('projectsTrack');
 const projectSlides = document.querySelectorAll('.project-slide');
 const projectDots = document.querySelectorAll('#projectsPagination .page-dot');
@@ -841,7 +917,6 @@ if (projectsTrack && projectSlides.length) {
         }
     });
 
-    //Mouse drag state for the Projects slider
     let projectsDragStartX = 0;
     let isProjectsDragging = false;
     let projectsDragMoved = false;
@@ -902,10 +977,8 @@ if (projectsTrack && projectSlides.length) {
 }
 
 
-//Swipe demo: on a slider's first appearance, nudges it partway to the next slide
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-//Demo transition speed and hold time for the swipe hint animation
 const SWIPE_DEMO_TRANSITION_MS = 0.75 * 1000;
 const SWIPE_DEMO_HOLD_MS = 100;
 
